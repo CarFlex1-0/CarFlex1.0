@@ -76,8 +76,8 @@ async function metricFunction1(id) {
     console.log(`Stock 0-60 time: ${stockAcceleration}`);
 
     return {
-      stockAcceleration: stockAcceleration.toFixed(2),
-      calculatedTime: accelerationTime.toFixed(2),
+      stock_Acceleration_Time: stockAcceleration.toFixed(2),
+      calculated_Acceleration_Time: accelerationTime.toFixed(2),
     };
   } catch (error) {
     console.error("Error in metricFunction1:", error);
@@ -125,8 +125,8 @@ async function metricFunction2(id) {
     console.log(`Calculated Max Speed (km/h): ${maxSpeedKph.toFixed(2)}`);
 
     return {
-      stockMaxSpeed: stockMaxSpeed.toFixed(2),
-      maxSpeedKph: maxSpeedKph.toFixed(2),
+      stock_Max_Speed_kph: stockMaxSpeed.toFixed(2),
+      calculated_max_Speed_Kph: maxSpeedKph.toFixed(2),
     };
   } catch (error) {
     console.error("Error in metricFunction2:", error);
@@ -192,9 +192,8 @@ async function metricFunction3(id) {
     const powerDifference = givenHorsepower - calculatedHorsepower;
 
     return {
-      givenHorsepower: givenHorsepower.toFixed(2),
-      calculatedHorsepower: calculatedHorsepower.toFixed(2),
-      powerDifference: powerDifference.toFixed(2),
+      stock_Horsepower: givenHorsepower.toFixed(2),
+      calculated_Horsepower: calculatedHorsepower.toFixed(2),
     };
   } catch (error) {
     console.error("Error in metricFunction3:", error);
@@ -241,9 +240,9 @@ async function metricFunction4(id) {
 
     // Return the results
     return {
-      calculatedDisplacementCc,
-      originalDisplacementCc: originalDisplacementCc.toFixed(2),
-      displacementDifference: displacementDifference.toFixed(2), // Difference in displacement
+      stock_Displacement_Cc: originalDisplacementCc.toFixed(2),
+      calculated_Displacement_Cc: calculatedDisplacementCc,
+      // Difference in displacement
     };
   } catch (error) {
     console.error("Error in metricFunction4:", error);
@@ -282,9 +281,8 @@ async function metricFunction5(id) {
 
     // Return the results
     return {
-      calculatedMaxTorqueNm: torqueNm.toFixed(2), // Calculated torque in Nm
-      givenMaxTorqueNm: givenMaxTorqueNm.toFixed(2), // Given torque in Nm
-      torqueDifference: torqueDifference.toFixed(2), // Difference in Nm
+      stock_Max_Torque_Nm: givenMaxTorqueNm.toFixed(2), // Given torque in Nm
+      calculated_Max_Torque_Nm: torqueNm.toFixed(2), // Calculated torque in Nm
     };
   } catch (error) {
     console.error("Error in metricFunction5:", error);
