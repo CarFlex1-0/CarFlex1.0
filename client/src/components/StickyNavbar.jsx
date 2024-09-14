@@ -12,7 +12,7 @@ const StickyNavbar = () => {
   };
 
   return (
-    <nav className="shadow shadow-gray-300 w-100 px-8 md:px-auto bg-black top-0 sticky">
+    <nav className="z-50 shadow shadow-gray-300 w-100 px-8 md:px-auto bg-black top-0 sticky">
       <div className="md:h-16 h-28 mx-auto md:px-4 container flex items-center justify-between flex-wrap md:flex-nowrap">
         <div className="text-indigo-500 md:order-1">
           <span className="text-2xl">
