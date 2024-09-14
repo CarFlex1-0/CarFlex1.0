@@ -6,6 +6,7 @@ import Footer from "./components/Footer";
 import ThreeDModel from "./components/ThreeDModel";
 import Scrapper from "./components/Scrapper";
 import Metric from "./components/Metric";
+import Dashboard from "./components/Dashboard";
 
 function App() {
   return (
@@ -19,9 +20,7 @@ function App() {
               element={
                 <>
                   <Background />
-                  <h2 className="w-screen min-h-screen flex items-center justify-center">
-                    Welcome to CarFlex Dashboard
-                  </h2>
+                  <Dashboard />
                 </>
               }
             />
