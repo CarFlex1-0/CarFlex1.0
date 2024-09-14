@@ -24,4 +24,4 @@ dist-ssr
 *.sw?
 
 
-./public/assets/models/supra.glb
+public/assets/models/ferrari.glb

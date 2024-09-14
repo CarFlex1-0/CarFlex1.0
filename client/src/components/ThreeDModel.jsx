@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import * as THREE from "three";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+
 import {
   OrbitControls,
   AccumulativeShadows,
@@ -11,16 +12,7 @@ import {
   Float,
 } from "@react-three/drei";
 import { LayerMaterial, Color, Depth } from "lamina";
-import ClimbingBoxLoader from "react-spinners/ClimbingBoxLoader";
-const override = {
-  display: "block",
-  position: "fixed",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  zIndex: 1000,
-  borderColor: "green",
-};
+
 const Model = ({ onModelLoad }) => {
   const gltf = useLoader(GLTFLoader, "./assets/models/supra.glb");
   const modelRef = useRef();
@@ -172,15 +164,8 @@ const ThreeDModel = () => {
 
         {/* Loader outside the Canvas */}
         {loading && (
-          <div className="loader-container">
-            <ClimbingBoxLoader
-              color={color}
-              loading={loading}
-              cssOverride={override}
-              size={50}
-              aria-label="Loading Spinner"
-              data-testid="loader"
-            />
+          <div className="flex justify-center items-center min-h-screen">
+            <div className="spinner"></div>
           </div>
         )}
 

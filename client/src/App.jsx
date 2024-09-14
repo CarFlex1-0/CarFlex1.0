@@ -7,6 +7,7 @@ import ThreeDModel from "./components/ThreeDModel";
 import Scrapper from "./components/Scrapper";
 import Metric from "./components/Metric";
 import Dashboard from "./components/Dashboard";
+import PostPage from "./pages/PostPage";
 
 function App() {
   return (
@@ -50,6 +51,15 @@ function App() {
                 <>
                   <Metric />
                   <Background />
+                </>
+              }
+            />
+            <Route
+              path="/blog/dashboard"
+              element={
+                <>
+                  <Background />
+                  <PostPage />
                 </>
               }
             />
