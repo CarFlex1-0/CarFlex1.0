@@ -52,12 +52,15 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
 };
 
 userSchema.pre('save', async function (next) {
+    // If password is not modified, move to the next middleware
     if (!this.isModified('password')) {
-        next();
+        return next();
     }
 
+    // Hash the password if it's modified or a new user
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
+    next(); // Move to the next middleware once hashing is done
 });
 
 const User = mongoose.model('User', userSchema);
