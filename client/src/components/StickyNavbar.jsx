@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 const StickyNavbar = () => {
   const location = useLocation(); // Get the current location
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  // Determine if a link is active based on the current path
   const getLinkClassName = (path) => {
     return location.pathname === path
       ? "md:px-4 md:py-2 text-indigo-500" // Active link styling
@@ -37,6 +37,71 @@ const StickyNavbar = () => {
             </li>
             <li className={getLinkClassName("/model")}>
               <Link to="/model">3D Model</Link>
+            </li>
+            {/* Blog Dropdown */}
+            <li className="relative">
+              <button
+                className="md:px-4 md:py-2 hover:text-indigo-400 text-gray-500 flex items-center"
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                aria-haspopup="true"
+                aria-expanded={isDropdownOpen}
+              >
+                Blog
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4 ml-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+              {isDropdownOpen && (
+                <ul className="absolute right-0 mt-2 bg-gray-800 text-gray-300 rounded-box shadow-lg w-48">
+                  <li>
+                    <Link
+                      to="/blog/dashboard"
+                      className="block px-4 py-2 hover:bg-gray-700"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      View
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/blog/create"
+                      className="block px-4 py-2 hover:bg-gray-700"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      Create
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/blog/edit"
+                      className="block px-4 py-2 hover:bg-gray-700"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      Edit
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/blog/delete"
+                      className="block px-4 py-2 hover:bg-gray-700"
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      Delete
+                    </Link>
+                  </li>
+                </ul>
+              )}
             </li>
           </ul>
         </div>

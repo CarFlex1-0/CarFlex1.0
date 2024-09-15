@@ -8,6 +8,7 @@ import Scrapper from "./components/Scrapper";
 import Metric from "./components/Metric";
 import Dashboard from "./components/Dashboard";
 import PostPage from "./pages/PostPage";
+import NewBlog from "./pages/NewBlog";
 
 function App() {
   return (
@@ -60,6 +61,15 @@ function App() {
                 <>
                   <Background />
                   <PostPage />
+                </>
+              }
+            />
+            <Route
+              path="/blog/create"
+              element={
+                <>
+                  <Background />
+                  <NewBlog />
                 </>
               }
             />
