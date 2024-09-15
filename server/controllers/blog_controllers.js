@@ -1,53 +1,55 @@
 const Blog = require("../models/blog");
+const User = require("../models/user");
+const cloudinary = require("../config/cloudinary_config");
 const { body, validationResult } = require("express-validator");
-const User = require("../models/user"); // Check this path
 
-// Create a new blog
-const createBlog = [
-  // Validation rules
-  body("title").notEmpty().withMessage("Title is required"),
-  body("content").notEmpty().withMessage("Content is required"),
-  body("author").isMongoId().withMessage("Invalid author ID"),
-  body("blogImageUrl").optional().isURL().withMessage("Invalid URL format"),
+// Create new Blog
+// controllers/blog_controllers.js
 
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
+const createBlog = async (req, res, next) => {
+  req.user = { _id: "66e5da75922c0737ba3eca42" }; // Mock user ID
 
-    try {
-      const { title, content, author, blogImageUrl } = req.body;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
 
-      const newBlog = new Blog({
-        title,
-        content,
-        author,
-        blogImageUrl,
-        plagPercentage: 0,
-      });
-      await newBlog.save();
-      res.status(201).json(newBlog);
-    } catch (error) {
-      res.status(500).json({ error: error.message, details: error });
-    }
-  },
-];
-
-// Update a blog post by ID
-const updateBlogById = async (req, res) => {
   try {
+    console.log("Request Body:", req.body); // Log the request body
+
     const { title, content, blogImageUrl } = req.body;
 
-    const updatedBlog = await Blog.findByIdAndUpdate(
-      req.params.id,
-      { title, content, blogImageUrl, plagPercentage: 0 },
-      { new: true }
-    );
-    if (!updatedBlog)
-      return res.status(404).json({ message: "Blog not found" });
-    res.status(200).json(updatedBlog);
+    if (!title || !content) {
+      return res.status(400).json({ error: "Title and content are required." });
+    }
+
+    let blogImageUrlData = null;
+    if (blogImageUrl) {
+      const result = await cloudinary.uploader.upload(blogImageUrl, {
+        folder: "blogs",
+        width: 1200,
+        crop: "scale",
+      });
+      blogImageUrlData = {
+        public_id: result.public_id,
+        url: result.secure_url,
+      };
+    }
+
+    const newBlog = await Blog.create({
+      title,
+      content,
+      author: req.user._id,
+      blogImageUrl: blogImageUrlData,
+      plagPercentage: 0,
+    });
+
+    res.status(201).json({
+      success: true,
+      newBlog,
+    });
   } catch (error) {
+    console.error("Error creating blog post:", error);
     res.status(500).json({ error: error.message });
   }
 };
@@ -84,6 +86,13 @@ const getBlogById = async (req, res) => {
 
 // Delete a blog post by ID
 const deleteBlogById = async (req, res) => {
+  const currentBlog = await Blog.findById(req.params.id);
+
+  //delete Blog image in cloudinary
+  const ImgId = currentBlog.blogImageUrl.public_id;
+  if (ImgId) {
+    await cloudinary.uploader.destroy(ImgId);
+  }
   try {
     const deletedBlog = await Blog.findByIdAndDelete(req.params.id);
     if (!deletedBlog)
@@ -94,13 +103,79 @@ const deleteBlogById = async (req, res) => {
   }
 };
 
+// Update a blog post by ID
+const updateBlogById = async (req, res) => {
+  try {
+    const { title, content, blogImageUrl } = req.body;
+
+    const currentBlog = await Blog.findById(req.params.id);
+    //build the object data
+    const data = {
+      title: title || currentBlog.title,
+      content: content || currentBlog.content,
+      blogImageUrl: blogImageUrl || currentBlog.blogImageUrl,
+      plagPercentage: 0,
+    };
+
+    //modify post image conditionally
+    if (req.body.blogImageUrl !== "") {
+      const ImgId = currentBlog.blogImageUrl.public_id;
+      if (ImgId) {
+        await cloudinary.uploader.destroy(ImgId);
+      }
+
+      const newImage = await cloudinary.uploader.upload(req.body.blogImageUrl, {
+        folder: "blogs",
+        width: 1200,
+        crop: "scale",
+      });
+
+      data.blogImageUrl = {
+        public_id: newImage.public_id,
+        url: newImage.secure_url,
+      };
+    }
+
+    const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, data, {
+      new: true,
+    });
+    if (!updatedBlog)
+      return res.status(404).json({ message: "Blog not found" });
+    res.status(200).json(updatedBlog);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 // Like a blog post by ID
 const likeBlogById = async (req, res) => {
   try {
-    const blog = await Blog.findById(req.params.id);
+    // Increment the likes field using $inc operator
+    const blog = await Blog.findByIdAndUpdate(
+      req.params.id,
+      { $inc: { likes: 1 } }, // Increment the likes field by 1
+      { new: true, runValidators: true } // Return the updated blog and run validators
+    );
+
     if (!blog) return res.status(404).json({ message: "Blog not found" });
-    blog.likes += 1;
-    await blog.save();
+
+    res.status(200).json(blog);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const removeLikeBlogById = async (req, res) => {
+  try {
+    // Decrement the likes field using $inc operator
+    const blog = await Blog.findByIdAndUpdate(
+      req.params.id,
+      { $inc: { likes: -1 } }, // Decrement the likes field by 1
+      { new: true, runValidators: true } // Return the updated blog and run validators
+    );
+
+    if (!blog) return res.status(404).json({ message: "Blog not found" });
+
     res.status(200).json(blog);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -114,4 +189,5 @@ module.exports = {
   updateBlogById,
   deleteBlogById,
   likeBlogById,
+  removeLikeBlogById,
 };

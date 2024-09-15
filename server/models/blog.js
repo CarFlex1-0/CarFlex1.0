@@ -14,9 +14,8 @@ const blogSchema = mongoose.Schema(
       default: 0,
     },
     blogImageUrl: {
-      type: String,
-      // default:
-      //   "https://www.hostinger.com/tutorials/wp-content/uploads/sites/2/2021/09/how-to-write-a-blog-post-1536x674.webp",
+      url: String,
+      public_id: String,
     },
     author: {
       type: mongoose.Schema.Types.ObjectId,
