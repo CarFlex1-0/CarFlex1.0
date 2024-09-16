@@ -1,3 +1,4 @@
+// Fetch All Blogs and Recently Uploaded Blogs
 import { useState, useEffect } from "react";
 
 const useFetchBlogs = () => {

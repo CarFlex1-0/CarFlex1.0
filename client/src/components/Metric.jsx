@@ -1,3 +1,5 @@
+// Dummy Dashboard for Metrics
+// TODO: Integrate with ThreeDModel and use values from there
 import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import {

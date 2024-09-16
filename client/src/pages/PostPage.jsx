@@ -1,3 +1,5 @@
+// Display All Blogs and recently published Blogs
+// TODO: Show Likes
 import React from "react";
 import useFetchBlogs from "../hooks/useFetchBlogs";
 import Carousel from "../components/Carousel";

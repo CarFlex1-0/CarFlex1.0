@@ -1,3 +1,4 @@
+// Carousel for viewing BlogList items
 import React from "react";
 import BlogCard from "./BlogCard";
 

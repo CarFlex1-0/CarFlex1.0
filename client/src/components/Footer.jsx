@@ -1,3 +1,5 @@
+// Footer Component
+// TODO: Add Links & CHange values and Copyright
 import React from "react";
 
 const Footer = () => {

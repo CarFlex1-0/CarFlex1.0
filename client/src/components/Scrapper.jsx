@@ -1,3 +1,5 @@
+// Scrapping data from auto data
+// TODO: Create form (Conditional render) and send (Use Yup for schema Validation)
 import React, { useState } from "react";
 
 const Scrapper = () => {

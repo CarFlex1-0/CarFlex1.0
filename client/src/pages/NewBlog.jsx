@@ -1,3 +1,5 @@
+// Add a new Blog
+// TODO: Pass a Default Img if None Provided
 import React, { useState } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";

@@ -6,6 +6,7 @@ const BlogCard = ({ item }) => {
   const location = useLocation();
 
   // Check if we are on the dashboard route
+  // TODO: Change conditional rendering with user state (I think backend Change)
   const isDashboard = location.pathname === "/blog/dashboard";
   const isEditDashboard = location.pathname === "/blog/edit/dashboard";
   const isDeleteDashboard = location.pathname === "/blog/delete/dashboard";

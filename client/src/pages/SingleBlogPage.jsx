@@ -1,3 +1,5 @@
+// Show a Single Blog
+// TODO: Show Blogs by author (Backend and Frontend)
 import React from "react";
 import { useParams } from "react-router-dom";
 import useBlog from "../hooks/useFetchSingleAndLike";

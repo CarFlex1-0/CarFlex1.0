@@ -1,3 +1,5 @@
+// 3D Model render
+// TODO: Link with scrapper values and Render graphs
 import React, { useRef, useState, useEffect } from "react";
 import * as THREE from "three";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
