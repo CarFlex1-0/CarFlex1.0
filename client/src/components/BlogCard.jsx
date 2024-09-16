@@ -1,8 +1,29 @@
 // BlogCard.js
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const BlogCard = ({ item }) => {
+  const navigate = useNavigate();
+  const handleDelete = async () => {
+    try {
+      if (confirm("Are you sure you want to delete")) {
+        const res = await fetch(`http://localhost:5000/api/blogs/${item._id}`, {
+          method: "DELETE",
+        });
+        if (!res.ok) {
+          throw new Error("Failed to delete blog");
+        }
+        // Redirect to dashboard after successful delete
+        alert("Blog Delete was successful");
+        navigate("/blog/dashboard"); // Redirect after successful delete
+      } else {
+        alert("Blog Delete was unsuccessful");
+      }
+    } catch (error) {
+      console.error(error);
+      // Handle error appropriately
+    }
+  };
   const location = useLocation();
 
   // Check if we are on the dashboard route
@@ -21,7 +42,11 @@ const BlogCard = ({ item }) => {
         <img
           src={item.blogImageUrl.url}
           alt={item.title}
-          className="w-full h-48 object-cover"
+          className={
+            isDashboard
+              ? "w-full h-48 object-cover"
+              : "w-full h-60 object-cover flex-wrap"
+          }
         />
       </figure>
       <div className="card-body">
@@ -46,10 +71,7 @@ const BlogCard = ({ item }) => {
           )}
           {isDeleteDashboard && (
             <>
-              <Link
-                to={`/blog/${item._id}/delete`}
-                className="btn btn-error glass"
-              >
+              <Link className="btn btn-error glass" onClick={handleDelete}>
                 Delete Blog
               </Link>
             </>

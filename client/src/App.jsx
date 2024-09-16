@@ -10,6 +10,7 @@ import Dashboard from "./components/Dashboard";
 import PostPage from "./pages/PostPage";
 import NewBlog from "./pages/NewBlog";
 import SingleBlogPage from "./pages/SingleBlogPage";
+import EditBlog from "./pages/EditBlog";
 
 function App() {
   return (
@@ -89,6 +90,15 @@ function App() {
                 <>
                   <Background />
                   <NewBlog />
+                </>
+              }
+            />
+            <Route
+              path="/blog/:id/edit"
+              element={
+                <>
+                  <Background />
+                  <EditBlog />
                 </>
               }
             />

@@ -35,7 +35,7 @@ const useFetchBlogs = () => {
         if (!res.ok) {
           throw new Error(data.error || "Failed to fetch recent blogs");
         }
-        setRecentBlogs(data.slice(0, 5));
+        setRecentBlogs(data.slice().reverse().slice(0, 5));
       } catch (error) {
         setError(error.message);
       }
