@@ -27,9 +27,31 @@ const addAnswer = async (req, res) => {
 // Upvote an answer
 const upvoteAnswer = async (req, res) => {
     const { answerId } = req.params;
+    const { userId } = req.body; // Get user ID from the request
+
     try {
         const answer = await Answer.findById(answerId);
-        answer.upvotes += 1;
+
+        // Check if the user already upvoted
+        const hasUpvoted = answer.upvoters.includes(userId);
+        const hasDownvoted = answer.downvoters.includes(userId);
+
+        if (hasUpvoted) {
+            // If already upvoted, remove the upvote
+            answer.upvotes -= 1;
+            answer.upvoters = answer.upvoters.filter(voter => voter.toString() !== userId);
+        } else {
+            // Add upvote
+            answer.upvotes += 1;
+            answer.upvoters.push(userId);
+
+            // If the user had previously downvoted, remove the downvote
+            if (hasDownvoted) {
+                answer.downvotes -= 1;
+                answer.downvoters = answer.downvoters.filter(voter => voter.toString() !== userId);
+            }
+        }
+
         await answer.save();
         res.status(200).json(answer);
     } catch (error) {
@@ -40,9 +62,31 @@ const upvoteAnswer = async (req, res) => {
 // Downvote an answer
 const downvoteAnswer = async (req, res) => {
     const { answerId } = req.params;
+    const { userId } = req.body; // Get user ID from the request
+
     try {
         const answer = await Answer.findById(answerId);
-        answer.downvotes += 1;
+
+        // Check if the user already downvoted
+        const hasDownvoted = answer.downvoters.includes(userId);
+        const hasUpvoted = answer.upvoters.includes(userId);
+
+        if (hasDownvoted) {
+            // If already downvoted, remove the downvote
+            answer.downvotes -= 1;
+            answer.downvoters = answer.downvoters.filter(voter => voter.toString() !== userId);
+        } else {
+            // Add downvote
+            answer.downvotes += 1;
+            answer.downvoters.push(userId);
+
+            // If the user had previously upvoted, remove the upvote
+            if (hasUpvoted) {
+                answer.upvotes -= 1;
+                answer.upvoters = answer.upvoters.filter(voter => voter.toString() !== userId);
+            }
+        }
+
         await answer.save();
         res.status(200).json(answer);
     } catch (error) {
