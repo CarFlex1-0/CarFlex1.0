@@ -66,6 +66,24 @@ function App() {
               }
             />
             <Route
+              path="/blog/edit/dashboard"
+              element={
+                <>
+                  <Background />
+                  <PostPage />
+                </>
+              }
+            />
+            <Route
+              path="/blog/delete/dashboard"
+              element={
+                <>
+                  <Background />
+                  <PostPage />
+                </>
+              }
+            />
+            <Route
               path="/blog/create"
               element={
                 <>

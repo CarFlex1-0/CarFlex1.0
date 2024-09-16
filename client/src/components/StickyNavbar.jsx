@@ -84,7 +84,7 @@ const StickyNavbar = () => {
                   </li>
                   <li>
                     <Link
-                      to="/blog/edit"
+                      to="/blog/edit/dashboard"
                       className="block px-4 py-2 hover:bg-gray-700"
                       onClick={() => setIsDropdownOpen(false)}
                     >
@@ -93,7 +93,7 @@ const StickyNavbar = () => {
                   </li>
                   <li>
                     <Link
-                      to="/blog/delete"
+                      to="/blog/delete/dashboard"
                       className="block px-4 py-2 hover:bg-gray-700"
                       onClick={() => setIsDropdownOpen(false)}
                     >
