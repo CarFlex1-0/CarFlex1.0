@@ -7,6 +7,9 @@ const dotenv = require('dotenv');
 var cors = require('cors');
 const { connectDB } = require("./config/db");
 var locRoutes = require('./routes/location');
+var questionRoutes = require('./routes/question');
+var answerRoutes = require('./routes/answer');
+
 var app = express();
 
 dotenv.config();
@@ -30,7 +33,8 @@ app.use(express.json()); // To handle JSON requests
 app.use(express.urlencoded({ extended: true })); // To handle form submissions
 //Routes
 app.use('/api/location', locRoutes);
-
+app.use('/api/questions', questionRoutes);
+app.use('/api/answer', answerRoutes)
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));

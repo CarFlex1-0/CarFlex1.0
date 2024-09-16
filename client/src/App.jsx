@@ -1,32 +1,21 @@
-import { useState } from 'react'
-import reactLogo from '../public/assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-
-function App() {
-  const [count, setCount] = useState(0)
-
+// src/App.js
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import ThreadsList from "./components/forum/ThreadList";
+import SingleThread from "./components/forum/SingleThread";
+import Header from "./components/forum/Header";
+import CreateQuestion from "./components/forum/CreateQuestion";
+const App = () => {
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-      </div>
-       <h1 className="text-3xl font-bold underline">
-      Welcome to CarFlex
-    </h1>
-    </>
-  )
-}
+    <Router>
+      <Header />
+      <Routes>
+        <Route path="/" element={<ThreadsList />} />
+        <Route path="/thread/:id" element={<SingleThread />} />
+        <Route path="/create-question" element={<CreateQuestion />} />
+      </Routes>
+    </Router>
+  );
+};
 
-export default App
+export default App;
