@@ -102,7 +102,7 @@ const Scrapper = () => {
   );
 
   return (
-    <div className="p-4 max-w-lg mx-auto min-h-[30vh]">
+    <div className="h-screen p-4 max-w-lg mx-auto min-h-[30vh]">
       <input
         type="text"
         value={url}

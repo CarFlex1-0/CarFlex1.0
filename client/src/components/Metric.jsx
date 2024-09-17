@@ -198,7 +198,7 @@ const Metric = () => {
 
   return (
     <>
-      <div className="flex items-center justify-center pt-6 pb-6">
+      <div className="h-screen flex items-center justify-center pt-6 pb-6">
         <div className="carousel w-64">
           {cars &&
             cars.map((car) => (
@@ -233,7 +233,7 @@ const Metric = () => {
 
       {metrics && (
         <div className="metrics-chart">
-          <h2>Metrics for Car ID: {selectedCarId}</h2>
+          <h2>Metrics :</h2>
           <Bar data={getChartData()} options={getChartOptions()} />
         </div>
       )}
