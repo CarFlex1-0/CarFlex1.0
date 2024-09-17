@@ -1,10 +1,7 @@
-// 3D Model render
-// TODO: Link with scrapper values and Render graphs
 import React, { useRef, useState, useEffect } from "react";
 import * as THREE from "three";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-
 import {
   OrbitControls,
   AccumulativeShadows,
@@ -70,11 +67,17 @@ const RotatingLightformerAnti = () => {
 
 const ThreeDModel = () => {
   const [model, setModel] = useState(null);
-  const [color, setColor] = useState("green");
-  const [loading, setLoading] = useState(true);
+  const [colors, setColors] = useState({
+    body: "#FF0000",
+    tyres: "#FF0000",
+    interior: "#00FF00",
+  });
 
-  const changeMaterialColor = (materialName, color) => {
+  const changeMaterialColor = (materialNames, color) => {
     if (model) {
+      const names = Array.isArray(materialNames)
+        ? materialNames
+        : [materialNames];
       let changed = false;
       model.traverse((child) => {
         if (child.isMesh) {
@@ -82,7 +85,7 @@ const ThreeDModel = () => {
             ? child.material
             : [child.material];
           materials.forEach((material) => {
-            if (material.name === materialName) {
+            if (names.includes(material.name)) {
               material.color.set(color);
               changed = true;
             }
@@ -90,108 +93,137 @@ const ThreeDModel = () => {
         }
       });
       if (!changed) {
-        console.warn(`Material "${materialName}" not found.`);
+        console.warn(`Materials "${names.join(", ")}" not found.`);
       }
     }
   };
 
-  const handleChangeColor = () => {
-    changeMaterialColor("Paint Black Matt", color);
+  const handleColorInputChange = (part) => (event) => {
+    setColors((prevColors) => ({ ...prevColors, [part]: event.target.value }));
   };
 
-  const handleColorChange = (event) => {
-    setColor(event.target.value);
+  const handleChangeColor = (part, materialNames) => () => {
+    changeMaterialColor(materialNames, colors[part]);
   };
-
-  useEffect(() => {
-    // Simulate loading delay
-    const timer = setTimeout(() => setLoading(false), 2000);
-    return () => clearTimeout(timer);
-  }, []);
 
   return (
-    <>
-      <div className="flex flex-col w-full h-full">
-        <Canvas shadows camera={{ position: [5, 5, 15], fov: 60 }}>
-          <spotLight
-            position={[0, 15, 0]}
-            angle={0.3}
-            penumbra={1}
-            castShadow
-            intensity={2}
-            shadow-bias={-0.0001}
+    <div className="flex flex-col w-full h-full">
+      <Canvas
+        shadows
+        camera={{ position: [5, 5, 35], fov: 60 }}
+        // onCreated={({ gl }) => {
+        //   gl.setSize(window.innerWidth, window.innerHeight);
+        // }}
+      >
+        <spotLight
+          position={[0, 15, 0]}
+          angle={0.3}
+          penumbra={1}
+          castShadow
+          intensity={2}
+          shadowBias={-0.0001}
+        />
+        <ambientLight intensity={0.5} />
+        <AccumulativeShadows
+          position={[0, -1.16, 0]}
+          frames={100}
+          alphaTest={0.9}
+          scale={10}
+        >
+          <RandomizedLight
+            amount={8}
+            radius={10}
+            ambient={0.5}
+            position={[1, 5, -1]}
           />
-          <ambientLight intensity={0.5} />
-          <AccumulativeShadows
-            position={[0, -1.16, 0]}
-            frames={100}
-            alphaTest={0.9}
-            scale={10}
-          >
-            <RandomizedLight
-              amount={8}
-              radius={10}
-              ambient={0.5}
-              position={[1, 5, -1]}
+        </AccumulativeShadows>
+        <Environment frames={Infinity} resolution={256} background blur={1}>
+          <Lightformers />
+        </Environment>
+        <Model onModelLoad={setModel} />
+        <OrbitControls
+          maxPolarAngle={Math.PI / 2}
+          maxDistance={100}
+          enableZoom={true}
+        />
+        <RotatingLightformer />
+        <RotatingLightformerAnti />
+        <mesh scale={100}>
+          <sphereGeometry args={[1, 64, 64]} />
+          <LayerMaterial side={THREE.BackSide}>
+            <Color color="#444" alpha={1} mode="normal" />
+            <Depth
+              colorA="blue"
+              colorB="purple"
+              alpha={0.5}
+              mode="normal"
+              near={0}
+              far={300}
+              origin={[100, 100, 100]}
             />
-          </AccumulativeShadows>
-          <Environment frames={Infinity} resolution={256} background blur={1}>
-            <Lightformers />
-          </Environment>
-          <Model onModelLoad={setModel} />
-          <OrbitControls
-            maxPolarAngle={Math.PI / 2}
-            minDistance={30}
-            maxDistance={100}
-            enableZoom={true}
+          </LayerMaterial>
+        </mesh>
+      </Canvas>
+
+      <div className="flex m-auto w-full bg-transparent text-white p-4 items-center justify-center gap-4">
+        <div className="flex items-center gap-2">
+          <input
+            type="color"
+            value={colors.body}
+            onChange={handleColorInputChange("body")}
           />
-          <RotatingLightformer />
-          <RotatingLightformerAnti />
-          <mesh scale={100}>
-            <sphereGeometry args={[1, 64, 64]} />
-            <LayerMaterial side={THREE.BackSide}>
-              <Color color="#444" alpha={1} mode="normal" />
-              <Depth
-                colorA="blue"
-                colorB="purple"
-                alpha={0.5}
-                mode="normal"
-                near={0}
-                far={300}
-                origin={[100, 100, 100]}
-              />
-            </LayerMaterial>
-          </mesh>
-        </Canvas>
-
-        {/* Loader outside the Canvas */}
-        {loading && (
-          <div className="flex justify-center items-center min-h-screen">
-            <div className="spinner"></div>
-          </div>
-        )}
-
-        <div className="flex m-auto w-full bg-slate-800 text-white p-4 items-center justify-center gap-2">
-          <input type="color" value={color} onChange={handleColorChange} />
           <button
             className="rounded-full p-1 px-3 bg-slate-300 text-black"
-            onClick={handleChangeColor}
+            onClick={handleChangeColor("body", [
+              "Paint Black Matt",
+              "Paint Black Matt.004",
+              "Paint Black Matt.006",
+              "Paint Black Matt.001",
+            ])}
           >
-            Change Wheel Color
+            Change Rim Color
+          </button>
+        </div>
+        <div className="flex items-center gap-2 ">
+          <input
+            type="color"
+            value={colors.tyres}
+            onChange={handleColorInputChange("tyres")}
+          />
+          <button
+            className="rounded-full p-1 px-3 bg-slate-300 text-black"
+            onClick={handleChangeColor("tyres", "Material.003")}
+          >
+            Change Body Paint Color
+          </button>
+        </div>
+        <div className="flex items-center gap-2 ">
+          <input
+            type="color"
+            value={colors.interior}
+            onChange={handleColorInputChange("interior")}
+          />
+          <button
+            className="rounded-full p-1 px-3 bg-slate-300 text-black"
+            onClick={handleChangeColor("interior", "SUPRA_95_BODY.001")}
+          >
+            Change Interior Color
           </button>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
 function Lightformers({ positions = [2, 0, 2, 0, 2, 0, 2, 0] }) {
   const group = useRef();
-  useFrame(
-    (state, delta) =>
-      (group.current.position.z += delta * 10) > 20 &&
-      (group.current.position.z = -60)
-  );
+  useFrame((state, delta) => {
+    if (group.current) {
+      group.current.position.z += delta * 10;
+      if (group.current.position.z > 20) group.current.position.z = -60;
+    }
+  });
+
   return (
     <>
       <Lightformer

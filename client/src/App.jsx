@@ -34,7 +34,8 @@ function App() {
               element={
                 <>
                   {/* <Background /> */}
-                  <div className="flex justify-center items-center h-[80vh] z-50">
+                  <Background></Background>
+                  <div className="flex justify-center items-center h-[80vh] z-50 ">
                     <ThreeDModel />
                   </div>
                 </>
