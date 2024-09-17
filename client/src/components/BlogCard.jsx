@@ -31,7 +31,7 @@ const BlogCard = ({ item }) => {
   const isDashboard = location.pathname === "/blog/dashboard";
   const isEditDashboard = location.pathname === "/blog/edit/dashboard";
   const isDeleteDashboard = location.pathname === "/blog/delete/dashboard";
-  console.log(isDashboard);
+  // console.log(isDashboard);
 
   return (
     <div

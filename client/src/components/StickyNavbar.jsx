@@ -25,11 +25,10 @@ const StickyNavbar = () => {
             <li className={getLinkClassName("/")}>
               <Link to="/">Dashboard</Link>
             </li>
-            {/* Uncomment and use if needed
-            <li className={getLinkClassName("/search")}>
-              <Link to="/search">Search</Link>
+
+            <li className={getLinkClassName("/feedback")}>
+              <Link to="/feedback">Feedback</Link>
             </li>
-            */}
             <li className={getLinkClassName("/scrap")}>
               <Link to="/scrap">Scrap</Link>
             </li>
@@ -106,6 +105,7 @@ const StickyNavbar = () => {
             </li>
           </ul>
         </div>
+
         <div className="order-2 md:order-3">
           <button className="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-gray-50 rounded-xl flex items-center gap-2">
             <svg

@@ -50,7 +50,7 @@ const Scrapper = () => {
       return;
     }
 
-    console.log("Saving data:", data); // Debug the data to be saved
+    // console.log("Saving data:", data); // Debug the data to be saved
 
     try {
       setIsSaving(true);
@@ -67,7 +67,7 @@ const Scrapper = () => {
       }
 
       const result = await response.json();
-      console.log("Save result:", result);
+      // console.log("Save result:", result);
       setIsSaving(false);
       setData(null);
       setError(null);

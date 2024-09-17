@@ -11,6 +11,7 @@ import PostPage from "./pages/PostPage";
 import NewBlog from "./pages/NewBlog";
 import SingleBlogPage from "./pages/SingleBlogPage";
 import EditBlog from "./pages/EditBlog";
+import FeedbackPage from "./pages/FeedbackPage";
 
 function App() {
   return (
@@ -108,6 +109,15 @@ function App() {
                 <>
                   <Background />
                   <SingleBlogPage />
+                </>
+              }
+            />
+            <Route
+              path="/feedback"
+              element={
+                <>
+                  <Background />
+                  <FeedbackPage />
                 </>
               }
             />

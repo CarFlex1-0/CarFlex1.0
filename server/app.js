@@ -13,6 +13,7 @@ const scraperRoutes = require("./routes/scraper_routes");
 const performanceMetricsRoutes = require("./routes/performance_metrics_routes");
 const carRoutes = require("./routes/car_routes");
 const blogRoutes = require("./routes/blog_routes");
+const feedbackRoutes = require("./routes/feedback_routes");
 
 var app = express();
 
@@ -34,6 +35,7 @@ app.use("/api", scraperRoutes);
 app.use("/api", performanceMetricsRoutes);
 app.use("/api", carRoutes);
 app.use("/api", blogRoutes);
+app.use("/api", feedbackRoutes);
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
