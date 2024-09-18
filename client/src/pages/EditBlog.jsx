@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axios from "@services/axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 
@@ -15,9 +15,7 @@ const EditBlog = () => {
   useEffect(() => {
     const fetchBlog = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:5000/api/blogs/${id}`
-        );
+        const response = await axios.get(`blogs/${id}`);
         setBlogData(response.data);
         reset({
           title: response.data.title,
@@ -60,14 +58,11 @@ const EditBlog = () => {
         imageBase64 = ""; // Keep this if you want to clear image URL when no file is provided
       }
 
-      const response = await axios.put(
-        `http://localhost:5000/api/blogs/${id}`,
-        {
-          title: data.title,
-          content: data.content,
-          blogImageUrl: imageBase64,
-        }
-      );
+      const response = await axios.put(`blogs/${id}`, {
+        title: data.title,
+        content: data.content,
+        blogImageUrl: imageBase64,
+      });
 
       alert("Blog post updated successfully");
       navigate(`/blog/${id}`); // Redirect to the single blog page or any other page

@@ -7,7 +7,8 @@ const { body, validationResult } = require("express-validator");
 // controllers/blog_controllers.js
 
 const createBlog = async (req, res, next) => {
-  req.user = { _id: "66e5da75922c0737ba3eca42" }; // Mock user ID
+  // TODO: CORRECT USER INTEGRATION
+  req.user = { _id: "66e546c813eb5f50654bc8d2" }; // Mock user ID
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {

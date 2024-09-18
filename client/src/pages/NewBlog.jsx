@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import axios from "@services/axios";
 import { useForm } from "react-hook-form";
 
 export default function NewBlog() {
@@ -43,7 +43,7 @@ export default function NewBlog() {
       }
 
       // Send form data along with the image
-      const response = await axios.post("http://localhost:5000/api/blogs", {
+      const response = await axios.post("/blogs", {
         title: data.title,
         content: data.content,
         blogImageUrl: imageBase64, // Sending image as Base64
@@ -61,6 +61,7 @@ export default function NewBlog() {
       setImagePreviewUrl("");
     } catch (error) {
       console.error("Submit failed:", error);
+      console.log(error);
       alert("Failed to create blog post. Please try again.");
     } finally {
       setLoading(false);

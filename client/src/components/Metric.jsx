@@ -1,6 +1,7 @@
 // Dummy Dashboard for Metrics
 // TODO: Integrate with ThreeDModel and use values from there
 import React, { useEffect, useState } from "react";
+import axios from "@services/axios";
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -29,10 +30,11 @@ const Metric = () => {
 
   useEffect(() => {
     const fetchCars = async () => {
-      const response = await fetch("http://localhost:5000/api/cars");
-      const json = await response.json();
-      if (response.ok) {
-        setCars(json);
+      try {
+        const response = await axios.get("/cars");
+        setCars(response.data); // Directly access the data from the response
+      } catch (error) {
+        console.error("Failed to fetch cars:", error); // Handle the error appropriately
       }
     };
     fetchCars();
@@ -41,30 +43,17 @@ const Metric = () => {
   const fetchMetrics = async (carId) => {
     setLoading(true);
     try {
-      const metric1Response = await fetch(
-        `http://localhost:5000/api/metric1/${carId}`
-      );
-      const metric1Data = await metric1Response.json();
+      const metric1Response = await axios.get(`/metric1/${carId}`);
+      const metric2Response = await axios.get(`/metric2/${carId}`);
+      const metric3Response = await axios.get(`/metric3/${carId}`);
+      const metric4Response = await axios.get(`/metric4/${carId}`);
+      const metric5Response = await axios.get(`/metric5/${carId}`);
 
-      const metric2Response = await fetch(
-        `http://localhost:5000/api/metric2/${carId}`
-      );
-      const metric2Data = await metric2Response.json();
-
-      const metric3Response = await fetch(
-        `http://localhost:5000/api/metric3/${carId}`
-      );
-      const metric3Data = await metric3Response.json();
-
-      const metric4Response = await fetch(
-        `http://localhost:5000/api/metric4/${carId}`
-      );
-      const metric4Data = await metric4Response.json();
-
-      const metric5Response = await fetch(
-        `http://localhost:5000/api/metric5/${carId}`
-      );
-      const metric5Data = await metric5Response.json();
+      const metric1Data = await metric1Response.data;
+      const metric2Data = await metric2Response.data;
+      const metric3Data = await metric3Response.data;
+      const metric4Data = await metric4Response.data;
+      const metric5Data = await metric5Response.data;
 
       const metricsData = {
         metric1: metric1Data.data,

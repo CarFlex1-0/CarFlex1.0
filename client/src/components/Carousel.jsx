@@ -1,6 +1,6 @@
 // Carousel for viewing BlogList items
 import React from "react";
-import BlogCard from "./BlogCard";
+import BlogCard from "@components/BlogCard";
 
 const Carousel = ({ items, title }) => {
   return (

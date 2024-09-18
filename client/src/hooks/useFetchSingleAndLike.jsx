@@ -1,5 +1,6 @@
 // Sing;e Blog Fetch and Like Management
 import { useState, useEffect } from "react";
+import axios from "@services/axios";
 
 const useBlog = (id) => {
   const [loading, setLoading] = useState(true);
@@ -12,13 +13,9 @@ const useBlog = (id) => {
     const fetchBlog = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`http://localhost:5000/api/blogs/${id}`, {
-          method: "GET",
-        });
-        const data = await res.json();
-        if (!res.ok) {
-          throw new Error(data.error || "Failed to fetch the blog post");
-        }
+        const res = await axios.get(`/blogs/${id}`);
+        const data = res.data;
+
         setBlog(data);
         setLikeCount(data.likes);
 
@@ -37,18 +34,12 @@ const useBlog = (id) => {
 
   const handleLike = async () => {
     try {
-      const endpoint = liked
-        ? `http://localhost:5000/api/blogs/${id}/removelike`
-        : `http://localhost:5000/api/blogs/${id}/like`;
+      // In the handleLike function
+      const endpoint = liked ? `/blogs/${id}/removelike` : `/blogs/${id}/like`;
 
-      const res = await fetch(endpoint, {
-        method: "PUT",
-      });
+      const res = await axios.put(endpoint);
 
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "Failed to update the like status");
-      }
+      const data = res.data;
 
       setLikeCount(data.likes);
       setLiked(!liked);

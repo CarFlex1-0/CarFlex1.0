@@ -1,6 +1,6 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import axios from "axios";
+import axios from "@services/axios";
 
 const FeedbackForm = () => {
   const {
@@ -18,7 +18,7 @@ const FeedbackForm = () => {
       // Include author reference
       const authorId = "some-user-id"; // You need to get the current user's ID
 
-      await axios.post("http://localhost:5000/api/feedback", {
+      await axios.post("feedback", {
         ...data,
         rating,
         author: authorId || "", // Send author ID here

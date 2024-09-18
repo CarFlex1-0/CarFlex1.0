@@ -7,7 +7,8 @@ const {
 
 exports.createFeedback = async (req, res) => {
   try {
-    req.body.author = { _id: "66e5da75922c0737ba3eca42" }; // Mock user ID
+    // TODO: USER INTEGRATION
+    req.body.author = { _id: "66e546c813eb5f50654bc8d2" }; // Mock user ID
     // Create new feedback
     const feedback = new Feedback({
       content: req.body.content,

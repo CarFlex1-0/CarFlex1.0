@@ -1,5 +1,6 @@
 // Fetch All Blogs and Recently Uploaded Blogs
 import { useState, useEffect } from "react";
+import axios from "@services/axios";
 
 const useFetchBlogs = () => {
   const [loading, setLoading] = useState(true);
@@ -11,16 +12,11 @@ const useFetchBlogs = () => {
     const fetchBlogs = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`http://localhost:5000/api/blogs`, {
-          method: "GET",
-        });
-        const data = await res.json();
-        if (!res.ok) {
-          throw new Error(data.error || "Failed to fetch blogs");
-        }
+        const res = await axios.get("/blogs");
+        const data = res.data; // No need to check res.ok
         setBlogs(data); // Set the fetched blogs
       } catch (error) {
-        setError(error.message);
+        setError(error.message); // Axios error messages will be here
       } finally {
         setLoading(false);
       }
@@ -28,16 +24,11 @@ const useFetchBlogs = () => {
 
     const fetchRecentBlogs = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/blogs`, {
-          method: "GET",
-        });
-        const data = await res.json();
-        if (!res.ok) {
-          throw new Error(data.error || "Failed to fetch recent blogs");
-        }
+        const res = await axios.get("/blogs");
+        const data = res.data; // No need to check res.ok
         setRecentBlogs(data.slice().reverse().slice(0, 5));
       } catch (error) {
-        setError(error.message);
+        setError(error.message); // Axios error messages will be here
       }
     };
 

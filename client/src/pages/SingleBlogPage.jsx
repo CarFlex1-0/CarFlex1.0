@@ -2,7 +2,7 @@
 // TODO: Show Blogs by author (Backend and Frontend)
 import React from "react";
 import { useParams } from "react-router-dom";
-import useBlog from "../hooks/useFetchSingleAndLike";
+import useBlog from "@hooks/useFetchSingleAndLike";
 
 const SingleBlogPage = () => {
   const { id } = useParams();
@@ -37,7 +37,7 @@ const SingleBlogPage = () => {
       <article className="bg-white shadow-2xl rounded-3xl overflow-hidden transform transition-transform duration-500 hover:scale-105 hover:shadow-2xl">
         <figure>
           <img
-            src={blog.blogImageUrl.url}
+            src={blog.blogImageUrl?.url}
             alt={blog.title}
             className="w-full h-96 object-cover transition-opacity duration-700 hover:opacity-90"
           />
@@ -90,18 +90,20 @@ const SingleBlogPage = () => {
             <div className="flex-shrink-0">
               <img
                 src={
-                  blog.author.profilePictureUrl ||
+                  blog.author?.profilePictureUrl ||
                   "/public/assets/icons/react.svg"
                 }
-                alt={blog.author.username}
+                alt={blog.author?.username || "Author"}
                 className="w-20 h-20 rounded-full border-4 border-white shadow-lg transform transition-transform duration-300 hover:scale-110"
               />
             </div>
             <div>
               <p className="text-xl font-semibold text-white">
-                @{blog.author.username}
+                @{blog.author?.username || "Unknown"}
               </p>
-              <p className="text-white mt-2">{blog.author.bio}</p>
+              <p className="text-white mt-2">
+                {blog.author?.bio || "No bio available"}
+              </p>
             </div>
           </div>
         </div>

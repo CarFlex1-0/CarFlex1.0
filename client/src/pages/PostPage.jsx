@@ -1,8 +1,8 @@
 // Display All Blogs and recently published Blogs
 // TODO: Show Likes
 import React from "react";
-import useFetchBlogs from "../hooks/useFetchBlogs";
-import Carousel from "../components/Carousel";
+import useFetchBlogs from "@hooks/useFetchBlogs";
+import Carousel from "@components/Carousel";
 import "../../public/stylesheets/spinner.css";
 import { Link, useLocation } from "react-router-dom";
 
@@ -29,7 +29,6 @@ const PostPage = () => {
 
   return (
     <main className="p-3 flex flex-col max-w-6xl mx-auto min-h-screen md:mb-12">
-      
       <Carousel items={blogs} title="All Blogs" />
       {isDashboard && <Carousel items={recentBlogs} title="Recent Posted" />}
     </main>

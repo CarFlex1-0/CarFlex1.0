@@ -1,18 +1,14 @@
 // BlogCard.js
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-
+import axios from "@services/axios";
 const BlogCard = ({ item }) => {
   const navigate = useNavigate();
   const handleDelete = async () => {
     try {
       if (confirm("Are you sure you want to delete")) {
-        const res = await fetch(`http://localhost:5000/api/blogs/${item._id}`, {
-          method: "DELETE",
-        });
-        if (!res.ok) {
-          throw new Error("Failed to delete blog");
-        }
+        const res = await axios.delete(`/blogs/${item._id}`);
+        
         // Redirect to dashboard after successful delete
         alert("Blog Delete was successful");
         navigate("/blog/dashboard"); // Redirect after successful delete
