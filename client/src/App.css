@@ -40,3 +40,18 @@
 .read-the-docs {
   color: #888;
 }
+<<<<<<< HEAD
+=======
+
+.transition-transform {
+  transition: transform 0.3s ease;
+}
+
+.transition-opacity {
+  transition: opacity 0.3s ease;
+}
+
+.transition-colors {
+  transition: color 0.3s ease;
+}
+>>>>>>> origin/mohid

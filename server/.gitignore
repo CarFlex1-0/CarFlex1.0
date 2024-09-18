@@ -1,3 +1,5 @@
+.env
+*.env
 # Logs
 logs
 *.log
@@ -22,9 +24,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-<<<<<<< HEAD
-=======
-
-
-public/assets/models/ferrari.glb
->>>>>>> origin/mohid
