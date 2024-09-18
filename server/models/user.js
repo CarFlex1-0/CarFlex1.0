@@ -17,9 +17,11 @@ const userSchema = mongoose.Schema(
         },
         bio:{
             type: String,
+            required: false
         },
         phoneNum:{
             type: String,
+            required:false
         },
         email: {
             type: String,
@@ -39,6 +41,7 @@ const userSchema = mongoose.Schema(
         }],
         isAdmin:{
             type:Boolean,
+            default: false
         }
     },
 
