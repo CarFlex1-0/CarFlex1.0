@@ -20,11 +20,11 @@ const forumSchema = mongoose.Schema(
         },
         commentId:{
             type: mongoose.Schema.Types.ObjectId, ref: 'Comment'
-        }
+        },
 
-        // plagPercentage:{
-        //     type: Number,
-        // }
+        plagPercentage:{
+            type: Number,
+        }
 
     },
 

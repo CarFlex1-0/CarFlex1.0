@@ -7,18 +7,12 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-<<<<<<< HEAD
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.9.0",
-=======
     "preview": "vite preview",
     "email": "email dev --dir src/emails"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.9.0"
+    
   },
   "dependencies": {
     "@cloudinary/react": "^1.13.0",
@@ -49,32 +43,23 @@
     "recharts": "^2.12.7",
     "resend": "^4.0.0",
     "three": "^0.168.0",
-    "yup": "^1.4.0"
-  },
-  "devDependencies": {
+    "yup": "^1.4.0",
     "@eslint/js": "^9.9.0",
     "@tailwindcss/typography": "^0.5.15",
->>>>>>> origin/mohid
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.20",
-<<<<<<< HEAD
-=======
     "daisyui": "^4.12.10",
->>>>>>> origin/mohid
     "eslint": "^9.9.0",
     "eslint-plugin-react": "^7.35.0",
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.9",
     "globals": "^15.9.0",
-<<<<<<< HEAD
-    "postcss": "^8.4.44",
-=======
     "postcss": "^8.4.45",
     "react-email": "3.0.1",
->>>>>>> origin/mohid
     "tailwindcss": "^3.4.10",
     "vite": "^5.4.1"
   }
+
 }
