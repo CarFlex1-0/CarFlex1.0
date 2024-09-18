@@ -15,6 +15,9 @@ const carRoutes = require("./routes/car_routes");
 const blogRoutes = require("./routes/blog_routes");
 const feedbackRoutes = require("./routes/feedback_routes");
 
+var questionRoutes = require('./routes/question');
+var answerRoutes = require('./routes/answer');
+var userRoutes = require('./routes/user')
 var app = express();
 
 dotenv.config();
@@ -52,7 +55,9 @@ app.use(express.json()); // To handle JSON requests
 app.use(express.urlencoded({ extended: true })); // To handle form submissions
 //Routes
 app.use("/api/location", locRoutes);
-
+app.use('/api/questions', questionRoutes);
+app.use('/api/answer', answerRoutes);
+app.use('/api/user', userRoutes);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
