@@ -2,6 +2,8 @@
 import React from "react";
 import BlogCard from "@components/BlogCard";
 
+
+
 const Carousel = ({ items, title }) => {
   return (
     <div className="flex flex-col justify-center items-center mb-1">

@@ -1,6 +1,6 @@
 // Display All Blogs and recently published Blogs
 // TODO: Show Likes
-import React from "react";
+import React, { useEffect } from "react";
 import useFetchBlogs from "@hooks/useFetchBlogs";
 import Carousel from "@components/Carousel";
 import "../../public/stylesheets/spinner.css";
@@ -10,6 +10,7 @@ const PostPage = () => {
   const location = useLocation();
   const isDashboard = location.pathname === "/blog/dashboard";
   const { loading, error, blogs, recentBlogs } = useFetchBlogs();
+  
 
   if (loading) {
     return (

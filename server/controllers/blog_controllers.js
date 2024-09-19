@@ -87,19 +87,24 @@ const getBlogById = async (req, res) => {
 
 // Delete a blog post by ID
 const deleteBlogById = async (req, res) => {
-  const currentBlog = await Blog.findById(req.params.id);
-
-  //delete Blog image in cloudinary
-  const ImgId = currentBlog.blogImageUrl.public_id;
-  if (ImgId) {
-    await cloudinary.uploader.destroy(ImgId);
-  }
   try {
-    const deletedBlog = await Blog.findByIdAndDelete(req.params.id);
-    if (!deletedBlog)
+    const currentBlog = await Blog.findById(req.params.id);
+    if (!currentBlog) {
       return res.status(404).json({ message: "Blog not found" });
+    }
+
+    // Log the image ID being deleted
+    const ImgId = currentBlog.blogImageUrl?.public_id;
+    if (ImgId) {
+      console.log(`Attempting to delete image with ID: ${ImgId}`);
+      await cloudinary.uploader.destroy(ImgId);
+      console.log(`Successfully deleted image with ID: ${ImgId}`);
+    }
+
+    const deletedBlog = await Blog.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: "Blog deleted successfully" });
   } catch (error) {
+    console.error("Error deleting blog:", error);
     res.status(500).json({ error: error.message });
   }
 };

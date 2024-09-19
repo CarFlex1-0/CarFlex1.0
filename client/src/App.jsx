@@ -21,10 +21,28 @@ import SignUp from "@pages/SignUp";
 import SignIn from "@pages/SignIn";
 import ForgotPassword from "@pages/ForgetPassword";
 import ResetPassword from "@pages/ResetPassword";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { v4 as uuidv4 } from "uuid";
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+          transition="Bounce"
+          containerId={uuidv4()}
+        />
+        <ToastContainer />
         <StickyNavbar />
         <Background />
         <div className="pages">
