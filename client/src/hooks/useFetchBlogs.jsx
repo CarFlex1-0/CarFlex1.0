@@ -1,6 +1,9 @@
 // Fetch All Blogs and Recently Uploaded Blogs
 import { useState, useEffect } from "react";
 import axios from "@services/axios";
+import { Bounce, Slide, Zoom } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const useFetchBlogs = () => {
   const [loading, setLoading] = useState(true);

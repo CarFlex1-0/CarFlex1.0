@@ -1,7 +1,9 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import axios from "@services/axios";
-
+import { Bounce, Slide, Zoom } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const FeedbackForm = () => {
   const {
     register,
@@ -23,12 +25,24 @@ const FeedbackForm = () => {
         rating,
         author: authorId || "", // Send author ID here
       });
-      alert("Feedback submitted successfully!");
+
+      toast.success("Feedback submitted successfully!", {
+        position: "top-left",
+        autoClose: 5000,
+        theme: "dark",
+        transition: Slide,
+      });
       reset();
       setRating(0);
     } catch (error) {
       console.error("Error submitting feedback:", error);
-      alert("Failed to submit feedback.");
+
+      toast.error("Failed to submit feedback.", {
+        position: "top-left",
+        autoClose: 5000,
+        theme: "dark",
+        transition: Slide,
+      });
     } finally {
       setIsSubmitting(false);
     }

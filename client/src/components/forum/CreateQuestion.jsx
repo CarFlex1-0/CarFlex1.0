@@ -4,6 +4,9 @@ import { TextField, Button, Typography, Box } from "@mui/material";
 import axiosInstance from "@services/axios";
 import { useTheme } from "@mui/material/styles";
 import { API_ENDPOINTS } from "@apis/endpoints";
+import { Bounce, Slide, Zoom } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const CreateQuestion = () => {
     const [title, setTitle] = useState("");
@@ -15,7 +18,13 @@ const CreateQuestion = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!title.trim() || !content.trim()) {
-            alert("Title and content are required.");
+            
+            toast.error("Title and content are required.", {
+                position: "top-left",
+                autoClose: 5000,
+                theme: "dark",
+                transition: Slide,
+              });
             return;
         }
 

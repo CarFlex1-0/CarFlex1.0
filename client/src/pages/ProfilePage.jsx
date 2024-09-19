@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import axiosInstance from '@services/axios'; // Assuming axios is set up already
 import { useForm } from 'react-hook-form'; // For form validation
-
+import { Bounce, Slide, Zoom } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const ProfilePage = () => {
     const [activeTab, setActiveTab] = useState('overview');
     const { register, handleSubmit, formState: { errors } } = useForm();
@@ -10,7 +12,13 @@ const ProfilePage = () => {
         try {
             // API call to update the profile info
             await axiosInstance.put('/profile/update', data);
-            alert('Profile updated successfully');
+            
+            toast.success("Profile updated successfully", {
+                position: "top-left",
+                autoClose: 5000,
+                theme: "dark",
+                transition: Slide,
+              });
         } catch (error) {
             console.error("Error updating profile:", error);
         }

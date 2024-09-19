@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import axios from "@services/axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import { Bounce, Slide, Zoom } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const EditBlog = () => {
   const { id } = useParams(); // Get blog ID from URL
@@ -64,11 +67,23 @@ const EditBlog = () => {
         blogImageUrl: imageBase64,
       });
 
-      alert("Blog post updated successfully");
+      
+      toast.success("Blog post updated successfully!", {
+        position: "top-left",
+        autoClose: 5000,
+        theme: "dark",
+        transition: Slide,
+      });
       navigate(`/blog/${id}`); // Redirect to the single blog page or any other page
     } catch (error) {
       console.error("Update failed:", error);
-      alert("Failed to update blog post. Please try again.");
+      
+      toast.error("Failed to update blog post. Please try again.", {
+        position: "top-left",
+        autoClose: 5000,
+        theme: "dark",
+        transition: Slide,
+      });
     } finally {
       setLoading(false);
     }
