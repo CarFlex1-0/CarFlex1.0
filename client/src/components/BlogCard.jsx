@@ -1,5 +1,5 @@
 // BlogCard.js
-// TODO: List not re-freshing 
+// TODO: List not re-freshing
 // TODO: Flex wrap
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -7,7 +7,6 @@ import axios from "@services/axios";
 import { Bounce, Slide, Zoom } from "react-toastify";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { v4 as uuidv4 } from "uuid";
 
 const BlogCard = ({ item }) => {
   const navigate = useNavigate();
@@ -21,7 +20,7 @@ const BlogCard = ({ item }) => {
           theme: "dark",
           transition: Slide,
         });
-        
+
         navigate("/blog/dashboard");
       } else {
         toast("Blog delete was unsuccessful", {
@@ -40,7 +39,6 @@ const BlogCard = ({ item }) => {
         theme: "dark",
         transition: Bounce,
       });
-      
     }
   };
 
@@ -55,12 +53,11 @@ const BlogCard = ({ item }) => {
 
   return (
     <>
-      
       <div
         key={item._id}
         className="card card-compact bg-base-100 w-96 shadow-xl mx-5"
       >
-        <figure className="relative">
+        <figure>
           <img
             src={item.blogImageUrl.url}
             alt={item.title}
@@ -72,8 +69,9 @@ const BlogCard = ({ item }) => {
           />
         </figure>
         <div className="card-body">
-          <h2 className="card-title">{item.title}</h2>
-          <p>{item.content.slice(0, 100)}...</p>
+          <h2 className="card-title max-w-full line-clamp-2">{item.title}</h2>
+          <p className="max-w-full line-clamp-3 mb-3">{item.content}</p>
+
           <div className="card-actions justify-center">
             {isDashboard && (
               <Link to={`/blog/${item._id}`} className="btn btn-primary glass">
@@ -82,21 +80,18 @@ const BlogCard = ({ item }) => {
             )}
 
             {isEditDashboard && (
-              <>
-                <Link
-                  to={`/blog/${item._id}/edit`}
-                  className="btn btn-info glass"
-                >
-                  Edit
-                </Link>
-              </>
+              <Link
+                to={`/blog/${item._id}/edit`}
+                className="btn btn-info glass"
+              >
+                Edit
+              </Link>
             )}
+
             {isDeleteDashboard && (
-              <>
-                <Link className="btn btn-error glass" onClick={handleDelete}>
-                  Delete Blog
-                </Link>
-              </>
+              <Link className="btn btn-error glass" onClick={handleDelete}>
+                Delete Blog
+              </Link>
             )}
           </div>
         </div>

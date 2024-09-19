@@ -1,4 +1,3 @@
-// prettier-ignore
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import React from "react";
 import StickyNavbar from "@components/StickyNavbar";
@@ -21,50 +20,60 @@ import SignUp from "@pages/SignUp";
 import SignIn from "@pages/SignIn";
 import ForgotPassword from "@pages/ForgetPassword";
 import ResetPassword from "@pages/ResetPassword";
+import Welcome from "@pages/Welcome";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { v4 as uuidv4 } from "uuid";
+
 function App() {
   return (
     <div className="App">
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+        transition="Bounce"
+      />
       <BrowserRouter>
-        <ToastContainer
-          position="top-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="dark"
-          transition="Bounce"
-          containerId={uuidv4()}
-        />
-        <ToastContainer />
         <StickyNavbar />
         <Background />
+
         <div className="pages">
           <Routes>
-            <Route path="/" element={<Dashboard />} />
+            <Route path="/" element={<Welcome />} />
+            <Route path="/user-dashboard" element={<Dashboard />} />
+            {/* Admin Route */}
             <Route path="/scrap" element={<Scrapper />} />
+            {/* Miscellaneous Route */}
             <Route path="/metric" element={<Metric />} />
+            {/* Blog User Routes */}
             <Route path="/blog/dashboard" element={<PostPage />} />
+            <Route path="/blog/:id" element={<SingleBlogPage />} />
+            {/* Blog Author Routes */}
             <Route path="/blog/edit/dashboard" element={<PostPage />} />
             <Route path="/blog/delete/dashboard" element={<PostPage />} />
             <Route path="/blog/create" element={<NewBlog />} />
             <Route path="/blog/:id/edit" element={<EditBlog />} />
-            <Route path="/blog/:id" element={<SingleBlogPage />} />
+            {/* Blog User Route */}
             <Route path="/feedback" element={<FeedbackPage />} />
+            {/* Forum User Routes */}
             <Route path="/form" element={<ThreadsList />} />
+            {/* Forum Author Routes */}
             <Route path="/thread/:id" element={<SingleThread />} />
             <Route path="/create-question" element={<CreateQuestion />} />
+            {/* User Profiling User Route */}
             <Route path="/profile-page" element={<ProfilePage />} />
             <Route path="/sign-in" element={<SignIn />} />
             <Route path="/sign-up" element={<SignUp />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            {/* 3D Model User Route - Combine With Metric */}
             <Route
               path="/model"
               element={
@@ -80,6 +89,5 @@ function App() {
     </div>
   );
 }
-export default App;
 
-// prettier-ignore-end
+export default App;

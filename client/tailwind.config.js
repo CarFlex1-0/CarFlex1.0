@@ -4,11 +4,15 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#3f51b5',   // Blue
-        secondary: '#9c27b0', // Purple
-        background: '#f4f5fa',
+        primary: "#3f51b5", // Blue
+        secondary: "#9c27b0", // Purple
+        background: "#f4f5fa",
       },
     },
   },
-  plugins: [require("@tailwindcss/typography"), require("daisyui")],
+  plugins: [
+    require("@tailwindcss/typography"),
+    require("@tailwindcss/line-clamp"),
+    require("daisyui"),
+  ],
 };
