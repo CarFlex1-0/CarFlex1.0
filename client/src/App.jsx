@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route  } from "react-router-dom";
 import React from "react";
 import StickyNavbar from "@components/StickyNavbar";
 import Background from "@components/Background";
@@ -24,7 +24,10 @@ import Welcome from "@pages/Welcome";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AuthProvider } from "./contexts/auth_context";
-import ProtectedRoute from "./routes/protected_routes"; // Adjust the path if needed
+import ProtectedRoute from "./routes/protected_routes"; // Adjust the path if needed;
+import SubscriptionSelect from "@components/SubscriptionSelect";
+import Success from "@components/Success";
+import Failure from "@components/Failure";
 
 function App() {
   return (
@@ -202,6 +205,7 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+
               {/* 3D Model User Route - Combine With Metric */}
               <Route
                 path="/model"
@@ -213,6 +217,14 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+
+
+
+
+            {/* Subscription Routes */}
+              <Route path="/subscription" element={<ProtectedRoute> <SubscriptionSelect /></ProtectedRoute>} />
+              <Route path="/success" element={<ProtectedRoute> <Success /></ProtectedRoute>} />
+              <Route path="/failure" element={<ProtectedRoute> <Failure /></ProtectedRoute>} />
             </Routes>
           </div>
           <Footer />

@@ -46,6 +46,9 @@ const StickyNavbar = () => {
             <li className={getLinkClassName("/model")}>
               <Link to="/model">3D Model</Link>
             </li>
+            <li className={getLinkClassName("/subscription")}>
+              <Link to="/subscription">Subscription</Link>
+            </li>
             {/* Blog Dropdown */}
             <li className="relative">
               <button

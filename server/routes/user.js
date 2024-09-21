@@ -58,4 +58,6 @@ router.get('/profile/:id', userController.getUserProfile);
 // @desc    Update user profile
 router.put('/profile/:id', userController.updateUserProfile);
 
+// Route to update user's subscription
+router.patch('/:id/subscribe', userController.activateSubscription);
 module.exports = router;
