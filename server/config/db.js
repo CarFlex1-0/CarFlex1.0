@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const User = require('../models/user');
+// const User = require('../models/user');
 dotenv.config();
 
 let dbConnection;
@@ -76,11 +76,13 @@ let dbConnection;
 //     "updatedAt": "2024-08-25T18:00:00.000Z"
 //   }
 // ]
+// const Subscription = require('../models/subscription');
 
 const connectDB = async () => {
   try {
     const conn = await mongoose.connect(process.env.MONGO_URI);
     // await User.insertMany(users);
+    // await Subscription.insertMany(subscriptions);
     // console.log('Dummy users inserted');
     console.log('✅ Database Connected...');
     dbConnection = conn;
