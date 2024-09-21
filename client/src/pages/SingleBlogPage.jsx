@@ -1,10 +1,15 @@
-import React from "react";
-import { useParams } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
 import useBlog from "@hooks/useFetchSingleAndLike";
 
 const SingleBlogPage = () => {
   const { id } = useParams();
-  const { loading, error, blog, liked, likeCount, handleLike } = useBlog(id);
+  const { loading, error, blog, liked, likeCount, handleLike, userId } =
+    useBlog(id);
+
+  console.log("Blog ID from params:", id);
+  console.log("Loading state:", loading);
+  console.log("Error state:", error);
 
   if (loading) {
     return (
@@ -15,6 +20,7 @@ const SingleBlogPage = () => {
   }
 
   if (error) {
+    console.error("Error fetching blog:", error);
     return (
       <div className="flex justify-center items-center min-h-screen bg-gray-100">
         <p className="text-red-600 text-xl font-semibold">{error}</p>
@@ -23,6 +29,7 @@ const SingleBlogPage = () => {
   }
 
   if (!blog) {
+    console.warn("No blog found for ID:", id);
     return (
       <div className="flex justify-center items-center min-h-screen bg-gray-100">
         <p className="text-gray-600 text-xl font-semibold">Blog not found</p>
@@ -30,8 +37,10 @@ const SingleBlogPage = () => {
     );
   }
 
+  console.log("Blog data:", blog);
+
   return (
-    <main className="p-6 md:p-12 max-w-4xl mx-auto h-full mt-10 mb-10">
+    <main className="p-6 md:p-12 max-w-5xl mx-auto h-full mt-10 mb-10">
       <article className="bg-white shadow-2xl rounded-3xl overflow-hidden transform transition-transform duration-500 hover:scale-105 hover:shadow-2xl">
         <figure>
           <img
@@ -106,14 +115,18 @@ const SingleBlogPage = () => {
               </div>
             </div>
             <div className="mt-4">
-              <button
+              <Link
+                to={`/blog/author/${blog.author._id}`}
                 onClick={() => {
-                  /* Navigate to author's blog posts */
+                  console.log(
+                    "Navigating to author's blog posts for user ID:",
+                    blog.author.userId
+                  );
                 }}
                 className="bg-white text-blue-500 font-bold py-2 px-4 rounded-lg shadow-md hover:bg-gray-200 transition duration-300"
               >
                 More by the Author
-              </button>
+              </Link>
             </div>
           </div>
         </div>

@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import axios from "@services/axios";
 import { Bounce, Slide, Zoom } from "react-toastify";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 const FeedbackForm = () => {
+  
   const {
     register,
     handleSubmit,
@@ -19,7 +20,7 @@ const FeedbackForm = () => {
     try {
       // Include author reference
       const authorId = "some-user-id"; // You need to get the current user's ID
-      console.log('1', 1)
+      console.log("1", 1);
       await axios.post("/feedback", {
         ...data,
         rating,

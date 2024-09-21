@@ -7,9 +7,6 @@ const { body, validationResult } = require("express-validator");
 // controllers/blog_controllers.js
 
 const createBlog = async (req, res, next) => {
-  // TODO: CORRECT USER INTEGRATION
-  req.user = { _id: "66e546c813eb5f50654bc8d2" }; // Mock user ID
-
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -18,10 +15,12 @@ const createBlog = async (req, res, next) => {
   try {
     console.log("Request Body:", req.body); // Log the request body
 
-    const { title, content, blogImageUrl } = req.body;
+    const { title, content, blogImageUrl, author } = req.body; // Extract author from the request body
 
-    if (!title || !content) {
-      return res.status(400).json({ error: "Title and content are required." });
+    if (!title || !content || !author) {
+      return res
+        .status(400)
+        .json({ error: "Title, content, and author are required." });
     }
 
     let blogImageUrlData = null;
@@ -40,10 +39,17 @@ const createBlog = async (req, res, next) => {
     const newBlog = await Blog.create({
       title,
       content,
-      author: req.user._id,
+      author, // Use the author ID from the request
       blogImageUrl: blogImageUrlData,
       plagPercentage: 0,
     });
+
+    // Add the new blog's ID to the user's blogsList
+    await User.findByIdAndUpdate(
+      author,
+      { $push: { blogsList: newBlog._id } },
+      { new: true }
+    );
 
     res.status(201).json({
       success: true,
@@ -100,6 +106,13 @@ const deleteBlogById = async (req, res) => {
       await cloudinary.uploader.destroy(ImgId);
       console.log(`Successfully deleted image with ID: ${ImgId}`);
     }
+
+    // Remove the blog ID from the author's blogsList
+    await User.findByIdAndUpdate(
+      currentBlog.author,
+      { $pull: { blogsList: currentBlog._id } },
+      { new: true } // Return the updated document
+    );
 
     const deletedBlog = await Blog.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: "Blog deleted successfully" });

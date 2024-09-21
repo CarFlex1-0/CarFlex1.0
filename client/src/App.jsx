@@ -25,28 +25,30 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AuthProvider } from "./contexts/auth_context";
 import ProtectedRoute from "./routes/protected_routes"; // Adjust the path if needed
+import AuthorPostPage from "@pages/AuthorPostPage";
 
 function App() {
   return (
-    <AuthProvider>
-      <div className="App">
-        <ToastContainer
-          position="top-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="dark"
-          transition="Bounce"
-        />
+    <div className="App flex flex-col min-h-screen">
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
+      <AuthProvider>
         <BrowserRouter>
           <StickyNavbar />
           <Background />
-          <div className="pages">
+          <div className="flex-grow">
+            {" "}
+            {/* Allow content to grow */}
             <Routes>
               <Route path="/" element={<Welcome />} />
               {/* Protected Route */}
@@ -63,8 +65,7 @@ function App() {
                 path="/scrap"
                 element={
                   <ProtectedRoute>
-                    {" "}
-                    <Scrapper />{" "}
+                    <Scrapper />
                   </ProtectedRoute>
                 }
               />
@@ -82,8 +83,15 @@ function App() {
                 path="/blog/dashboard"
                 element={
                   <ProtectedRoute>
-                    {" "}
-                    <PostPage />{" "}
+                    <PostPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/blog/author/:id"
+                element={
+                  <ProtectedRoute>
+                    <PostPage />
                   </ProtectedRoute>
                 }
               />
@@ -91,27 +99,16 @@ function App() {
                 path="/blog/:id"
                 element={
                   <ProtectedRoute>
-                    {" "}
-                    <SingleBlogPage />{" "}
+                    <SingleBlogPage />
                   </ProtectedRoute>
                 }
               />
               {/* Blog Author Routes */}
               <Route
-                path="/blog/edit/dashboard"
+                path="/blog/actions/dashboard"
                 element={
                   <ProtectedRoute>
-                    {" "}
-                    <PostPage />{" "}
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/blog/delete/dashboard"
-                element={
-                  <ProtectedRoute>
-                    {" "}
-                    <PostPage />{" "}
+                    <AuthorPostPage />
                   </ProtectedRoute>
                 }
               />
@@ -119,8 +116,7 @@ function App() {
                 path="/blog/create"
                 element={
                   <ProtectedRoute>
-                    {" "}
-                    <NewBlog />{" "}
+                    <NewBlog />
                   </ProtectedRoute>
                 }
               />
@@ -128,8 +124,7 @@ function App() {
                 path="/blog/:id/edit"
                 element={
                   <ProtectedRoute>
-                    {" "}
-                    <EditBlog />{" "}
+                    <EditBlog />
                   </ProtectedRoute>
                 }
               />
@@ -138,8 +133,7 @@ function App() {
                 path="/feedback"
                 element={
                   <ProtectedRoute>
-                    {" "}
-                    <FeedbackPage />{" "}
+                    <FeedbackPage />
                   </ProtectedRoute>
                 }
               />
@@ -148,8 +142,7 @@ function App() {
                 path="/form"
                 element={
                   <ProtectedRoute>
-                    {" "}
-                    <ThreadsList />{" "}
+                    <ThreadsList />
                   </ProtectedRoute>
                 }
               />
@@ -158,8 +151,7 @@ function App() {
                 path="/thread/:id"
                 element={
                   <ProtectedRoute>
-                    {" "}
-                    <SingleThread />{" "}
+                    <SingleThread />
                   </ProtectedRoute>
                 }
               />
@@ -167,8 +159,7 @@ function App() {
                 path="/create-question"
                 element={
                   <ProtectedRoute>
-                    {" "}
-                    <CreateQuestion />{" "}
+                    <CreateQuestion />
                   </ProtectedRoute>
                 }
               />
@@ -177,8 +168,7 @@ function App() {
                 path="/profile-page"
                 element={
                   <ProtectedRoute>
-                    {" "}
-                    <ProfilePage />{" "}
+                    <ProfilePage />
                   </ProtectedRoute>
                 }
               />
@@ -188,8 +178,7 @@ function App() {
                 path="/forgot-password"
                 element={
                   <ProtectedRoute>
-                    {" "}
-                    <ForgotPassword />{" "}
+                    <ForgotPassword />
                   </ProtectedRoute>
                 }
               />
@@ -197,8 +186,7 @@ function App() {
                 path="/reset-password"
                 element={
                   <ProtectedRoute>
-                    {" "}
-                    <ResetPassword />{" "}
+                    <ResetPassword />
                   </ProtectedRoute>
                 }
               />
@@ -217,8 +205,8 @@ function App() {
           </div>
           <Footer />
         </BrowserRouter>
-      </div>
-    </AuthProvider>
+      </AuthProvider>
+    </div>
   );
 }
 

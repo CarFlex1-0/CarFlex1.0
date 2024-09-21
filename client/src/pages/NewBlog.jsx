@@ -5,6 +5,7 @@ import { Bounce, Slide, Zoom } from "react-toastify";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { v4 as uuidv4 } from "uuid";
+import Cookies from "js-cookie";
 
 export default function NewBlog() {
   const { register, handleSubmit, reset } = useForm();
@@ -47,10 +48,12 @@ export default function NewBlog() {
       }
 
       // Send form data along with the image
+      const user = JSON.parse(Cookies.get("user"));
       const response = await axios.post("/blogs", {
         title: data.title,
         content: data.content,
         blogImageUrl: imageBase64, // Sending image as Base64
+        author: user._id, // Extract the user ID from the cookie
       });
 
       // Assuming response contains the image URL

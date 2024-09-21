@@ -8,6 +8,7 @@ const useBlog = (id) => {
   const [blog, setBlog] = useState(null);
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
+  const [userId, setUserId] = useState(0);
 
   useEffect(() => {
     const fetchBlog = async () => {
@@ -18,6 +19,7 @@ const useBlog = (id) => {
 
         setBlog(data);
         setLikeCount(data.likes);
+        setUserId(data.author._id);
 
         // Check if the user has liked this blog
         const userLiked = localStorage.getItem(`liked_${id}`) === "true";
@@ -26,6 +28,7 @@ const useBlog = (id) => {
         setError(error.message);
       } finally {
         setLoading(false);
+        window.scrollTo(0, 0);
       }
     };
 
@@ -46,10 +49,12 @@ const useBlog = (id) => {
       localStorage.setItem(`liked_${id}`, !liked);
     } catch (error) {
       setError(error.message);
+    } finally {
+      window.scrollTo(0, 0);
     }
   };
 
-  return { loading, error, blog, liked, likeCount, handleLike };
+  return { loading, error, blog, liked, likeCount, handleLike, userId };
 };
 
 export default useBlog;

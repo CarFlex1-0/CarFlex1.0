@@ -92,20 +92,11 @@ const StickyNavbar = () => {
                   </li>
                   <li>
                     <Link
-                      to="/blog/edit/dashboard"
+                      to="/blog/actions/dashboard"
                       className="block px-4 py-2 hover:bg-gray-700"
                       onClick={() => setIsDropdownOpen(false)}
                     >
-                      Edit
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/blog/delete/dashboard"
-                      className="block px-4 py-2 hover:bg-gray-700"
-                      onClick={() => setIsDropdownOpen(false)}
-                    >
-                      Delete
+                      My Blogs
                     </Link>
                   </li>
                 </ul>
@@ -133,9 +124,14 @@ const StickyNavbar = () => {
               className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
             >
               <li>
-                <a className="justify-between" onClick={()=>{navigate("/profile-page")}}>
+                <a
+                  className="justify-between"
+                  onClick={() => {
+                    navigate("/profile-page");
+                  }}
+                >
                   Profile
-                  <span className="badge" >New</span>
+                  <span className="badge">New</span>
                 </a>
               </li>
               <li>

@@ -8,14 +8,11 @@ const Carousel = ({ items, title, onDelete, onUpdate }) => {
         {title}
       </h1>
 
-      <div className="grid justify-items-stretch gap-6 w-full">
+      <div className="carousel carousel-vertical carousel-center rounded-box w-full my-5-5">
         {items.length > 0 ? (
           items.map((item) => (
-            <div
-              className="card text-black hover:text-white bg-indigo-400 sm:card-side hover:bg-indigo-500 transition-colors sm:max-w-none"
-              key={item._id}
-            >
-              <BlogCard item={item} onDelete={onDelete} onUpdate={onUpdate}/>
+            <div className="carousel-item w-full h-full" key={item._id}>
+              <BlogCard item={item} onDelete={onDelete} onUpdate={onUpdate} />
             </div>
           ))
         ) : (

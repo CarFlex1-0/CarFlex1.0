@@ -2,36 +2,34 @@ import React, { useEffect, useState } from "react";
 import axios from "@services/axios";
 import Carousel from "@components/Carousel";
 import "../../public/stylesheets/spinner.css";
-import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
+import Cookies from "js-cookie";
 
-const PostPage = () => {
-  const location = useLocation();
-  const isDashboard = location.pathname === "/blog/dashboard";
-  const authorId = location.pathname.split("/")[3];
+const AuthorPostPage = () => {
+    
+  const authorCookie = Cookies.get("user");
+  const author = authorCookie ? JSON.parse(authorCookie) : null; // Parse cookie data
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [blogs, setBlogs] = useState([]);
-  const [recentBlogs, setRecentBlogs] = useState([]);
 
   useEffect(() => {
     const fetchBlogs = async () => {
+      if (!author) {
+        console.error("No author data found in cookies.");
+        setError("No author data found.");
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
-        console.log("Fetching blogs...");
-        const res = isDashboard
-          ? await axios.get("/blogs")
-          : await axios.get(`/blogs/author/${authorId}`);
-
+        console.log("Fetching blogs for author ID:", author._id);
+        const res = await axios.get(`/blogs/author/${author._id}`);
         console.log("Response data:", res.data);
         const data = res.data; // Assume response is structured correctly
         setBlogs(data); // Set the fetched blogs
-
-        if (isDashboard) {
-          setRecentBlogs(data.slice().reverse().slice(0, 5)); // Get recent blogs for dashboard
-          console.log("Recent blogs set:", data.slice().reverse().slice(0, 5));
-        }
       } catch (error) {
         console.error("Error fetching blogs:", error);
         setError(error.message);
@@ -42,16 +40,13 @@ const PostPage = () => {
     };
 
     fetchBlogs();
-  }, [isDashboard, authorId]);
+  }, []);
 
   const deleteBlog = async (blogId) => {
     try {
       console.log("Deleting blog with ID:", blogId);
       await axios.delete(`/blogs/${blogId}`);
       setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog._id !== blogId));
-      setRecentBlogs((prevBlogs) =>
-        prevBlogs.filter((blog) => blog._id !== blogId).slice(0, 5)
-      );
       toast.success("Blog deleted successfully!");
       console.log("Blog deleted:", blogId);
     } catch (error) {
@@ -69,12 +64,6 @@ const PostPage = () => {
           blog._id === updatedBlog._id ? res.data : blog
         )
       );
-      setRecentBlogs((prevBlogs) => {
-        const filteredBlogs = prevBlogs.filter(
-          (blog) => blog._id !== updatedBlog._id
-        );
-        return [res.data, ...filteredBlogs].slice(0, 5); // Update recent blogs
-      });
       toast.success("Blog updated successfully!");
       console.log("Blog updated:", res.data);
     } catch (error) {
@@ -107,13 +96,12 @@ const PostPage = () => {
     <main className="p-3 flex flex-col max-w-7xl mx-auto min-h-screen md:mb-12">
       <Carousel
         items={blogs}
-        title={isDashboard ? "All Blogs" : "Author's Blogs"}
+        title={"My Blogs"}
         onDelete={deleteBlog}
         onUpdate={updateBlog}
       />
-      {isDashboard && <Carousel items={recentBlogs} title="Recent Posted" />}
     </main>
   );
 };
 
-export default PostPage;
+export default AuthorPostPage;

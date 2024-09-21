@@ -7,6 +7,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const EditBlog = () => {
+  
   const { id } = useParams(); // Get blog ID from URL
   const navigate = useNavigate(); // For navigation after submission
   const { register, handleSubmit, reset } = useForm();
@@ -67,7 +68,6 @@ const EditBlog = () => {
         blogImageUrl: imageBase64,
       });
 
-      
       toast.success("Blog post updated successfully!", {
         position: "top-left",
         autoClose: 5000,
@@ -77,7 +77,7 @@ const EditBlog = () => {
       navigate(`/blog/${id}`); // Redirect to the single blog page or any other page
     } catch (error) {
       console.error("Update failed:", error);
-      
+
       toast.error("Failed to update blog post. Please try again.", {
         position: "top-left",
         autoClose: 5000,

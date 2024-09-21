@@ -5,7 +5,6 @@ import './index.css'
 import * as THREE from "three";
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    
     <App />
   </StrictMode>,
 )

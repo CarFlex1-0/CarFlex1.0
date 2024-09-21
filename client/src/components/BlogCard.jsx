@@ -1,100 +1,61 @@
 // BlogCard.js
-// TODO: List not re-freshing
-// TODO: Flex wrap
-import React from "react";
+
+import React, { useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import axios from "@services/axios";
-import { Bounce, Slide, Zoom } from "react-toastify";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { MdReadMore } from "react-icons/md";
+import { CiEdit } from "react-icons/ci";
+import { MdDeleteForever } from "react-icons/md";
 
-const BlogCard = ({ item }) => {
+const BlogCard = ({ item, onDelete }) => {
+  const location = useLocation();
+  const isDashboard = location.pathname === "/blog/actions/dashboard"; // Check if the URL is the dashboard
   const navigate = useNavigate();
-  const handleDelete = async () => {
-    try {
-      if (confirm("Are you sure you want to delete")) {
-        const res = await axios.delete(`/blogs/${item._id}`);
-        toast.success("Blog deleted successfully!", {
-          position: "top-left",
-          autoClose: 5000,
-          theme: "dark",
-          transition: Slide,
-        });
 
-        navigate("/blog/dashboard");
-      } else {
-        toast("Blog delete was unsuccessful", {
-          position: "bottom-right",
-          autoClose: 5000,
-          theme: "dark",
-          transition: Bounce,
-        });
-      }
-    } catch (error) {
-      console.error("Error deleting blog post:", error);
-      console.log("Error deleting blog post:", error);
-      toast.error("An error occurred while deleting the blog post", {
-        position: "bottom-right",
-        autoClose: 5000,
-        theme: "dark",
-        transition: Bounce,
-      });
+  const handleDelete = async () => {
+    if (confirm("Are you sure you want to delete this blog?")) {
+      await onDelete(item._id);
     }
   };
 
-  const location = useLocation();
-
-  // Check if we are on the dashboard route
-  // TODO: Change conditional rendering with user state (I think backend Change)
-  const isDashboard = location.pathname === "/blog/dashboard";
-  const isEditDashboard = location.pathname === "/blog/edit/dashboard";
-  const isDeleteDashboard = location.pathname === "/blog/delete/dashboard";
-  // console.log(isDashboard);
+  
 
   return (
     <>
-      <div
-        key={item._id}
-        className="card card-compact bg-base-100 w-96 shadow-xl mx-5"
-      >
-        <figure>
-          <img
-            src={item.blogImageUrl.url}
-            alt={item.title}
-            className={
-              isDashboard
-                ? "w-full h-48 object-cover"
-                : "w-full h-60 object-cover flex-wrap"
-            }
-          />
-        </figure>
-        <div className="card-body">
-          <h2 className="card-title max-w-full line-clamp-2">{item.title}</h2>
-          <p className="max-w-full line-clamp-3 mb-3">{item.content}</p>
+      <figure className="mx-auto w-full p-6 max-sm:pb-0 sm:max-w-[12rem] sm:pe-0">
+        <img
+          src={item.blogImageUrl.url}
+          alt={item.title}
+          className="w-full h-24 object-scale-down  border-base-content bg-base-300 rounded-btn border border-opacity-5"
+        />
+      </figure>
+      <div className="card-body">
+        <h2 className="card-title line-clamp-2">{item.title}</h2>
+        <p className="text-xs opacity-60 line-clamp-3">{item.content}</p>
+      </div>
+      <div className="flex justify-center items-center space-x-3 px-2">
+        <Link
+          to={`/blog/${item._id}`}
+          className="rounded-box p-3 hover:bg-green-300 btn-primary glass"
+        >
+          <MdReadMore />
+        </Link>
 
-          <div className="card-actions justify-center">
-            {isDashboard && (
-              <Link to={`/blog/${item._id}`} className="btn btn-primary glass">
-                Read More
-              </Link>
-            )}
-
-            {isEditDashboard && (
-              <Link
-                to={`/blog/${item._id}/edit`}
-                className="btn btn-info glass"
-              >
-                Edit
-              </Link>
-            )}
-
-            {isDeleteDashboard && (
-              <Link className="btn btn-error glass" onClick={handleDelete}>
-                Delete Blog
-              </Link>
-            )}
-          </div>
-        </div>
+        {isDashboard && ( // Only show buttons if on the dashboard
+          <>
+            <Link
+              to={`/blog/${item._id}/edit`}
+              className="rounded-box p-3 hover:bg-blue-300 btn-primary glass"
+            >
+              <CiEdit />
+            </Link>
+            <button
+              className="rounded-box p-3 hover:bg-red-300 btn-primary glass"
+              onClick={handleDelete}
+            >
+              <MdDeleteForever />
+            </button>
+          </>
+        )}
       </div>
     </>
   );

@@ -6,7 +6,7 @@ const Scrapper = () => {
   const [data, setData] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState(null);
-
+  
   const handleUrlChange = (e) => setUrl(e.target.value);
 
   const handleScrape = async () => {
