@@ -1,5 +1,6 @@
 const Feedback = require("../models/feedback");
 const User = require("../models/user");
+
 const {
   sendAdminNotification,
   sendUserThankYou,
@@ -8,7 +9,7 @@ const {
 exports.createFeedback = async (req, res) => {
   try {
     // TODO: USER INTEGRATION
-    req.body.author = { _id: "66e546c813eb5f50654bc8d2" }; // Mock user ID
+    req.body.author = { _id: "66e95b2197b3cde8d868b6cb" }; // Mock user ID
     // Create new feedback
     const feedback = new Feedback({
       content: req.body.content,
@@ -24,12 +25,12 @@ exports.createFeedback = async (req, res) => {
     }
     const userEmail = user.email;
 
+    
     // Send email to admin
-    await sendAdminNotification(feedback, userEmail);
+    sendAdminNotification(feedback, userEmail);
 
     // Send email to user
-    // await sendUserThankYou(userEmail, feedback);
-    await sendUserThankYou("mohid.anwar@gmail.com", feedback);
+    sendUserThankYou(userEmail, feedback);
 
     res.status(201).json(feedback);
   } catch (error) {

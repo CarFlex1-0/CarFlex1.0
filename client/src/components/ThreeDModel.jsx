@@ -106,26 +106,6 @@ const ThreeDModel = () => {
     changeMaterialColor(materialNames, colors[part]);
   };
 
-  const removeMaterial = (materialName) => {
-    if (model) {
-      model.traverse((child) => {
-        if (child.isMesh) {
-          const materials = Array.isArray(child.material)
-            ? child.material
-            : [child.material];
-          materials.forEach((material, index) => {
-            if (material.name === materialName) {
-              // Remove the material
-              materials.splice(index, 1);
-              child.material =
-                materials.length === 1 ? materials[0] : materials;
-            }
-          });
-        }
-      });
-    }
-  };
-
   return (
     <div className="flex flex-col w-full h-full">
       <Canvas
@@ -228,19 +208,6 @@ const ThreeDModel = () => {
             onClick={handleChangeColor("interior", "SUPRA_95_BODY.001")}
           >
             Change Interior Color
-          </button>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            className="rounded-full p-1 px-3 text-white bg-slate"
-            onClick={() => {
-              removeMaterial("Black plastic.001");
-              removeMaterial("Black plastic.002");
-              removeMaterial("Black plastic.004");
-              removeMaterial("Material.015");
-            }}
-          >
-            Full Stock Option
           </button>
         </div>
       </div>

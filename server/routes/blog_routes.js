@@ -9,6 +9,7 @@ const {
   deleteBlogById,
   likeBlogById,
   removeLikeBlogById,
+  getBlogsByAuthor,
 } = require("../controllers/blog_controllers");
 
 // Define blog routes
@@ -19,5 +20,6 @@ router.delete("/blogs/:id", deleteBlogById);
 router.put("/blogs/:id", updateBlogById);
 router.put("/blogs/:id/like", likeBlogById);
 router.put("/blogs/:id/removelike", removeLikeBlogById);
+router.get("/blogs/author/:authorId", getBlogsByAuthor);
 
 module.exports = router;

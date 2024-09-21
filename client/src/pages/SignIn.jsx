@@ -5,7 +5,7 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai"; // Loading icon
 import { Slide, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate, Link } from "react-router-dom";
-
+import Cookies from 'js-cookie';
 const SignIn = () => {
   const navigate = useNavigate();
   const {
@@ -22,6 +22,10 @@ const SignIn = () => {
     try {
       const response = await axios.post("user/login", data);
       console.log("User signed in:", response.data);
+
+      Cookies.set('token', response.data.token, { expires: 30 }); // Adjust expiration as needed
+      Cookies.set('user', JSON.stringify(response.data), { expires: 30 });
+
       toast.success("Signed in successfully!", {
         position: "top-left",
         autoClose: 5000,
