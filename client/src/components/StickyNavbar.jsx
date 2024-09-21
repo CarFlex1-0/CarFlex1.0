@@ -1,15 +1,23 @@
 // Navbar Component for carFlex
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/auth_context";
 
 const StickyNavbar = () => {
+  const { logout } = useAuth();
   const location = useLocation(); // Get the current location
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const navigate = useNavigate();
 
   const getLinkClassName = (path) => {
     return location.pathname === path
       ? "md:px-4 md:py-2 text-indigo-500" // Active link styling
       : "md:px-4 md:py-2 hover:text-indigo-400"; // Default link styling
+  };
+
+  const handleLogout = () => {
+    logout(); // Call the logout function
+    navigate("/sign-in"); // Redirect to the signIn page
   };
 
   return (
@@ -20,12 +28,12 @@ const StickyNavbar = () => {
             Car<span className="text-red-600">F</span>lex
           </span>
         </div>
+
         <div className="text-gray-500 order-3 w-full md:w-auto md:order-2">
           <ul className="flex font-semibold justify-between">
             <li className={getLinkClassName("/")}>
               <Link to="/">Dashboard</Link>
             </li>
-
             <li className={getLinkClassName("/feedback")}>
               <Link to="/feedback">Feedback</Link>
             </li>
@@ -106,22 +114,38 @@ const StickyNavbar = () => {
           </ul>
         </div>
 
-        <div className="order-2 md:order-3">
-          <button className="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-gray-50 rounded-xl flex items-center gap-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
+        <div className="order-2 md:order-3 flex items-center gap-2">
+          <div className="dropdown dropdown-end">
+            <div
+              tabIndex={0}
+              role="button"
+              className="btn btn-ghost btn-circle avatar"
             >
-              <path
-                fillRule="evenodd"
-                d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z"
-                clipRule="evenodd"
-              />
-            </svg>
-            <span>Login</span>
-          </button>
+              <div className="w-10 rounded-full">
+                <img
+                  alt="User Avatar"
+                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                />
+              </div>
+            </div>
+            <ul
+              tabIndex={0}
+              className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
+            >
+              <li>
+                <a className="justify-between" onClick={()=>{navigate("/profile-page")}}>
+                  Profile
+                  <span className="badge" >New</span>
+                </a>
+              </li>
+              <li>
+                <a>Settings</a>
+              </li>
+              <li>
+                <a onClick={handleLogout}>Logout</a>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </nav>

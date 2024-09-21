@@ -1,14 +1,10 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import axiosInstance from "@services/axios"; // Assuming axios is set up already
 import { useForm } from "react-hook-form"; // For form validation
 import { Bounce, Slide, Zoom } from "react-toastify";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Cookies from "js-cookie";
-
 const ProfilePage = () => {
-  const user = Cookies.get("user");
-  const fileInputRef = useRef(null);
   const [activeTab, setActiveTab] = useState("overview");
   const {
     register,
@@ -16,9 +12,9 @@ const ProfilePage = () => {
     formState: { errors },
   } = useForm();
   const [imageFile, setImageFile] = useState(null);
-  const [imagePreviewUrl, setImagePreviewUrl] = useState(
-    "https://via.placeholder.com/150"
-  ); // Default image
+  const [imagePreviewUrl, setImagePreviewUrl] = useState("");
+
+  const handleImage = async () => {};
 
   // Convert file to Base64
   const convertBase64 = (file) => {
@@ -40,81 +36,73 @@ const ProfilePage = () => {
     try {
       let imageBase64;
 
-      if (imageFile) {
-        imageBase64 = await convertBase64(imageFile);
-        console.log("Image converted to Base64:", imageBase64);
+      // Use default image if no file is provided
+      if (!imageFile) {
+        imageBase64 = defaultImageUrl;
       } else {
-        console.log("No image file selected.");
+        imageBase64 = await convertBase64(imageFile);
       }
+      // API call to update the profile info
+      await axiosInstance.put("/profile/update", data);
+      // Assuming response contains the image URL
+      const imageUrl = response.data.newBlog.blogImageUrl;
 
-      // Prepare the payload with only necessary data
-      const payload = {
-        firstName: data.firstName,
-        lastName: data.lastName,
-        phone: data.phone,
-        location: data.location,
-        email: data.email,
-        profileImage: imageBase64,
-      };
-
-      // Log user details
-      console.log("User from cookies:", user);
-      const parsedUser = user ? JSON.parse(user) : null;
-      const userId = parsedUser ? parsedUser._id : null;
-
-      if (!userId) {
-        console.error("User ID is not available.");
-        toast.error("User ID is missing!", {
-          position: "top-left",
-          autoClose: 5000,
-          theme: "dark",
-          transition: Slide,
-        });
-        return;
-      }
-
-      console.log("Sending PUT request to /profile/update", userId);
-      const response = await axiosInstance.put(
-        `user/profile/${userId}`,
-        payload
-      );
-      console.log("Response from server:", response.data);
-
+      setImagePreviewUrl(imageUrl); // Optionally update preview URL
       toast.success("Profile updated successfully", {
         position: "top-left",
         autoClose: 5000,
         theme: "dark",
         transition: Slide,
       });
-
-      // Clear image file state after saving
       setImageFile(null);
-      setImagePreviewUrl(imageBase64 || "https://via.placeholder.com/150");
     } catch (error) {
       console.error("Error updating profile:", error);
-      if (error.response) {
-        console.error("Error response data:", error.response.data);
-        console.error("Error response status:", error.response.status);
-        console.error("Error response headers:", error.response.headers);
-      }
+      console.log(error);
       toast.error("Update Profile unsuccessful!", {
         position: "top-left",
         autoClose: 5000,
         theme: "dark",
         transition: Slide,
       });
-    } finally {
-      console.log("new user", user);
+      if (error.code === "ECONNRESET") {
+        console.error("Connection was reset:", error.message);
+      } else {
+        console.error("An error occurred:", error.message);
+      }
     }
-  };
-
+    };
+    // Handle file input change
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
     if (file) {
       const base64 = await convertBase64(file);
       setImageFile(file);
-      setImagePreviewUrl(base64); // Update preview URL
+      setImagePreviewUrl(base64); // Set a preview URL if needed
     }
+  };
+
+  // Handle drag events
+  const handleDragOver = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    // Add visual feedback for drag over (optional)
+  };
+
+  const handleDrop = async (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const file = event.dataTransfer.files[0];
+    if (file) {
+      const base64 = await convertBase64(file);
+      setImageFile(file);
+      setImagePreviewUrl(base64); // Set a preview URL if needed
+    }
+  };
+
+  // Handle file input click
+  const handleFileInputClick = () => {
+    document.getElementById("dropzone-file").click();
   };
 
   return (
@@ -122,29 +110,18 @@ const ProfilePage = () => {
       <div className="w-full max-w-4xl bg-white shadow-lg rounded-lg p-6 mb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="hidden" // Hide the input
-              ref={fileInputRef} // Create a ref for the input
-            />
             <img
-              src={imagePreviewUrl} // Updated to use preview URL
+              onClick={handleImage}
+              src="https://via.placeholder.com/150" // user avatar
               alt="Profile"
-              className="w-20 h-20 rounded-full border-4 border-blue-500 cursor-pointer" // Add cursor pointer
-              onClick={() => fileInputRef.current.click()} // Trigger file input on click
+              className="w-20 h-20 rounded-full border-4 border-blue-500"
             />
-
             <div>
               <h1 className="text-2xl font-bold text-blue-700">John Doe</h1>
               <p className="text-gray-500">Full Stack Developer</p>
             </div>
           </div>
-          <button
-            onClick={saveChanges}
-            className="bg-purple-500 text-white py-2 px-4 rounded-lg hover:bg-purple-600"
-          >
+          <button className="bg-purple-500 text-white py-2 px-4 rounded-lg hover:bg-purple-600">
             Edit Profile
           </button>
         </div>
@@ -197,8 +174,8 @@ const ProfilePage = () => {
                     </label>
                     <input
                       type="text"
-                      {...register("firstName", { required: false })}
-                      className="input mt-1 bg-gray-300 text-black block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      {...register("firstName", { required: true })}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                     />
                     {errors.firstName && (
                       <p className="text-red-500 text-sm">
@@ -212,8 +189,8 @@ const ProfilePage = () => {
                     </label>
                     <input
                       type="text"
-                      {...register("lastName", { required: false })}
-                      className="input mt-1 bg-gray-300 text-black block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      {...register("lastName", { required: true })}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                     />
                     {errors.lastName && (
                       <p className="text-red-500 text-sm">
@@ -227,8 +204,8 @@ const ProfilePage = () => {
                     </label>
                     <input
                       type="text"
-                      {...register("phone", { required: false })}
-                      className="input mt-1 bg-gray-300 text-black block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      {...register("phone", { required: true })}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                     />
                     {errors.phone && (
                       <p className="text-red-500 text-sm">
@@ -242,8 +219,8 @@ const ProfilePage = () => {
                     </label>
                     <input
                       type="text"
-                      {...register("location", { required: false })}
-                      className="input mt-1 bg-gray-300 text-black block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      {...register("location", { required: true })}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                     />
                     {errors.location && (
                       <p className="text-red-500 text-sm">
@@ -271,21 +248,21 @@ const ProfilePage = () => {
                   </label>
                   <input
                     type="email"
-                    {...register("email", { required: false })}
-                    className="input mt-1 bg-gray-300 text-black block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    {...register("email", { required: true })}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                   />
                   {errors.email && (
                     <p className="text-red-500 text-sm">Email is required.</p>
                   )}
                 </div>
                 <div className="mb-4">
-                  <label className="block text-sm font-medium  text-gray-700">
+                  <label className="block text-sm font-medium text-gray-700">
                     Change Password
                   </label>
                   <input
                     type="password"
-                    {...register("password", { required: false })}
-                    className="input mt-1 bg-gray-300 text-black block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    {...register("password", { required: true })}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                   />
                   {errors.password && (
                     <p className="text-red-500 text-sm">

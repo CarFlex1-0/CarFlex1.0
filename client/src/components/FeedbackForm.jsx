@@ -19,8 +19,8 @@ const FeedbackForm = () => {
     try {
       // Include author reference
       const authorId = "some-user-id"; // You need to get the current user's ID
-
-      await axios.post("feedback", {
+      console.log('1', 1)
+      await axios.post("/feedback", {
         ...data,
         rating,
         author: authorId || "", // Send author ID here

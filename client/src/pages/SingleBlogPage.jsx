@@ -1,6 +1,3 @@
-// Show a Single Blog
-// TODO: Show Blogs by author (Backend and Frontend)
-// TODO: Flex wrap p tag
 import React from "react";
 import { useParams } from "react-router-dom";
 import useBlog from "@hooks/useFetchSingleAndLike";
@@ -44,10 +41,10 @@ const SingleBlogPage = () => {
           />
         </figure>
         <div className="p-8">
-          <h1 className="text-5xl font-extrabold text-gray-900 mb-6 transition-colors duration-300 hover:text-indigo-600">
+          <h1 className="text-5xl font-extrabold text-gray-900 mb-6 transition-colors duration-300 hover:text-indigo-600 flex flex-wrap">
             {blog.title}
           </h1>
-          <p className="leading-relaxed mb-8 prose prose-zinc prose-xl border-b border-b-gray-800 pb-4">
+          <p className="leading-relaxed mb-8 prose prose-zinc prose-xl border-b border-b-gray-800 pb-4 flex flex-wrap">
             {blog.content}
           </p>
           <div className="flex justify-end mt-6">
@@ -87,24 +84,36 @@ const SingleBlogPage = () => {
           <h2 className="text-3xl font-semibold text-white mb-6">
             About the Author
           </h2>
-          <div className="flex items-center space-x-6">
-            <div className="flex-shrink-0">
-              <img
-                src={
-                  blog.author?.profilePictureUrl ||
-                  "/public/assets/icons/react.svg"
-                }
-                alt={blog.author?.username || "Author"}
-                className="w-20 h-20 rounded-full border-4 border-white shadow-lg transform transition-transform duration-300 hover:scale-110"
-              />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-6">
+              <div className="flex-shrink-0">
+                <img
+                  src={
+                    blog.author?.profilePictureUrl ||
+                    "/public/assets/icons/react.svg"
+                  }
+                  alt={blog.author?.username || "Author"}
+                  className="w-20 h-20 rounded-full border-4 border-white shadow-lg transform transition-transform duration-300 hover:scale-110"
+                />
+              </div>
+              <div>
+                <p className="text-xl font-semibold text-white">
+                  @{blog.author?.username || "Unknown"}
+                </p>
+                <p className="text-white mt-2">
+                  {blog.author?.bio || "No bio available"}
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-xl font-semibold text-white">
-                @{blog.author?.username || "Unknown"}
-              </p>
-              <p className="text-white mt-2">
-                {blog.author?.bio || "No bio available"}
-              </p>
+            <div className="mt-4">
+              <button
+                onClick={() => {
+                  /* Navigate to author's blog posts */
+                }}
+                className="bg-white text-blue-500 font-bold py-2 px-4 rounded-lg shadow-md hover:bg-gray-200 transition duration-300"
+              >
+                More by the Author
+              </button>
             </div>
           </div>
         </div>

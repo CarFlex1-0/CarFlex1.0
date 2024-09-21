@@ -23,70 +23,202 @@ import ResetPassword from "@pages/ResetPassword";
 import Welcome from "@pages/Welcome";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { AuthProvider } from "./contexts/auth_context";
+import ProtectedRoute from "./routes/protected_routes"; // Adjust the path if needed
 
 function App() {
   return (
-    <div className="App">
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
-        transition="Bounce"
-      />
-      <BrowserRouter>
-        <StickyNavbar />
-        <Background />
-
-        <div className="pages">
-          <Routes>
-            <Route path="/" element={<Welcome />} />
-            <Route path="/user-dashboard" element={<Dashboard />} />
-            {/* Admin Route */}
-            <Route path="/scrap" element={<Scrapper />} />
-            {/* Miscellaneous Route */}
-            <Route path="/metric" element={<Metric />} />
-            {/* Blog User Routes */}
-            <Route path="/blog/dashboard" element={<PostPage />} />
-            <Route path="/blog/:id" element={<SingleBlogPage />} />
-            {/* Blog Author Routes */}
-            <Route path="/blog/edit/dashboard" element={<PostPage />} />
-            <Route path="/blog/delete/dashboard" element={<PostPage />} />
-            <Route path="/blog/create" element={<NewBlog />} />
-            <Route path="/blog/:id/edit" element={<EditBlog />} />
-            {/* Blog User Route */}
-            <Route path="/feedback" element={<FeedbackPage />} />
-            {/* Forum User Routes */}
-            <Route path="/form" element={<ThreadsList />} />
-            {/* Forum Author Routes */}
-            <Route path="/thread/:id" element={<SingleThread />} />
-            <Route path="/create-question" element={<CreateQuestion />} />
-            {/* User Profiling User Route */}
-            <Route path="/profile-page" element={<ProfilePage />} />
-            <Route path="/sign-in" element={<SignIn />} />
-            <Route path="/sign-up" element={<SignUp />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            {/* 3D Model User Route - Combine With Metric */}
-            <Route
-              path="/model"
-              element={
-                <div className="flex justify-center items-center h-[80vh] z-50">
-                  <ThreeDModel />
-                </div>
-              }
-            />
-          </Routes>
-        </div>
-        <Footer />
-      </BrowserRouter>
-    </div>
+    <AuthProvider>
+      <div className="App">
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+          transition="Bounce"
+        />
+        <BrowserRouter>
+          <StickyNavbar />
+          <Background />
+          <div className="pages">
+            <Routes>
+              <Route path="/" element={<Welcome />} />
+              {/* Protected Route */}
+              <Route
+                path="/user-dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              {/* Admin Route */}
+              <Route
+                path="/scrap"
+                element={
+                  <ProtectedRoute>
+                    {" "}
+                    <Scrapper />{" "}
+                  </ProtectedRoute>
+                }
+              />
+              {/* Miscellaneous Route */}
+              <Route
+                path="/metric"
+                element={
+                  <ProtectedRoute>
+                    <Metric />
+                  </ProtectedRoute>
+                }
+              />
+              {/* Blog User Routes */}
+              <Route
+                path="/blog/dashboard"
+                element={
+                  <ProtectedRoute>
+                    {" "}
+                    <PostPage />{" "}
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/blog/:id"
+                element={
+                  <ProtectedRoute>
+                    {" "}
+                    <SingleBlogPage />{" "}
+                  </ProtectedRoute>
+                }
+              />
+              {/* Blog Author Routes */}
+              <Route
+                path="/blog/edit/dashboard"
+                element={
+                  <ProtectedRoute>
+                    {" "}
+                    <PostPage />{" "}
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/blog/delete/dashboard"
+                element={
+                  <ProtectedRoute>
+                    {" "}
+                    <PostPage />{" "}
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/blog/create"
+                element={
+                  <ProtectedRoute>
+                    {" "}
+                    <NewBlog />{" "}
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/blog/:id/edit"
+                element={
+                  <ProtectedRoute>
+                    {" "}
+                    <EditBlog />{" "}
+                  </ProtectedRoute>
+                }
+              />
+              {/* Blog User Route */}
+              <Route
+                path="/feedback"
+                element={
+                  <ProtectedRoute>
+                    {" "}
+                    <FeedbackPage />{" "}
+                  </ProtectedRoute>
+                }
+              />
+              {/* Forum User Routes */}
+              <Route
+                path="/form"
+                element={
+                  <ProtectedRoute>
+                    {" "}
+                    <ThreadsList />{" "}
+                  </ProtectedRoute>
+                }
+              />
+              {/* Forum Author Routes */}
+              <Route
+                path="/thread/:id"
+                element={
+                  <ProtectedRoute>
+                    {" "}
+                    <SingleThread />{" "}
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/create-question"
+                element={
+                  <ProtectedRoute>
+                    {" "}
+                    <CreateQuestion />{" "}
+                  </ProtectedRoute>
+                }
+              />
+              {/* User Profiling User Route */}
+              <Route
+                path="/profile-page"
+                element={
+                  <ProtectedRoute>
+                    {" "}
+                    <ProfilePage />{" "}
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/sign-in" element={<SignIn />} />
+              <Route path="/sign-up" element={<SignUp />} />
+              <Route
+                path="/forgot-password"
+                element={
+                  <ProtectedRoute>
+                    {" "}
+                    <ForgotPassword />{" "}
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/reset-password"
+                element={
+                  <ProtectedRoute>
+                    {" "}
+                    <ResetPassword />{" "}
+                  </ProtectedRoute>
+                }
+              />
+              {/* 3D Model User Route - Combine With Metric */}
+              <Route
+                path="/model"
+                element={
+                  <ProtectedRoute>
+                    <div className="flex justify-center items-center h-[80vh] z-50">
+                      <ThreeDModel />
+                    </div>
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </div>
+          <Footer />
+        </BrowserRouter>
+      </div>
+    </AuthProvider>
   );
 }
 

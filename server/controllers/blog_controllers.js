@@ -188,6 +188,29 @@ const removeLikeBlogById = async (req, res) => {
   }
 };
 
+// Get all blogs by author ID
+const getBlogsByAuthor = async (req, res) => {
+  const authorId = req.params.authorId; // Get author ID from route parameters
+
+  try {
+    const blogs = await Blog.find({ author: authorId }).populate(
+      "author",
+      "username"
+    );
+    if (!blogs.length) {
+      return res
+        .status(404)
+        .json({ message: "No blogs found for this author" });
+    }
+    res.status(200).json(blogs);
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+      details: "In Get Blogs By Author",
+    });
+  }
+};
+
 module.exports = {
   createBlog,
   getAllBlogs,
@@ -196,4 +219,5 @@ module.exports = {
   deleteBlogById,
   likeBlogById,
   removeLikeBlogById,
+  getBlogsByAuthor,
 };
