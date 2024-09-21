@@ -41,10 +41,10 @@ async function metricFunction1(id) {
       const missingData = !power
         ? "Power"
         : !kerbWeight
-        ? "Kerb Weight"
-        : !stockAcceleration
-        ? "Stock Acceleration"
-        : "Drag Coefficient";
+          ? "Kerb Weight"
+          : !stockAcceleration
+            ? "Stock Acceleration"
+            : "Drag Coefficient";
       console.error(`Error: Missing ${missingData}`);
       throw new Error("Required data for calculation is missing.");
     }
@@ -67,7 +67,7 @@ async function metricFunction1(id) {
     // Calculate acceleration using a more realistic approach
     const accelerationTime = Math.sqrt(
       (2 * kerbWeight * Math.pow(velocityMps, 2)) /
-        (powerWatts * (1 - dragCoefficient))
+      (powerWatts * (1 - dragCoefficient))
     );
 
     console.log(
