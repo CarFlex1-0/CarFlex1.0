@@ -4,10 +4,12 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 const dotenv = require("dotenv");
-var cors = require("cors");
+const cors = require("cors");
 const bodyParser = require("body-parser");
+const cron = require("./services/cron")
+
 const { connectDB } = require("./config/db");
-var locRoutes = require("./routes/location");
+const locRoutes = require("./routes/location");
 
 const scraperRoutes = require("./routes/scraper_routes");
 const performanceMetricsRoutes = require("./routes/performance_metrics_routes");
@@ -15,10 +17,12 @@ const carRoutes = require("./routes/car_routes");
 const blogRoutes = require("./routes/blog_routes");
 const feedbackRoutes = require("./routes/feedback_routes");
 
-var questionRoutes = require('./routes/question');
-var answerRoutes = require('./routes/answer');
-var userRoutes = require('./routes/user')
-var app = express();
+const questionRoutes = require('./routes/question');
+const answerRoutes = require('./routes/answer');
+const userRoutes = require('./routes/user')
+const paymentRoutes =require('./routes/payment')
+const subRoutes = require('./routes/subscription')
+const app = express();
 
 dotenv.config();
 
@@ -53,11 +57,16 @@ app.use(express.static(path.join(__dirname, "public")));
 // Use the middleware correctly
 app.use(express.json()); // To handle JSON requests
 app.use(express.urlencoded({ extended: true })); // To handle form submissions
+
+
+
 //Routes
 app.use("/api/location", locRoutes);
 app.use('/api/questions', questionRoutes);
 app.use('/api/answer', answerRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/payment', paymentRoutes);
+app.use('/api/', subRoutes);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
@@ -74,9 +83,7 @@ app.use(function (err, req, res, next) {
   res.render('error');
 });
 const PORT = process.env.PORT || 4000;
-
-
-
+cron; //Setting Cron Job for expiration of current user Subscription;
 app.listen(PORT, () => {
   console.log(`✅ Server running on port ${PORT}...`);
 }).on('error', (err) => {
