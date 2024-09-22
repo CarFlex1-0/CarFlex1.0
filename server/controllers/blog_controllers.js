@@ -2,6 +2,7 @@ const Blog = require("../models/blog");
 const User = require("../models/user");
 const cloudinary = require("../config/cloudinary_config");
 const { body, validationResult } = require("express-validator");
+const mongoose = require("mongoose");
 
 // Create new Blog
 // controllers/blog_controllers.js
@@ -168,15 +169,30 @@ const updateBlogById = async (req, res) => {
 
 // Like a blog post by ID
 const likeBlogById = async (req, res) => {
-  try {
-    // Increment the likes field using $inc operator
-    const blog = await Blog.findByIdAndUpdate(
-      req.params.id,
-      { $inc: { likes: 1 } }, // Increment the likes field by 1
-      { new: true, runValidators: true } // Return the updated blog and run validators
-    );
+  const userId = req.body.userId; // Extract userId from the request body
 
+  try {
+    // Validate userId
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: "Invalid User ID." });
+    }
+
+    // Find the blog post
+    const blog = await Blog.findById(req.params.id);
     if (!blog) return res.status(404).json({ message: "Blog not found" });
+
+    // Check if the user has already liked the blog
+    if (blog.likes.likedBy.includes(userId)) {
+      return res
+        .status(400)
+        .json({ message: "You have already liked this blog." });
+    }
+
+    // Update likes count and likedBy array
+    blog.likes.likesCount += 1;
+    blog.likes.likedBy.push(userId); // Push the userId directly
+
+    await blog.save();
 
     res.status(200).json(blog);
   } catch (error) {
@@ -185,15 +201,30 @@ const likeBlogById = async (req, res) => {
 };
 
 const removeLikeBlogById = async (req, res) => {
+  const userId = req.body.userId; // Extract userId from the request body
+
   try {
-    // Decrement the likes field using $inc operator
-    const blog = await Blog.findByIdAndUpdate(
-      req.params.id,
-      { $inc: { likes: -1 } }, // Decrement the likes field by 1
-      { new: true, runValidators: true } // Return the updated blog and run validators
+    // Validate userId
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: "Invalid User ID." });
+    }
+
+    // Find the blog post
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) return res.status(404).json({ message: "Blog not found" });
+
+    // Check if the user has liked the blog
+    if (!blog.likes.likedBy.includes(userId)) {
+      return res.status(400).json({ message: "You have not liked this blog." });
+    }
+
+    // Update likes count and likedBy array
+    blog.likes.likesCount -= 1;
+    blog.likes.likedBy = blog.likes.likedBy.filter(
+      (id) => id.toString() !== userId
     );
 
-    if (!blog) return res.status(404).json({ message: "Blog not found" });
+    await blog.save();
 
     res.status(200).json(blog);
   } catch (error) {

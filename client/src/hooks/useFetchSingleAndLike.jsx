@@ -1,14 +1,15 @@
-// Sing;e Blog Fetch and Like Management
 import { useState, useEffect } from "react";
 import axios from "@services/axios";
+import Cookies from "js-cookie"; // Import JS Cookies
 
 const useBlog = (id) => {
+  const user = Cookies.get("user");
+  const userId = user ? JSON.parse(user)._id : null; // Parse userId from cookies
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [blog, setBlog] = useState(null);
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
-  const [userId, setUserId] = useState(0);
 
   useEffect(() => {
     const fetchBlog = async () => {
@@ -18,12 +19,11 @@ const useBlog = (id) => {
         const data = res.data;
 
         setBlog(data);
-        setLikeCount(data.likes);
-        setUserId(data.author._id);
+        setLikeCount(data.likes.likesCount);
+        setLiked(data.likes.likedBy.includes(userId)); // Check if the user has liked
 
-        // Check if the user has liked this blog
-        const userLiked = localStorage.getItem(`liked_${id}`) === "true";
-        setLiked(userLiked);
+        // This is optional based on your earlier approach
+        localStorage.setItem(`liked_${id}`, liked);
       } catch (error) {
         setError(error.message);
       } finally {
@@ -33,24 +33,21 @@ const useBlog = (id) => {
     };
 
     fetchBlog();
-  }, [id]);
+  }, [id, userId]); // Add userId as a dependency
 
   const handleLike = async () => {
     try {
-      // In the handleLike function
       const endpoint = liked ? `/blogs/${id}/removelike` : `/blogs/${id}/like`;
 
-      const res = await axios.put(endpoint);
+      const res = await axios.put(endpoint, { userId }); // Send userId in the request body
 
       const data = res.data;
 
-      setLikeCount(data.likes);
+      setLikeCount(data.likes.likesCount);
       setLiked(!liked);
       localStorage.setItem(`liked_${id}`, !liked);
     } catch (error) {
       setError(error.message);
-    } finally {
-      window.scrollTo(0, 0);
     }
   };
 

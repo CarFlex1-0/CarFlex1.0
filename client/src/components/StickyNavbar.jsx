@@ -1,24 +1,36 @@
-// Navbar Component for carFlex
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/auth_context";
+import Cookies from "js-cookie"; // Import JS Cookies
 
 const StickyNavbar = () => {
   const { logout } = useAuth();
-  const location = useLocation(); // Get the current location
+  const location = useLocation();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
 
   const getLinkClassName = (path) => {
     return location.pathname === path
-      ? "md:px-4 md:py-2 text-indigo-500" // Active link styling
-      : "md:px-4 md:py-2 hover:text-indigo-400"; // Default link styling
+      ? "md:px-4 md:py-2 text-indigo-500"
+      : "md:px-4 md:py-2 hover:text-indigo-400";
   };
 
   const handleLogout = () => {
-    logout(); // Call the logout function
-    navigate("/sign-in"); // Redirect to the signIn page
+    logout();
+    navigate("/sign-in");
   };
+
+  // Get user image URL from cookies
+  // const user = Cookies.get("user");
+  // const userImageUrl = user ? JSON.parse(user).imageUrl.url : null;
+  // console.log(userImageUrl); // Returning undefined
+  // console.log(user);
+  // const defaultAvatarUrl =
+  //   "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"; // Default avatar URL
+  // const avatarSrc = userImageUrl ? userImageUrl : defaultAvatarUrl; // Use user image or default
+
+  const avatarSrc =
+    "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"; // TODO: Change with upper logic after cookie updating
 
   return (
     <nav className="z-50 shadow shadow-gray-300 w-100 px-8 md:px-auto bg-black top-0 sticky">
@@ -118,7 +130,7 @@ const StickyNavbar = () => {
               <div className="w-10 rounded-full">
                 <img
                   alt="User Avatar"
-                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                  src={avatarSrc} // Use the dynamic avatar source
                 />
               </div>
             </div>

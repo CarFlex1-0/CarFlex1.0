@@ -10,8 +10,16 @@ const blogSchema = mongoose.Schema(
       required: true,
     },
     likes: {
-      type: Number,
-      default: 0,
+      likesCount: {
+        type: Number,
+        default: 0,
+      },
+      likedBy: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+      ],
     },
     blogImageUrl: {
       url: String,

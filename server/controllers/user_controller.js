@@ -209,20 +209,23 @@ exports.updateUserProfile = async (req, res) => {
   }
 };
 
-
 exports.activateSubscription = async (req, res) => {
   const { id } = req.params;
   const { subscriptionId, subscriptionPlan, subscriptionStatus } = req.body;
 
   try {
-    const user = await User.findByIdAndUpdate(id, {
-      subscriptionId,
-      subscriptionPlan,
-      subscriptionStatus,
-    }, { new: true });
+    const user = await User.findByIdAndUpdate(
+      id,
+      {
+        subscriptionId,
+        subscriptionPlan,
+        subscriptionStatus,
+      },
+      { new: true }
+    );
 
     res.json(user);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-}
+};

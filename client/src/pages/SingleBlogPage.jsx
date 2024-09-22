@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import useBlog from "@hooks/useFetchSingleAndLike";
 
+
 const SingleBlogPage = () => {
   const { id } = useParams();
   const { loading, error, blog, liked, likeCount, handleLike, userId } =
