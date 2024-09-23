@@ -59,6 +59,8 @@ exports.loginUser = async (req, res) => {
       email: user.email,
       token: generateToken(user._id, tokenExpiry), // Generate JWT with expiry,
       imageUrl: user.imageUrl,
+      bio: user.bio || "",
+      phoneNum: user.phoneNum || "",
     });
   } else {
     res.status(401).json({ message: "Invalid email or password" });
@@ -175,7 +177,8 @@ exports.getUserProfile = async (req, res) => {
 // Update user profile
 exports.updateUserProfile = async (req, res) => {
   try {
-    const { firstName, lastName, bio, phoneNum, imageUrl } = req.body;
+    const { firstName, lastName, bio, phoneNum, imageUrl, username, email } =
+      req.body;
     const user = await User.findById(req.params.id);
 
     if (!user) {
@@ -200,12 +203,13 @@ exports.updateUserProfile = async (req, res) => {
     user.bio = bio || user.bio;
     user.phoneNum = phoneNum || user.phoneNum;
     user.imageUrl = imageUrlData || user.imageUrl;
-
+    user.username = username || user.username;
+    user.email = email || user.email;
+    console.log("User Details", user);
     await user.save();
     res.status(200).json(user);
   } catch (error) {
     console.error("Error updating user profile:", error);
-
     res.status(500).json({ error: error.message });
   }
 };

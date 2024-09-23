@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/auth_context";
 import Cookies from "js-cookie"; // Import JS Cookies
@@ -24,8 +24,14 @@ const StickyNavbar = () => {
 
   const defaultAvatarUrl =
     "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"; // Default avatar URL
-  const avatarSrc = userImageUrl ? userImageUrl : defaultAvatarUrl; // Use user image or default
 
+  const [avatarSrc, setAvatarSrc] = useState(
+    userImageUrl ? userImageUrl : defaultAvatarUrl
+  ); // Use user image or default
+  useEffect(() => {
+    setAvatarSrc(userImageUrl ? userImageUrl : defaultAvatarUrl);
+    console.log("User Image Navbar", avatarSrc);
+  }, [user]);
   // const avatarSrc =
   //   "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"; // TODO: Change with upper logic after cookie updating
 

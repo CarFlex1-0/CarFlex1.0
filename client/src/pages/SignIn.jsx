@@ -6,7 +6,9 @@ import { Slide, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate, Link } from "react-router-dom";
 import Cookies from 'js-cookie';
+import { useAuth } from "../contexts/auth_context";
 const SignIn = () => {
+  const { user, setUser } = useAuth();
   const navigate = useNavigate();
   const {
     register,
@@ -21,11 +23,13 @@ const SignIn = () => {
     setErrorMessage(null);
     try {
       const response = await axios.post("user/login", data);
-      console.log("User signed in:", response.data);
+      console.log("User (Cookie) signed in:", response.data);
 
       Cookies.set('token', response.data.token, { expires: 30 }); // Adjust expiration as needed
       Cookies.set('user', JSON.stringify(response.data), { expires: 30 });
-
+      // TODO: AHMAD SE CHECKK KRWANA 
+      await setUser(response.data) 
+      console.log("User (Auth) signed in:", user) // Giving Null
       toast.success("Signed in successfully!", {
         position: "top-left",
         autoClose: 5000,
