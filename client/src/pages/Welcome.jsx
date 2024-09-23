@@ -1,6 +1,8 @@
 // Start Point
 import React from "react";
 import { Link } from "react-router-dom";
+
+
 const Welcome = () => {
   // Define button data
   const buttons = [

@@ -10,10 +10,12 @@ const {
   likeBlogById,
   removeLikeBlogById,
   getBlogsByAuthor,
+  plageValue,
 } = require("../controllers/blog_controllers");
 
 // Define blog routes
 router.post("/blogs", createBlog);
+router.post("/blogs/plagiarism", plageValue);
 router.get("/blogs", getAllBlogs);
 router.get("/blogs/:id", getBlogById);
 router.delete("/blogs/:id", deleteBlogById);

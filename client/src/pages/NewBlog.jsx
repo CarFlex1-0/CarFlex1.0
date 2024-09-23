@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import axios from "@services/axios";
 import { useForm } from "react-hook-form";
-import { Bounce, Slide, Zoom } from "react-toastify";
+import { Slide } from "react-toastify";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { v4 as uuidv4 } from "uuid";
 import Cookies from "js-cookie";
 
 export default function NewBlog() {
@@ -12,54 +11,88 @@ export default function NewBlog() {
   const [loading, setLoading] = useState(false);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState("");
+  const [plagPercentage, setPlagPercentage] = useState(null);
+  const [isSubmitEnabled, setIsSubmitEnabled] = useState(false);
 
-  // Define a default image URL
   const defaultImageUrl =
     "https://res.cloudinary.com/dortbtymj/image/upload/v1726523224/default_img_blog_bineg4.webp";
 
-  // Convert file to Base64
   const convertBase64 = (file) => {
     return new Promise((resolve, reject) => {
       const fileReader = new FileReader();
       fileReader.readAsDataURL(file);
-
-      fileReader.onload = () => {
-        resolve(fileReader.result);
-      };
-
-      fileReader.onerror = (error) => {
-        reject(error);
-      };
+      fileReader.onload = () => resolve(fileReader.result);
+      fileReader.onerror = (error) => reject(error);
     });
   };
 
-  // Handle form submission
+  const checkPlagiarism = async (title, content) => {
+    try {
+      if (title != "" && content != "") {
+        setLoading(true);
+        const response = await axios.post("/blogs/plagiarism", {
+          title,
+          content,
+        });
+        setLoading(false);
+        const percentage = response.data.plagPercentage;
+        setPlagPercentage(percentage);
+        setIsSubmitEnabled(percentage < 30);
+        if (percentage > 30) {
+          toast.info(
+            `Please note that Plagiarism Percentage: ${percentage}% is over Allowed Value`,
+            {
+              position: "top-left",
+              autoClose: 5000,
+              theme: "dark",
+              transition: Slide,
+            }
+          );
+        } else {
+          toast.info(`Plagiarism Percentage: ${percentage}% within range`, {
+            position: "top-left",
+            autoClose: 5000,
+            theme: "dark",
+            transition: Slide,
+          });
+        }
+      } else {
+        toast.error("A title and Content is required", {
+          position: "top-left",
+          autoClose: 5000,
+          theme: "dark",
+          transition: Slide,
+        });
+      }
+    } catch (error) {
+      console.error("Error checking plagiarism:", error);
+      toast.error("Failed to check plagiarism.", {
+        position: "top-left",
+        autoClose: 5000,
+        theme: "dark",
+        transition: Slide,
+      });
+    }
+  };
+
   const onSubmit = async (data) => {
     setLoading(true);
-
     try {
-      let imageBase64;
+      let imageBase64 = imageFile
+        ? await convertBase64(imageFile)
+        : defaultImageUrl;
 
-      // Use default image if no file is provided
-      if (!imageFile) {
-        imageBase64 = defaultImageUrl;
-      } else {
-        imageBase64 = await convertBase64(imageFile);
-      }
-
-      // Send form data along with the image
       const user = JSON.parse(Cookies.get("user"));
       const response = await axios.post("/blogs", {
         title: data.title,
         content: data.content,
-        blogImageUrl: imageBase64, // Sending image as Base64
-        author: user._id, // Extract the user ID from the cookie
+        blogImageUrl: imageBase64,
+        author: user._id,
+        plagPercentage: plagPercentage,
       });
 
-      // Assuming response contains the image URL
       const imageUrl = response.data.newBlog.blogImageUrl;
-
-      setImagePreviewUrl(imageUrl); // Optionally update preview URL
+      setImagePreviewUrl(imageUrl);
       toast.success("Blog Created successfully!", {
         position: "top-left",
         autoClose: 5000,
@@ -67,59 +100,49 @@ export default function NewBlog() {
         transition: Slide,
       });
 
-      // Reset the form and state
       reset();
       setImageFile(null);
       setImagePreviewUrl("");
+      setPlagPercentage(null);
+      setIsSubmitEnabled(false);
     } catch (error) {
       console.error("Submit failed:", error);
-      console.log(error);
       toast.error("Blog creation unsuccessful!", {
         position: "top-left",
         autoClose: 5000,
         theme: "dark",
         transition: Slide,
       });
-      if (error.code === "ECONNRESET") {
-        console.error("Connection was reset:", error.message);
-      } else {
-        console.error("An error occurred:", error.message);
-      }
     } finally {
       setLoading(false);
     }
   };
 
-  // Handle file input change
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
     if (file) {
       const base64 = await convertBase64(file);
       setImageFile(file);
-      setImagePreviewUrl(base64); // Set a preview URL if needed
+      setImagePreviewUrl(base64);
     }
   };
 
-  // Handle drag events
   const handleDragOver = (event) => {
     event.preventDefault();
     event.stopPropagation();
-    // Add visual feedback for drag over (optional)
   };
 
   const handleDrop = async (event) => {
     event.preventDefault();
     event.stopPropagation();
-
     const file = event.dataTransfer.files[0];
     if (file) {
       const base64 = await convertBase64(file);
       setImageFile(file);
-      setImagePreviewUrl(base64); // Set a preview URL if needed
+      setImagePreviewUrl(base64);
     }
   };
 
-  // Handle file input click
   const handleFileInputClick = () => {
     document.getElementById("dropzone-file").click();
   };
@@ -169,8 +192,13 @@ export default function NewBlog() {
                   {...register("content", { required: "Content is required" })}
                   className="border border-gray-300 p-2 w-full hover:bg-white hover:text-black text-white"
                   placeholder="Blog Content"
+                  onChange={(e) => {
+                    setPlagPercentage(null);
+                    setIsSubmitEnabled(false);
+                  }}
                 />
               </div>
+
               <div
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
@@ -221,12 +249,38 @@ export default function NewBlog() {
                   </div>
                 )}
               </div>
-              <button
-                type="submit"
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 mt-4"
-              >
-                Submit
-              </button>
+              <div className="flex justify-between">
+                <button
+                  type="submit"
+                  disabled={!isSubmitEnabled}
+                  className={`px-4 py-2 mt-4 rounded ${
+                    isSubmitEnabled ? "bg-blue-500" : "bg-gray-300"
+                  } text-white`}
+                >
+                  Submit
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    checkPlagiarism(
+                      document.getElementById("title").value,
+                      document.getElementById("content").value
+                    )
+                  }
+                  className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 mt-4"
+                >
+                  Check Plagiarism
+                </button>
+              </div>
+              {plagPercentage !== null && (
+                <div
+                  className={`mt-2 text-xl ${
+                    plagPercentage < 30 ? "text-green-500" : "text-red-500"
+                  }`}
+                >
+                  Plagiarism Percentage: {plagPercentage}%
+                </div>
+              )}
             </form>
           )}
         </div>

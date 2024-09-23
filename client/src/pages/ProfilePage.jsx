@@ -4,10 +4,11 @@ import { useForm } from "react-hook-form"; // For form validation
 import { Bounce, Slide, Zoom } from "react-toastify";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Cookies from "js-cookie";
+
+import {useAuth} from "../contexts/auth_context"
 
 const ProfilePage = () => {
-  const user = Cookies.get("user");
+  const {user} = useAuth();
   const fileInputRef = useRef(null);
   const [activeTab, setActiveTab] = useState("overview");
   const {

@@ -57,7 +57,8 @@ exports.loginUser = async (req, res) => {
       lastName: user.lastName,
       username: user.username,
       email: user.email,
-      token: generateToken(user._id, tokenExpiry), // Generate JWT with expiry
+      token: generateToken(user._id, tokenExpiry), // Generate JWT with expiry,
+      imageUrl: user.imageUrl,
     });
   } else {
     res.status(401).json({ message: "Invalid email or password" });
