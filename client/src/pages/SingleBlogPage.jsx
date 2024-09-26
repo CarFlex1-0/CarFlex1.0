@@ -2,15 +2,14 @@ import React, { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import useBlog from "@hooks/useFetchSingleAndLike";
 
-
 const SingleBlogPage = () => {
   const { id } = useParams();
   const { loading, error, blog, liked, likeCount, handleLike, userId } =
     useBlog(id);
 
-  console.log("Blog ID from params:", id);
-  console.log("Loading state:", loading);
-  console.log("Error state:", error);
+  // console.log("Blog ID from params:", id);
+  // console.log("Loading state:", loading);
+  // console.log("Error state:", error);
 
   if (loading) {
     return (
@@ -43,17 +42,18 @@ const SingleBlogPage = () => {
   return (
     <main className="p-6 md:p-12 max-w-5xl mx-auto h-full mt-10 mb-10">
       <article className="bg-white shadow-2xl rounded-3xl overflow-hidden transform transition-transform duration-500 hover:scale-105 hover:shadow-2xl">
-        <figure>
-          <img
-            src={blog.blogImageUrl?.url}
-            alt={blog.title}
-            className="w-full h-96 object-cover transition-opacity duration-700 hover:opacity-90"
-          />
-        </figure>
         <div className="p-8">
           <h1 className="text-5xl font-extrabold text-gray-900 mb-6 transition-colors duration-300 hover:text-indigo-600 flex flex-wrap">
             {blog.title}
           </h1>
+            <h6 className="flex p-2">Last Updated At: {new Date(blog.updatedAt).toLocaleDateString()}</h6>
+          <figure>
+            <img
+              src={blog.blogImageUrl?.url}
+              alt={blog.title}
+              className="w-full rounded-3xl object-cover transition-opacity duration-700 hover:opacity-90 mb-3"
+            />
+          </figure>
           <p className="leading-relaxed mb-8 prose prose-zinc prose-xl border-b border-b-gray-800 pb-4 flex flex-wrap">
             {blog.content}
           </p>
@@ -99,7 +99,7 @@ const SingleBlogPage = () => {
               <div className="flex-shrink-0">
                 <img
                   src={
-                    blog.author?.profilePictureUrl ||
+                    blog.author?.imageUrl?.url ||
                     "/public/assets/icons/react.svg"
                   }
                   alt={blog.author?.username || "Author"}

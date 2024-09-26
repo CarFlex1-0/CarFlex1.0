@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import axios from "@services/axios";
 import { useForm } from "react-hook-form";
 import { Slide } from "react-toastify";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Cookies from "js-cookie";
+import Quill from "quill";
+import "quill/dist/quill.snow.css";
 
 export default function NewBlog() {
   const { register, handleSubmit, reset } = useForm();
@@ -13,9 +15,32 @@ export default function NewBlog() {
   const [imagePreviewUrl, setImagePreviewUrl] = useState("");
   const [plagPercentage, setPlagPercentage] = useState(null);
   const [isSubmitEnabled, setIsSubmitEnabled] = useState(false);
+  const quillRef = useRef(null);
 
   const defaultImageUrl =
     "https://res.cloudinary.com/dortbtymj/image/upload/v1726523224/default_img_blog_bineg4.webp";
+
+  useEffect(() => {
+    if (!quillRef.current) {
+      quillRef.current = new Quill("#editor", {
+        theme: "snow",
+        modules: {
+          toolbar: [
+            [{ header: [1, 2, false] }],
+            ["bold", "italic", "underline"],
+            ["image", "code-block"],
+            ["clean"],
+          ],
+        },
+      });
+
+      quillRef.current.on("text-change", () => {
+        const content = quillRef.current.root.innerHTML;
+        setPlagPercentage(null);
+        setIsSubmitEnabled(false);
+      });
+    }
+  }, []);
 
   const convertBase64 = (file) => {
     return new Promise((resolve, reject) => {
@@ -26,10 +51,22 @@ export default function NewBlog() {
     });
   };
 
+  const handleCheckPlagiarism = () => {
+    const title = document.getElementById("title").value;
+    const content = quillRef.current.root.innerHTML;
+    checkPlagiarism(title, content); // Pass content correctly
+  };
+
   const checkPlagiarism = async (title, content) => {
     try {
       if (title != "" && content != "") {
         setLoading(true);
+        if (content.length > 2500) {
+          content.slice(0, 1999);
+        }
+
+        // console.log(newContent);
+
         const response = await axios.post("/blogs/plagiarism", {
           title,
           content,
@@ -78,6 +115,7 @@ export default function NewBlog() {
   const onSubmit = async (data) => {
     setLoading(true);
     try {
+      const content = quillRef.current.root.innerHTML;
       let imageBase64 = imageFile
         ? await convertBase64(imageFile)
         : defaultImageUrl;
@@ -85,7 +123,7 @@ export default function NewBlog() {
       const user = JSON.parse(Cookies.get("user"));
       const response = await axios.post("/blogs", {
         title: data.title,
-        content: data.content,
+        content: content,
         blogImageUrl: imageBase64,
         author: user._id,
         plagPercentage: plagPercentage,
@@ -105,6 +143,7 @@ export default function NewBlog() {
       setImagePreviewUrl("");
       setPlagPercentage(null);
       setIsSubmitEnabled(false);
+      quillRef.current.setText("");
     } catch (error) {
       console.error("Submit failed:", error);
       toast.error("Blog creation unsuccessful!", {
@@ -186,17 +225,10 @@ export default function NewBlog() {
                 >
                   Content
                 </label>
-                <textarea
-                  id="content"
-                  name="content"
-                  {...register("content", { required: "Content is required" })}
-                  className="border border-gray-300 p-2 w-full hover:bg-white hover:text-black text-white"
-                  placeholder="Blog Content"
-                  onChange={(e) => {
-                    setPlagPercentage(null);
-                    setIsSubmitEnabled(false);
-                  }}
-                />
+                <div
+                  id="editor"
+                  className="border border-gray-300 p-2 h-64"
+                ></div>
               </div>
 
               <div
@@ -237,6 +269,7 @@ export default function NewBlog() {
                   accept="image/*"
                 />
               </div>
+
               <div className="mt-4">
                 {imagePreviewUrl && !loading && (
                   <div>
@@ -261,12 +294,7 @@ export default function NewBlog() {
                 </button>
                 <button
                   type="button"
-                  onClick={() =>
-                    checkPlagiarism(
-                      document.getElementById("title").value,
-                      document.getElementById("content").value
-                    )
-                  }
+                  onClick={handleCheckPlagiarism}
                   className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 mt-4"
                 >
                   Check Plagiarism

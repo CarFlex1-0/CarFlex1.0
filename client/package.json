@@ -50,6 +50,7 @@
     "leva": "^0.9.35",
     "mui-file-dropzone": "^4.0.2",
     "postcss": "^8.4.45",
+    "quill": "^2.0.2",
     "r3f-perf": "^7.2.1",
     "react": "^18.3.1",
     "react-chartjs-2": "^5.2.0",

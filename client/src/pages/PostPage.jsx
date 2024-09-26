@@ -105,13 +105,13 @@ const PostPage = () => {
 
   return (
     <main className="p-3 flex flex-col max-w-7xl mx-auto min-h-screen md:mb-12">
+      {isDashboard && <Carousel items={recentBlogs} title="Recently Posted" />}
       <Carousel
         items={blogs}
         title={isDashboard ? "All Blogs" : "Author's Blogs"}
         onDelete={deleteBlog}
         onUpdate={updateBlog}
       />
-      {isDashboard && <Carousel items={recentBlogs} title="Recent Posted" />}
     </main>
   );
 };
