@@ -18,6 +18,7 @@ export default defineConfig({
       '@hooks': '/src/hooks',
       '@pages': '/src/pages',
       '@contexts': '/src/contexts',
+      '@ui': '/@/components/ui',
     },
   },
   base: './',

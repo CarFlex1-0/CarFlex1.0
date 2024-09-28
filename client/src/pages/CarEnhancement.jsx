@@ -4,7 +4,7 @@ import TravelForm from "@components/TravelForm";
 import Suggestions from "@components/Suggestions";
 import axios from "@services/axios";
 import { useAuth } from "@contexts/auth_context";
-import { BackgroundBeams } from "../../@/components/ui/background-beams";
+import { BackgroundBeams } from "@ui/background-beams";
 
 const CarEnhancements = () => {
   const [history, setHistory] = useState([]);
