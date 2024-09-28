@@ -22,6 +22,7 @@ const answerRoutes = require('./routes/answer');
 const userRoutes = require('./routes/user')
 const paymentRoutes =require('./routes/payment')
 const subRoutes = require('./routes/subscription')
+const aiRoutes = require('./routes/ai_model')
 const app = express();
 
 dotenv.config();
@@ -67,6 +68,7 @@ app.use('/api/answer', answerRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/', subRoutes);
+app.use("/api/ai", aiRoutes);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
