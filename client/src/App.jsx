@@ -29,6 +29,7 @@ import SubscriptionSelect from "@components/SubscriptionSelect";
 import Success from "@components/Success";
 import Failure from "@components/Failure";
 import AuthorPostPage from "@pages/AuthorPostPage";
+import CarEnhancements from "@pages/CarEnhancement";
 
 function App() {
   return (
@@ -47,13 +48,14 @@ function App() {
       />
       <AuthProvider>
         <BrowserRouter>
-          <StickyNavbar />
-          <Background />
+          {/* <StickyNavbar /> */}
+          {/* <Background /> */}
           <div className="flex-grow">
             {" "}
             {/* Allow content to grow */}
             <Routes>
               <Route path="/" element={<Welcome />} />
+               <Route path="/car-enhancements" element={<CarEnhancements />} />
               {/* Protected Route */}
               <Route
                 path="/user-dashboard"
@@ -215,7 +217,7 @@ function App() {
               <Route path="/failure" element={<ProtectedRoute> <Failure /></ProtectedRoute>} />
             </Routes>
           </div>
-          <Footer />
+          {/* <Footer /> */}
         </BrowserRouter>
       </AuthProvider>
     </div>

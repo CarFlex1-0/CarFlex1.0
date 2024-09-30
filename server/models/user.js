@@ -55,7 +55,11 @@ const userSchema = mongoose.Schema(
       expirationDate:{
         type: Date,
       },
-    }
+    },
+    chatHistory:[{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Chat",
+    }]
   },
 
   {
