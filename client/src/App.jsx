@@ -30,6 +30,7 @@ import Success from "@components/Success";
 import Failure from "@components/Failure";
 import AuthorPostPage from "@pages/AuthorPostPage";
 import CarEnhancements from "@pages/CarEnhancement";
+import CarPreview from "@components/car_model/CarPreview";
 
 function App() {
   return (
@@ -201,8 +202,19 @@ function App() {
                 path="/model"
                 element={
                   <ProtectedRoute>
-                    <div className="flex justify-center items-center h-[80vh] z-50">
+                    <div className="flex justify-center items-center h-[80vh]">
                       <ThreeDModel />
+                    </div>
+                  </ProtectedRoute>
+                }
+              />
+              {/* 3D Model User Route - Combine With Metric */}
+              <Route
+                path="/model/civic"
+                element={
+                  <ProtectedRoute>
+                    <div className="flex justify-center items-center">
+                      <CarPreview/>
                     </div>
                   </ProtectedRoute>
                 }
