@@ -86,8 +86,6 @@ const CarEnhancements = () => {
 
           {isLoading ? (
             <div className="mt-6 flex justify-center items-center">
-              <span className="loading loading-dots loading-sm me-4 bg-gradient-to-r from-gray-400 to-gray-600"></span>
-              <span className="loading loading-dots loading-md me-4 bg-gradient-to-r from-gray-400 to-gray-600"></span>
               <span className="loading loading-dots loading-lg me-4 bg-gradient-to-r from-gray-400 to-gray-600"></span>
             </div>
           ) : suggestions.carEnhancements ? (

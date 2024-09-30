@@ -30,7 +30,10 @@ import Success from "@components/Success";
 import Failure from "@components/Failure";
 import AuthorPostPage from "@pages/AuthorPostPage";
 import CarEnhancements from "@pages/CarEnhancement";
-
+import  AdminDashboard   from "@pages/AdminDashboard";
+import Users from "@components/admin/Users";
+import  AdminDashoardAnalytics  from "@components/admin/Dashoard";
+import Upload3DModel from "@components/admin/Upload3DModel";
 function App() {
   return (
     <div className="App flex flex-col min-h-screen">
@@ -55,7 +58,7 @@ function App() {
             {/* Allow content to grow */}
             <Routes>
               <Route path="/" element={<Welcome />} />
-               <Route path="/car-enhancements" element={<CarEnhancements />} />
+              <Route path="/car-enhancements" element={<CarEnhancements />} />
               {/* Protected Route */}
               <Route
                 path="/user-dashboard"
@@ -208,13 +211,39 @@ function App() {
                 }
               />
 
-
-
-
-            {/* Subscription Routes */}
-              <Route path="/subscription" element={<ProtectedRoute> <SubscriptionSelect /></ProtectedRoute>} />
-              <Route path="/success" element={<ProtectedRoute> <Success /></ProtectedRoute>} />
-              <Route path="/failure" element={<ProtectedRoute> <Failure /></ProtectedRoute>} />
+              {/* Subscription Routes */}
+              <Route
+                path="/subscription"
+                element={
+                  <ProtectedRoute>
+                    {" "}
+                    <SubscriptionSelect />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/success"
+                element={
+                  <ProtectedRoute>
+                    {" "}
+                    <Success />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/failure"
+                element={
+                  <ProtectedRoute>
+                    {" "}
+                    <Failure />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="admin" element={<AdminDashboard />}>
+                <Route path="dashboard" element={<AdminDashoardAnalytics />} />
+                <Route path="users" element={<Users />} />
+                <Route path="upload-3d-model" element={<Upload3DModel />} />
+              </Route>
             </Routes>
           </div>
           {/* <Footer /> */}
