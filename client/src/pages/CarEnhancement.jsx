@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import Sidebar from "@components/Sidebar";
-import TravelForm from "@components/TravelForm";
+import Sidebar from "@components/journey-suggestion/Sidebar";
+import TravelForm from "@components/journey-suggestion/TravelForm";
 import Suggestions from "@components/Suggestions";
 import axios from "@services/axios";
 import { useAuth } from "@contexts/auth_context";
@@ -15,7 +15,7 @@ const CarEnhancements = () => {
     weatherConditions: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const { user } = useAuth();
+  const { user, drawerState } = useAuth();
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -73,9 +73,9 @@ const CarEnhancements = () => {
   };
 
   return (
-    <>
-      <BackgroundBeams className="absolute inset-0 pointer-events-none z-0" />
-      <div className="flex h-screen bg-gray-700">
+    <div className={drawerState ? "blur bg-blue-950" : ""}>
+      {/* <BackgroundBeams className="absolute inset-0 pointer-events-none z-0" /> */}
+      <div className="flex h-screen">
         <Sidebar
           key={history.length}
           history={history}
@@ -92,10 +92,16 @@ const CarEnhancements = () => {
             <Suggestions suggestions={suggestions} />
           ) : (
             selectedChat && (
-              <div className="mt-6 p-4 bg-slate-800 text-slate-200 rounded-lg shadow-lg">
-                <h2 className="text-2xl font-semibold mb-4">
-                  {selectedChat.title}
-                </h2>
+              <div className="mt-6 p-4 backdrop-blur-md bg-white/10 text-slate-200 rounded-lg shadow-lg">
+                <div className="flex justify-between">
+                  <h2 className="text-2xl font-semibold mb-4">
+                    {selectedChat.title}
+                  </h2>
+                  <p className="text-md mt-1 px-3">
+                    <strong>Date:</strong>{" "}
+                    {new Date(selectedChat.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
                 <p className="text-md mb-4 overflow-wrap break-word">
                   <strong>Asked:</strong>{" "}
                   {selectedChat.prompt
@@ -115,16 +121,12 @@ const CarEnhancements = () => {
                   <strong>Weather Conditions:</strong>{" "}
                   {selectedChat.response?.weatherConditions || "N/A"}
                 </p>
-                <p className="text-md">
-                  <strong>Date:</strong>{" "}
-                  {new Date(selectedChat.createdAt).toLocaleDateString()}
-                </p>
               </div>
             )
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

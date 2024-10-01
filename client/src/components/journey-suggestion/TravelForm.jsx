@@ -18,12 +18,17 @@ const TravelForm = ({ onSubmit }) => {
   };
 
   return (
-    <div className="flex">
-      <div className="shadow-xl rounded-lg p-8 ">
-        <h2 className="text-3xl font-bold text-white text-center mb-8">Plan Your Journey</h2>
-        
+    <div className="flex justify-center ">
+      <div className="shadow-xl rounded-lg p-8 backdrop-blur-md bg-white/10">
+        <h2 className="text-3xl font-bold text-white text-center mb-8">
+          Plan Your Journey
+        </h2>
+
         {/* Form */}
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 md:grid-cols-3 gap-6"
+        >
           {/* Start Location */}
           <div className="relative flex items-center space-x-3">
             <FaMapMarkerAlt className="text-white/70" />
@@ -65,7 +70,7 @@ const TravelForm = ({ onSubmit }) => {
 
           {/* Travel Date */}
           <div className="relative flex items-center md:col-span-2 space-x-3 mt-4 md:mt-0">
-            <FaCalendarDays className="text-white/70"/>
+            <FaCalendarDays className="text-white/70" />
             <input
               type="date"
               value={travelDate}
@@ -79,7 +84,7 @@ const TravelForm = ({ onSubmit }) => {
           <div className="flex rounded-lg justify-end items-center mt-4 md:mt-0 md:col-span-1">
             <button
               type="submit"
-              className="w-full rounded-lg bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-3 px-8  shadow-lg hover:shadow-2xl hover:scale-105 transform transition duration-300"
+              className="w-full rounded-lg bg-blue-900 glass text-white py-3 px-8  shadow-lg hover:shadow-2xl hover:scale-105 transform transition duration-300"
             >
               Get Suggestions
             </button>

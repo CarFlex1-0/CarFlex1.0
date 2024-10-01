@@ -89,7 +89,7 @@ const BarChart = ({ data, categories, barColor, heading, headerText }) => {
 
   return (
     <Card
-      className="backdrop-blur-md bg-white/10 rounded-lg shadow-lg p-4 drawer-overlay transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl"
+      className="backdrop-blur-md bg-white/10 rounded-lg shadow-lg p-4  transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl"
       floated={false}
       shadow={true}
     >

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route  } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import React from "react";
 import StickyNavbar from "@components/StickyNavbar";
 import Background from "@components/Background";
@@ -30,10 +30,13 @@ import Success from "@components/Success";
 import Failure from "@components/Failure";
 import AuthorPostPage from "@pages/AuthorPostPage";
 import CarEnhancements from "@pages/CarEnhancement";
-import  AdminDashboard   from "@pages/AdminDashboard";
+import AdminDashboard from "@pages/AdminDashboard";
 import Users from "@components/admin/Users";
-import  AdminDashoardAnalytics  from "@components/admin/Dashoard";
+import AdminDashoardAnalytics from "@components/admin/Dashoard";
 import Upload3DModel from "@components/admin/Upload3DModel";
+import UserDashboard from "@pages/UserDashboard";
+import ForumCommunity from "@pages/ForumCommunity";
+import ForumPage from "@pages/ForumPage";
 function App() {
   return (
     <div className="App flex flex-col min-h-screen">
@@ -243,6 +246,14 @@ function App() {
                 <Route path="dashboard" element={<AdminDashoardAnalytics />} />
                 <Route path="users" element={<Users />} />
                 <Route path="upload-3d-model" element={<Upload3DModel />} />
+              </Route>
+
+              <Route path="user" element={<UserDashboard />}>
+                <Route path="car-enhancements" element={<CarEnhancements />} />
+                <Route path="users" element={<Users />} />
+                {/* Forum User Routes */}
+                <Route path="forum" element={<ForumCommunity />} />
+
               </Route>
             </Routes>
           </div>

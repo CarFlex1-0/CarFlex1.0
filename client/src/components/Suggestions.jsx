@@ -1,5 +1,5 @@
 import React from 'react';
-import TypingEffect from './TypingEffect';
+import TypingEffect from './journey-suggestion/TypingEffect';
 
 const Suggestions = ({ suggestions }) => {
   const { carEnhancements = '', terrainAnalysis = '', weatherConditions = '' } = suggestions;
