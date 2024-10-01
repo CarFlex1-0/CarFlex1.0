@@ -36,7 +36,8 @@ import AdminDashoardAnalytics from "@components/admin/Dashoard";
 import Upload3DModel from "@components/admin/Upload3DModel";
 import UserDashboard from "@pages/UserDashboard";
 import ForumCommunity from "@pages/ForumCommunity";
-import ForumPage from "@pages/ForumPage";
+import ForumPage from "@pages/ForumPage";import CarPreview from "@components/car_model/CarPreview";
+
 function App() {
   return (
     <div className="App flex flex-col min-h-screen">
@@ -207,8 +208,19 @@ function App() {
                 path="/model"
                 element={
                   <ProtectedRoute>
-                    <div className="flex justify-center items-center h-[80vh] z-50">
+                    <div className="flex justify-center items-center h-[80vh]">
                       <ThreeDModel />
+                    </div>
+                  </ProtectedRoute>
+                }
+              />
+              {/* 3D Model User Route - Combine With Metric */}
+              <Route
+                path="/model/civic"
+                element={
+                  <ProtectedRoute>
+                    <div className="flex justify-center items-center">
+                      <CarPreview/>
                     </div>
                   </ProtectedRoute>
                 }

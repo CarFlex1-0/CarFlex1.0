@@ -3,7 +3,7 @@ const User = require("../models/user");
 const cloudinary = require("../config/cloudinary_config");
 const { body, validationResult } = require("express-validator");
 const mongoose = require("mongoose");
-
+const { checkPlagiarism } = require("../services/plagiarism"); // Import the plagiarism service
 // Create new Blog
 // controllers/blog_controllers.js
 
@@ -16,12 +16,25 @@ const createBlog = async (req, res, next) => {
   try {
     console.log("Request Body:", req.body); // Log the request body
 
-    const { title, content, blogImageUrl, author } = req.body; // Extract author from the request body
+    const { title, content, blogImageUrl, author, plagPercentage } = req.body;
 
     if (!title || !content || !author) {
       return res
         .status(400)
         .json({ error: "Title, content, and author are required." });
+    }
+
+    if (isNaN(plagPercentage)) {
+      console.error("Plagiarism percentage is NaN:", percentString);
+      return res.status(400).json({ error: "Invalid plagiarism percentage." });
+    }
+
+    // Check if plagPercentage is greater than or equal to 30%
+    if (plagPercentage >= 30) {
+      return res.status(400).json({
+        error:
+          "Plagiarism percentage is too high. Please ensure it is below 30%.",
+      });
     }
 
     let blogImageUrlData = null;
@@ -40,18 +53,18 @@ const createBlog = async (req, res, next) => {
     const newBlog = await Blog.create({
       title,
       content,
-      author, // Use the author ID from the request
+      author,
       blogImageUrl: blogImageUrlData,
-      plagPercentage: 0,
+      plagPercentage, // Use the parsed number here
     });
 
-    // Add the new blog's ID to the user's blogsList
     await User.findByIdAndUpdate(
       author,
       { $push: { blogsList: newBlog._id } },
       { new: true }
     );
 
+    console.log("New Blog Created:", newBlog);
     res.status(201).json({
       success: true,
       newBlog,
@@ -62,10 +75,38 @@ const createBlog = async (req, res, next) => {
   }
 };
 
+const plageValue = async (req, res) => {
+  try {
+    const { title, content } = req.body;
+    // Call plagiarism check before creating the blog
+    console.log("Checking for plagiarism...");
+    const plagResult = await checkPlagiarism(content, title);
+    console.log("Plagiarism Check Result:", plagResult);
+
+    // Extract and parse the plagiarism percentage
+    const percentString = plagResult.Plagiarised; // Ensure you are referencing the right key
+    const plagPercentage = parseFloat(percentString.replace("%", "")); // Remove '%' and convert to float
+
+    if (isNaN(plagPercentage)) {
+      console.error("Plagiarism percentage is NaN:", percentString);
+      return res.status(400).json({ error: "Invalid plagiarism percentage." });
+    }
+
+    return res.json({ plagPercentage: plagPercentage });
+  } catch (e) {
+    console.error("Error checking for plagiarism:", e);
+    res.status(500).json({ error: "Failed to check for plagiarism." });
+  }
+};
+
 // Get all blog posts
 const getAllBlogs = async (req, res) => {
   try {
-    const blogs = await Blog.find().populate("author", "username");
+    const blogs = await Blog.find().populate(
+      "author",
+      "username bio imageUrl.url"
+    );
+
     res.status(200).json(blogs);
   } catch (error) {
     res.status(500).json({
@@ -80,7 +121,7 @@ const getBlogById = async (req, res) => {
   try {
     const blog = await Blog.findById(req.params.id).populate(
       "author",
-      "username"
+      "username bio imageUrl.url"
     );
     if (!blog) return res.status(404).json({ message: "Blog not found" });
     res.status(200).json(blog);
@@ -264,4 +305,5 @@ module.exports = {
   likeBlogById,
   removeLikeBlogById,
   getBlogsByAuthor,
+  plageValue,
 };

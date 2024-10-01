@@ -1,6 +1,10 @@
 // Start Point
 import React from "react";
 import { Link } from "react-router-dom";
+import Hero from "@components/Dashboard/Hero";
+import About from "@components/Dashboard/About";
+import  HowItWorks from "@components/Dashboard/HowItWorks";
+import { Pricing } from "@components/Dashboard/Pricing";
 const Welcome = () => {
   // Define button data
   const buttons = [
@@ -9,22 +13,28 @@ const Welcome = () => {
   ];
 
   return (
-    <div className="w-full min-h-screen flex flex-col items-center justify-center p-4">
-      <div className="prose lg:prose-xl text-center mb-8">
-        <h2>Welcome to CarFlex !</h2>
-      </div>
-      <div className="flex gap-4 items-center">
+        <>
+    
+       <Hero />
+      
+      <div className="flex justify-center gap-4 items-center">
         {buttons.map((button, index) => (
           <Link
             key={index}
             to={button.to}
-            className="btn glass btn-accent text-white px-4 py-2 rounded"
+            className="btn glass btn-accent text-white ml-10  px-4 py-2 rounded btn-wide"
           >
             {button.label}
           </Link>
         ))}
       </div>
-    </div>
+
+      <About />
+      <HowItWorks />
+      <Pricing/>
+
+    
+      </>
   );
 };
 
