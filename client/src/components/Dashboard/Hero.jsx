@@ -2,7 +2,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button, Typography, AppBar, Toolbar } from '@mui/material';
-
+// import {ImagePath} from "public/assets/images/"
 const Hero = () => {
 
   return (
@@ -44,7 +44,7 @@ const Hero = () => {
       <div className="z-10">
         <div className="hidden lg:flex flex-row flex-wrap gap-8 relative w-[700px] h-[500px]">
           <img
-            src={"./assets/images/hero-car.png"}
+            src="public/assets/images/hero-car.png"
             className="w-full max-w-lg h-auto object-contain"
             alt="Hero Car"
           />

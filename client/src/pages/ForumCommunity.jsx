@@ -27,7 +27,7 @@ const ForumCommunity = () => {
   const [newAnswer, setNewAnswer] = useState("");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [userId, setUserId] = useState("");
-  const {user} = useAuth(); // Replace with actual user ID logic
+  const { user, drawerState } = useAuth(); // Replace with actual user ID logic
   useEffect(() => {
     fetchThreads();
   }, []);
@@ -117,7 +117,9 @@ const ForumCommunity = () => {
   };
 
   return (
-    <div className="min-h-screen backdrop-blur-md bg-white/10 p-4">
+    <div
+      className={drawerState ? "blur bg-blue-950 cursor-none" : "min-h-screen backdrop-blur-md bg-white/10 p-4"}
+    >
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <Typography variant="h3" color="blue-gray" className="font-bold">

@@ -19,6 +19,7 @@ export default defineConfig({
       '@pages': '/src/pages',
       '@contexts': '/src/contexts',
       '@ui': '/@/components/ui',
+      '@images': '/public/assets/images',
     },
   },
   base: './',

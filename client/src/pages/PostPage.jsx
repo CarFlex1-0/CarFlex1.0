@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 
 const PostPage = () => {
   const location = useLocation();
-  const isDashboard = location.pathname === "/blog/dashboard";
+  const isDashboard = location.pathname === "/user/blog-dashboard";
   const authorId = location.pathname.split("/")[3];
 
   const [loading, setLoading] = useState(true);

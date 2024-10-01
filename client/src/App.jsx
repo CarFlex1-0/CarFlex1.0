@@ -220,7 +220,7 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <div className="flex justify-center items-center">
-                      <CarPreview/>
+                      <CarPreview />
                     </div>
                   </ProtectedRoute>
                 }
@@ -261,11 +261,17 @@ function App() {
               </Route>
 
               <Route path="user" element={<UserDashboard />}>
+                <Route path="dashboard" element={<UserDashboard />} />
+                <Route path="customize-3d-model" element={<CarPreview />} />
                 <Route path="car-enhancements" element={<CarEnhancements />} />
+                <Route path="blog-dashboard" element={<PostPage />} />
+                <Route path="blog-create" element={<NewBlog />} />
+                <Route path="blog-actions-dashboard" element={<AuthorPostPage />} />
+                
+
                 <Route path="users" element={<Users />} />
                 {/* Forum User Routes */}
                 <Route path="forum" element={<ForumCommunity />} />
-
               </Route>
             </Routes>
           </div>
