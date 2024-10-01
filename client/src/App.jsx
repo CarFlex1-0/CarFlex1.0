@@ -32,7 +32,7 @@ import AuthorPostPage from "@pages/AuthorPostPage";
 import CarEnhancements from "@pages/CarEnhancement";
 import AdminDashboard from "@pages/AdminDashboard";
 import Users from "@components/admin/Users";
-import AdminDashoardAnalytics from "@components/admin/Dashoard";
+import AdminDashoardAnalytics from "@components/admin/Dashboard";
 import Upload3DModel from "@components/admin/Upload3DModel";
 import UserDashboard from "@pages/UserDashboard";
 import ForumCommunity from "@pages/ForumCommunity";
