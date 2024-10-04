@@ -4,10 +4,15 @@ import { CustomizationProvider } from "@contexts/Customization";
 import { Suspense } from "react";
 import { Stats } from "@react-three/drei";
 import { Leva } from "leva";
-
+import { useAuth } from "@contexts/auth_context";
 function CarPreview() {
+  const { drawerState } = useAuth();
   return (
-    <div className="App w-screen h-screen p-0 m-0">
+    <div
+      className={
+        drawerState ? "blur bg-blue-950" : "App w-screen h-screen p-0 m-0"
+      }
+    >
       <CustomizationProvider>
         <Suspense
           fallback={

@@ -6,7 +6,7 @@ import { Button, Typography, AppBar, Toolbar } from '@mui/material';
 const Hero = () => {
 
   return (
-    <section className="container grid lg:grid-cols-2 place-items-center py-12 md:py-12 gap-10 ps-20">
+    <section className="container grid lg:grid-cols-2 place-items-center py-12 md:py-12 gap-10 ps-20 ">
       {/* Text Section */}
       <div className="text-center lg:text-start space-y-6">
         <main className="text-5xl md:text-6xl font-bold">
@@ -29,7 +29,7 @@ const Hero = () => {
         </Typography>
 
         <div className="space-y-4 md:space-y-0 md:space-x-4">
-          <Link to="/#">
+          <Link to="user-dashboard">
             <Button
               variant="outlined"
               className="text-gray-600 w-full md:w-1/3 border-gray-600"

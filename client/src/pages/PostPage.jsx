@@ -4,12 +4,12 @@ import Carousel from "@components/Carousel";
 import "../../public/stylesheets/spinner.css";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
-
+import { useAuth } from "@contexts/auth_context";
 const PostPage = () => {
   const location = useLocation();
   const isDashboard = location.pathname === "/user/blog-dashboard";
   const authorId = location.pathname.split("/")[3];
-
+  const { drawerState } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [blogs, setBlogs] = useState([]);
@@ -104,7 +104,7 @@ const PostPage = () => {
   console.log("Blogs loaded:", blogs);
 
   return (
-    <main className="p-3 flex flex-col max-w-7xl mx-auto min-h-screen md:mb-12">
+    <main className={drawerState ? "blur bg-blue-950": "p-3 flex flex-col max-w-7xl mx-auto min-h-screen md:mb-12"}>
       {isDashboard && <Carousel items={recentBlogs} title="Recently Posted" />}
       <Carousel
         items={blogs}

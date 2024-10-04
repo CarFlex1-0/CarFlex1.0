@@ -36,9 +36,11 @@ import AdminDashoardAnalytics from "@components/admin/Dashboard";
 import Upload3DModel from "@components/admin/Upload3DModel";
 import UserDashboard from "@pages/UserDashboard";
 import ForumCommunity from "@pages/ForumCommunity";
-import ForumPage from "@pages/ForumPage";import CarPreview from "@components/car_model/CarPreview";
+
+import CarPreview from "@components/car_model/CarPreview";
 
 function App() {
+  
   return (
     <div className="App flex flex-col min-h-screen">
       <ToastContainer
@@ -151,7 +153,7 @@ function App() {
               />
               {/* Forum User Routes */}
               <Route
-                path="/form"
+                path="/forum"
                 element={
                   <ProtectedRoute>
                     <ThreadsList />
@@ -261,15 +263,19 @@ function App() {
               </Route>
 
               <Route path="user" element={<UserDashboard />}>
-                <Route path="dashboard" element={<UserDashboard />} />
+                <Route path="user-dashboard" element={<Dashboard />} />
                 <Route path="customize-3d-model" element={<CarPreview />} />
                 <Route path="car-enhancements" element={<CarEnhancements />} />
                 <Route path="blog-dashboard" element={<PostPage />} />
                 <Route path="blog-create" element={<NewBlog />} />
-                <Route path="blog-actions-dashboard" element={<AuthorPostPage />} />
-                
+                <Route
+                  path="blog-actions-dashboard"
+                  element={<AuthorPostPage />}
+                />
+                <Route path="subscription" element={<SubscriptionSelect />} />
+                <Route path="profile-page" element={<ProfilePage />} />
+                <Route path="feedback" element={<FeedbackPage />} />
 
-                <Route path="users" element={<Users />} />
                 {/* Forum User Routes */}
                 <Route path="forum" element={<ForumCommunity />} />
               </Route>

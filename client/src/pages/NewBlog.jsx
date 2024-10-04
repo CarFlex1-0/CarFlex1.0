@@ -5,7 +5,7 @@ import { Slide } from "react-toastify";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Cookies from "js-cookie";
-
+import { useAuth } from "@contexts/auth_context";
 export default function NewBlog() {
   const { register, handleSubmit, reset } = useForm();
   const [loading, setLoading] = useState(false);
@@ -13,7 +13,7 @@ export default function NewBlog() {
   const [imagePreviewUrl, setImagePreviewUrl] = useState("");
   const [plagPercentage, setPlagPercentage] = useState(null);
   const [isSubmitEnabled, setIsSubmitEnabled] = useState(false);
-
+  const { drawerState } = useAuth();
   const defaultImageUrl =
     "https://res.cloudinary.com/dortbtymj/image/upload/v1726523224/default_img_blog_bineg4.webp";
 
@@ -148,7 +148,7 @@ export default function NewBlog() {
   };
 
   return (
-    <>
+    <div className={drawerState ? "blur bg-blue-950" : ""}>
       <div className="flex justify-center flex-col m-8">
         <div>
           <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-center text-gray-900 dark:text-white">
@@ -285,6 +285,6 @@ export default function NewBlog() {
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 }

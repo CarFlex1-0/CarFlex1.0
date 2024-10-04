@@ -49,15 +49,15 @@ const SignUp = () => {
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-purple-50 px-4">
+    <div className="min-h-screen flex justify-center items-center bg-gradient-to-br from-blue-950 to-indigo-950 bg-opacity-100 px-4">
       <form
-        className="bg-white p-8 shadow-lg rounded-lg max-w-md w-full"
+        className="backdrop-blur-md bg-white/10 rounded-lg shadow-lg p-8 max-w-md w-full"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <h2 className="text-3xl font-bold mb-6 text-center text-purple-700">
+        <h2 className="text-3xl font-bold mb-6 text-center text-white">
           Create an Account
         </h2>
-         
+
         <div className="mb-5">
           <label>First Name</label>
           <label className="input input-bordered flex items-center gap-2">
@@ -165,7 +165,7 @@ const SignUp = () => {
         </div>
         <button
           type="submit"
-          className="btn btn-primary w-full flex items-center justify-center"
+          className="btn btn-primary w-full text-white flex items-center justify-center"
           disabled={loading}
         >
           {loading ? (
@@ -174,9 +174,9 @@ const SignUp = () => {
             "Create Account"
           )}
         </button>
-        <p className="text-sm text-center text-gray-500 mt-6">
+        <p className="text-sm text-center text-white mt-6">
           Already have an account?{" "}
-          <Link to="/sign-in" className="text-purple-700 underline">
+          <Link to="/sign-in" className="text-white underline">
             Sign In
           </Link>
         </p>

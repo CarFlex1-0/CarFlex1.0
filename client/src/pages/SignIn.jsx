@@ -5,7 +5,7 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai"; // Loading icon
 import { Slide, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate, Link } from "react-router-dom";
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 import { useAuth } from "../contexts/auth_context";
 const SignIn = () => {
   const { user, setUser } = useAuth();
@@ -25,18 +25,20 @@ const SignIn = () => {
       const response = await axios.post("user/login", data);
       console.log("User (Cookie) signed in:", response.data);
 
-      Cookies.set('token', response.data.token, { expires: 30 }); // Adjust expiration as needed
-      Cookies.set('user', JSON.stringify(response.data), { expires: 30 });
-      // TODO: AHMAD SE CHECKK KRWANA 
-      await setUser(response.data) 
-      console.log("User (Auth) signed in:", user) // Giving Null
+      Cookies.set("token", response.data.token, { expires: 30 }); // Adjust expiration as needed
+      Cookies.set("user", JSON.stringify(response.data), { expires: 30 });
+      // TODO: AHMAD SE CHECKK KRWANA
+      await setUser(response.data);
+      console.log("User (Auth) signed in:", user); // Giving Null
       toast.success("Signed in successfully!", {
         position: "top-left",
         autoClose: 5000,
         theme: "dark",
         transition: Slide,
       });
-      navigate("/user-dashboard");
+      navigate("/user/customize-3d-model", { replace: true });
+
+
     } catch (error) {
       const errorMessage =
         "Sign In failed. Please check your credentials and try again.";
@@ -54,19 +56,19 @@ const SignIn = () => {
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gray-50 px-4">
+    <div className="min-h-screen flex justify-center items-center bg-gradient-to-br from-blue-950 to-indigo-950 bg-opacity-100 px-4">
       <form
-        className="bg-white p-8 shadow-lg rounded-lg max-w-md w-full"
+        className="backdrop-blur-md bg-white/10 rounded-lg shadow-lg p-8 max-w-md w-full"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <h2 className="text-3xl font-bold mb-6 text-center text-purple-700">
+        <h2 className="text-3xl font-bold mb-6 text-center text-white">
           Sign In
         </h2>
         {errorMessage && (
           <p className="text-red-600 mb-4 text-center">{errorMessage}</p>
         )}
         <div className="mb-5">
-          <label className="block  text-gray-700 mb-2">Email Address</label>
+          <label className="block  text-white mb-2">Email Address</label>
           <input
             type="email"
             {...register("email", {
@@ -86,7 +88,7 @@ const SignIn = () => {
           )}
         </div>
         <div className="mb-5">
-          <label className="block text-gray-700 mb-2">Password</label>
+          <label className="block text-white mb-2">Password</label>
           <input
             type="password"
             {...register("password", { required: "Password is required" })}
@@ -107,7 +109,7 @@ const SignIn = () => {
               className="mr-2 checkbox"
               id="rememberMe"
             />
-            <label htmlFor="rememberMe" className="text-gray-700">
+            <label htmlFor="rememberMe" className="text-white">
               Remember Me
             </label>
           </div>
@@ -126,13 +128,12 @@ const SignIn = () => {
             "Sign In"
           )}
         </button>
-        <p className="text-sm text-center text-gray-500 mt-6">
+        <p className="text-sm text-center text-white mt-6">
           Don't have an account?{" "}
           <Link to="/sign-up" className="text-purple-700 underline">
             Sign Up
           </Link>
         </p>
-       
       </form>
     </div>
   );

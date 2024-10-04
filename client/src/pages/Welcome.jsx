@@ -13,11 +13,10 @@ const Welcome = () => {
   ];
 
   return (
-        <>
-    
-       <Hero />
-      
-      <div className="flex justify-center gap-4 items-center">
+    <div className="bg-gradient-to-br from-blue-950 to-indigo-950 bg-opacity-100w">
+      <Hero />
+
+      <div className="flex justify-center gap-4 items-center ">
         {buttons.map((button, index) => (
           <Link
             key={index}
@@ -31,10 +30,8 @@ const Welcome = () => {
 
       <About />
       <HowItWorks />
-      <Pricing/>
-
-    
-      </>
+      <Pricing />
+    </div>
   );
 };
 
