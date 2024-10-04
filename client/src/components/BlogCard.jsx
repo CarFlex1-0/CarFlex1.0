@@ -8,7 +8,7 @@ import { MdDeleteForever } from "react-icons/md";
 
 const BlogCard = ({ item, onDelete }) => {
   const location = useLocation();
-  const isDashboard = location.pathname === "/blog/actions/dashboard"; // Check if the URL is the dashboard
+  const isDashboard = location.pathname === "/user/blog-actions-dashboard"; // Check if the URL is the dashboard
   const navigate = useNavigate();
 
   const handleDelete = async () => {
