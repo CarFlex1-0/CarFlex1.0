@@ -8,16 +8,6 @@ import {
   Tooltip,
   Bar,
   Legend,
-  LineChart,
-  Line,
-  RadialBarChart,
-  RadialBar,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  Radar,
-  ResponsiveContainer,
 } from "recharts";
 import axios from "@services/axios";
 
@@ -37,7 +27,7 @@ const Configurator = () => {
     fenderColors,
     diffuserColors,
     roofColors,
-    trunkColors,
+    trunkColors, 
     // CarBody
     carBodyClick,
     setCarBodyClick,
@@ -233,114 +223,35 @@ const Configurator = () => {
     },
   ];
 
-  const getMaxValue = (dataKey) => {
-    return Math.max(...data.map(item => Math.max(item[dataKey], item['New'])));
-  };
-
-  const getRadialDomain = () => {
-    const maxCC = Math.max(metrics.stockCC, metrics.newCC);
-    if (maxCC > 3000) {
-      return [0, Math.ceil(maxCC / 1000) * 1000];
-    }
-    return [0, 3000];
-  };
-
-  const style = {
-    top: '30%',
-    right: 0,
-    transform: 'translate(0, -50%)',
-    lineHeight: '24px',
-  };
-
-  const CustomTooltip = ({ active, payload }) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      return (
-        <div className="custom-tooltip" style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)', padding: '10px', border: '1px solid #ccc' }}>
-          <p className="label" style={{ color: '#fff' }}>{`${data.name}`}</p>
-          <p style={{ color: '#8884d8' }}>{`Stock: ${data.Stock}`}</p>
-          <p style={{ color: '#82ca9d' }}>{`New: ${data.New}`}</p>
-        </div>
-      );
-    }
-    return null;
-  };
-
   return (
     <>
       {/* Graph Display */}
-      <div className="mt-5 backdrop-blur-md rounded-lg g-4 bg-white/10 flex flex-col justify-center items-center w-full container mx-auto px-4">
+      <div className="mt-5 backdrop-blur-md rounded-lg g-4 bg-white/10 flex flex-col justify-center items-center w-screen container m-auto">
         <div className="text-white text-3xl mb-5">Performance Details</div>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={data}>
-            <CartesianGrid className="text-white" strokeDasharray="3 3" />
-            <XAxis stroke="#FFFFFF" dataKey="name" className="text-white" />
-            <YAxis stroke="#FFFFFF" className="text-white" domain={[0, dataMax => Math.max(dataMax, getMaxValue('Stock'))]} />
-            <Tooltip />
-            <Legend className="text-white" />
-            <Bar dataKey="Stock" fill="#8884d8" />
-            <Bar dataKey="New" fill="#82ca9d" />
-          </BarChart>
-        </ResponsiveContainer>
-
-        {/* Line Chart */}
-        <div className="mt-10 w-full">
-          <div className="text-white text-2xl mb-3">Performance Trend</div>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" stroke="#FFFFFF" />
-              <YAxis stroke="#FFFFFF" domain={[0, dataMax => Math.max(dataMax, getMaxValue('Stock'))]} />
-              <Tooltip />
-              <Legend />
-              <Line type="monotone" dataKey="Stock" stroke="#8884d8" />
-              <Line type="monotone" dataKey="New" stroke="#82ca9d" />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* Radial Chart */}
-        <div className="mt-10 w-full">
-          <div className="text-white text-2xl mb-3">Performance Overview</div>
-          <ResponsiveContainer width="100%" height={400}>
-            <RadialBarChart
-              innerRadius="20%"
-              outerRadius="80%"
-              data={data}
-              startAngle={180}
-              endAngle={0}
-              barGap={2}
-              barCategoryGap={3}
-            >
-              <PolarAngleAxis 
-                type="number" 
-                domain={getRadialDomain()} 
-                angleAxisId={0} 
-                tick={{ fill: "#FFFFFF" }} 
-              />
-              <RadialBar
-                minAngle={15}
-                background
-                clockWise={true}
-                dataKey="Stock"
-                fill="#8884d8"
-                name="Stock"
-              />
-              <RadialBar
-                minAngle={15}
-                background
-                clockWise={true}
-                dataKey="New"
-                fill="#a4de6c"
-                name="New"
-              />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend iconSize={10}  layout="vertical" verticalAlign="middle" wrapperStyle={style} />
-            </RadialBarChart>
-          </ResponsiveContainer>
-        </div>
+        <BarChart width={730} height={250} data={data}>
+          <CartesianGrid className="text-white" strokeDasharray="3 3" />
+          <XAxis stroke="#FFFFFF" dataKey="name" className="text-white" />
+          <YAxis stroke="#FFFFFF" className="text-white" />
+          <Tooltip />
+          <Legend className="text-white" />
+          <Bar dataKey="Stock" fill="#8884d8" />
+          <Bar dataKey="New" fill="#82ca9d" />
+        </BarChart>
+        {/* <button
+          className="btn btn-primary mt-4 px-6 py-3 text-lg font-bold uppercase tracking-wider bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg rounded-full"
+          onClick={() =>
+            updateMetrics({
+              ...bodyData,
+              p: bodyData.dC + 10000,
+              kW: 148,
+              dC: 0.12,
+            })
+          }
+        >
+          <span className="relative z-10">New Metrics</span>
+          <span className="absolute inset-0 bg-white opacity-0 hover:opacity-20 rounded-full transition-opacity duration-300"></span>
+        </button> */}
       </div>
-      
 
       {/* Button Row */}
       <div className="btn-row fixed top-20 ml-5 flex flex-col gap-4 opacity-0 transition-opacity duration-300 hover:opacity-100 overflow-y-auto h-[80vh]">
@@ -709,7 +620,7 @@ const Configurator = () => {
                     updateMetrics({
                       ...bodyData,
                       dC: bodyData.dC + 0.02,
-                      kW: bodyData.kW - 5,
+                      kW: bodyData.kW - 5
                     });
                   }}
                 >
@@ -730,7 +641,7 @@ const Configurator = () => {
                     updateMetrics({
                       ...bodyData,
                       dC: bodyData.dC - 0.01,
-                      kW: bodyData.kW + 5,
+                      kW: bodyData.kW + 5
                     });
                   }}
                 >
@@ -751,7 +662,7 @@ const Configurator = () => {
                     updateMetrics({
                       ...bodyData,
                       dC: bodyData.dC - 0.02,
-                      kW: bodyData.kW + 7,
+                      kW: bodyData.kW + 7
                     });
                   }}
                 >
@@ -772,7 +683,7 @@ const Configurator = () => {
                     updateMetrics({
                       ...bodyData,
                       dC: bodyData.dC - 0.03,
-                      kW: bodyData.kW + 10,
+                      kW: bodyData.kW + 10
                     });
                   }}
                 >
@@ -866,7 +777,7 @@ const Configurator = () => {
                     setBonnet(1);
                     updateMetrics({
                       ...bodyData,
-                      kW: bodyData.kW + 5,
+                      kW: bodyData.kW + 5
                     });
                   }}
                 >
@@ -890,7 +801,7 @@ const Configurator = () => {
                       kW: bodyData.kW + 3,
                       dC: bodyData.dC - 0.01,
                       rpm: bodyData.rpm + 50,
-                      brpm: bodyData.brpm + 50,
+                      brpm: bodyData.brpm + 50
                     });
                   }}
                 >
@@ -964,7 +875,7 @@ const Configurator = () => {
                       nOC: 4,
                       bD: 86,
                       pS: 85.9,
-                      brpm: 6500,
+                      brpm: 6500
                     });
                   }}
                 >
@@ -990,7 +901,7 @@ const Configurator = () => {
                       nOC: 6,
                       bD: 90,
                       pS: 90.9,
-                      brpm: 8000,
+                      brpm: 8000
                     });
                   }}
                 >
@@ -1016,7 +927,7 @@ const Configurator = () => {
                       nOC: 8,
                       bD: 92,
                       pS: 93,
-                      brpm: 8500,
+                      brpm: 8500
                     });
                   }}
                 >
@@ -1051,7 +962,7 @@ const Configurator = () => {
                     updateMetrics({
                       ...bodyData,
                       kW: bodyData.kW - 10,
-                      dC: bodyData.dC + 0.01,
+                      dC: bodyData.dC + 0.01
                     });
                   }}
                 >
@@ -1073,7 +984,7 @@ const Configurator = () => {
                     updateMetrics({
                       ...bodyData,
                       kW: bodyData.kW + 5,
-                      dC: bodyData.dC - 0.005,
+                      dC: bodyData.dC - 0.005
                     });
                   }}
                 >
@@ -1095,7 +1006,7 @@ const Configurator = () => {
                     updateMetrics({
                       ...bodyData,
                       kW: bodyData.kW + 10,
-                      dC: bodyData.dC - 0.01,
+                      dC: bodyData.dC - 0.01
                     });
                   }}
                 >
@@ -1117,7 +1028,7 @@ const Configurator = () => {
                     updateMetrics({
                       ...bodyData,
                       kW: bodyData.kW + 15,
-                      dC: bodyData.dC - 0.015,
+                      dC: bodyData.dC - 0.015
                     });
                   }}
                 >
@@ -1157,7 +1068,7 @@ const Configurator = () => {
                     updateMetrics({
                       ...bodyData,
                       dC: bodyData.dC + 0.02,
-                      kW: bodyData.kW - 5,
+                      kW: bodyData.kW - 5
                     });
                   }}
                 >
@@ -1183,7 +1094,7 @@ const Configurator = () => {
                     updateMetrics({
                       ...bodyData,
                       dC: bodyData.dC - 0.01,
-                      kW: bodyData.kW + 3,
+                      kW: bodyData.kW + 3
                     });
                   }}
                 >
@@ -1209,7 +1120,7 @@ const Configurator = () => {
                     updateMetrics({
                       ...bodyData,
                       dC: bodyData.dC - 0.015,
-                      kW: bodyData.kW + 4,
+                      kW: bodyData.kW + 4
                     });
                   }}
                 >
@@ -1235,7 +1146,7 @@ const Configurator = () => {
                     updateMetrics({
                       ...bodyData,
                       dC: bodyData.dC - 0.02,
-                      kW: bodyData.kW + 5,
+                      kW: bodyData.kW + 5
                     });
                   }}
                 >
@@ -1309,7 +1220,7 @@ const Configurator = () => {
                         updateMetrics({
                           ...bodyData,
                           dC: bodyData.dC + 0.01,
-                          kW: bodyData.kW + 2,
+                          kW: bodyData.kW + 2
                         });
                       }}
                     >
@@ -1331,7 +1242,7 @@ const Configurator = () => {
                         updateMetrics({
                           ...bodyData,
                           dC: bodyData.dC - 0.005,
-                          kW: bodyData.kW + 1,
+                          kW: bodyData.kW + 1
                         });
                       }}
                     >
@@ -1357,7 +1268,7 @@ const Configurator = () => {
                         updateMetrics({
                           ...bodyData,
                           dC: bodyData.dC + 0.005,
-                          kW: bodyData.kW + 3,
+                          kW: bodyData.kW + 3
                         });
                       }}
                     >
@@ -1379,7 +1290,7 @@ const Configurator = () => {
                         updateMetrics({
                           ...bodyData,
                           dC: bodyData.dC - 0.01,
-                          kW: bodyData.kW + 2,
+                          kW: bodyData.kW + 2
                         });
                       }}
                     >
@@ -1416,7 +1327,7 @@ const Configurator = () => {
                     updateMetrics({
                       ...bodyData,
                       dC: bodyData.dC + 0.01,
-                      kW: bodyData.kW - 5,
+                      kW: bodyData.kW - 5
                     });
                   }}
                 >
@@ -1437,7 +1348,7 @@ const Configurator = () => {
                     updateMetrics({
                       ...bodyData,
                       dC: bodyData.dC - 0.01,
-                      kW: bodyData.kW + 5,
+                      kW: bodyData.kW + 5
                     });
                   }}
                 >

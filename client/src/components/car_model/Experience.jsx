@@ -13,6 +13,8 @@ const Experience = () => {
   return (
     <>
       <Canvas
+        frameloop="demand"
+      
         gl={{ logarithmicDepthBuffer: true, antialias: false }}
         dpr={[1, 1.5]}
         camera={{ position: [0, 0, 10], fov: 25 }}
