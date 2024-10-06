@@ -97,7 +97,7 @@ export const CustomizationProvider = (props) => {
   const [carBodyColor, setCarBodyColor] = useState(bodyColors[7]); // State for car body color
 
   // Spoiler
-  const [spoiler, setSpoiler] = useState(0); // State for spoiler selection
+  const [spoiler, setSpoiler] = useState(1); // State for spoiler selection
   const [spoilerClick, setSpoilerClick] = useState(false); // State for spoiler click status
   const [spoilerColor, setSpoilerColor] = useState(spoilerColors[7]); // State for spoiler color
 
@@ -110,7 +110,7 @@ export const CustomizationProvider = (props) => {
   const [rimColor, setRimColor] = useState(rimColors[7]); // State for rim color
 
   // Wheels (assuming color doesn't change for wheels)
-  const [wheels, setWheels] = useState(0); // State for wheel selection
+  const [wheels, setWheels] = useState(1); // State for wheel selection
   const [wheelsClick, setWheelsClick] = useState(false); // State for wheel click status
 
   // Bonnet
@@ -119,7 +119,7 @@ export const CustomizationProvider = (props) => {
   const [bonnetColor, setBonnetColor] = useState(bonnetColors[7]); // State for bonnet color
 
   // Sidekits
-  const [sideKit, setSideKit] = useState(0); // State for side kit selection
+  const [sideKit, setSideKit] = useState(1); // State for side kit selection
   const [sideKitClick, setSideKitClick] = useState(false); // State for side kit click status
   const [sideKitColor, setSideKitColor] = useState(sideKitColors[7]); // State for side kit color
 
@@ -155,7 +155,7 @@ export const CustomizationProvider = (props) => {
   const [fenderColor, setFenderColor] = useState(fenderColors[7]); // State for fender color
 
   // Diffuser
-  const [diffuser, setDiffuser] = useState(3); // State for diffuser selection
+  const [diffuser, setDiffuser] = useState(1); // State for diffuser selection
   const [diffuserClick, setDiffuserClick] = useState(false); // State for diffuser click status
   const [diffuserColor, setDiffuserColor] = useState(diffuserColors[7]); // State for diffuser color
 

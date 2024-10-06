@@ -8,16 +8,6 @@ import {
   Tooltip,
   Bar,
   Legend,
-  LineChart,
-  Line,
-  RadialBarChart,
-  RadialBar,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  Radar,
-  ResponsiveContainer,
 } from "recharts";
 import axios from "@services/axios";
 
@@ -141,69 +131,53 @@ const Configurator = () => {
     setTrunkColor,
   } = useCustomization();
 
-  const [bodyData, setBodyData] = useState({
-    p: 320, // Power in horsepower
-    kW: 1400, // Kerb weight in kg
-    dC: 0.27, // Drag coefficient
-    w: 1877, // Width in mm
-    h: 1434, // Height in mm
-    t: 400, // Torque in Nm
-    r: 2500, // RPM for HP
-    nOC: 4, // Number of cylinders
-    bD: 86, // Bore diameter in mm
-    pS: 85.9, // Piston stroke in mm
-    brpm: 6500, // RPM at max power
-  });
-
   const [metrics, setMetrics] = useState({
-    stockAcceleration: 3.48,
-    newAcceleration: 0,
-    stockMaxSpeed: 290.52,
-    newMaxSpeed: 0,
-    stockHorsepower: 140.43,
-    newHorsepower: 0,
-    stockCC: 1995.91,
-    newCC: 0,
-    stockTorque: 350.56,
-    newTorque: 0,
+    stockAcceleration: 550,
+    newAcceleration: 750,
+    stockMaxSpeed: 270,
+    newMaxSpeed: 300,
+    stockHorsepower: 320,
+    newHorsepower: 360,
+    stockCC: 1996,
+    newCC: 2200,
+    stockTorque: 400.0,
+    newTorque: 440,
   });
 
-  const updateMetrics = async (bodyData) => {
-    try {
-      console.log("Body data:", bodyData);
-      const responses = await Promise.all([
-        axios.post("metric01", { bodyData }),
-        axios.post("metric02", { bodyData }),
-        axios.post("metric03", { bodyData }),
-        axios.post("metric04", { bodyData }),
-        axios.post("metric05", { bodyData }),
-      ]);
+  // const updateMetrics = async () => {
+  //   try {
+  //     const bodyData = {
+  //       power: 35,
+  //       kerbWeight: 148999990,
+  //       dragCoefficient: 0.32,
+  //     };
 
-      const [acceleration, maxSpeed, horsepower, cc, torque] = responses.map(
-        (response) => response.data.data
-      );
+  //     const response = await axios.post(`metric01/66fadc033654382aef23dad6`, {
+  //       bodyData,
+  //     });
 
-      setMetrics((prevMetrics) => {
-        const newMetrics = {
-          ...prevMetrics,
-          newAcceleration: parseFloat(acceleration.acceleration).toFixed(2),
-          newMaxSpeed: parseFloat(maxSpeed.max_speed).toFixed(2),
-          newHorsepower: parseFloat(horsepower.hp).toFixed(2),
-          newCC: parseFloat(cc.cc).toFixed(2),
-          newTorque: parseFloat(torque.torque).toFixed(2),
-        };
-        console.log("New metrics:", newMetrics);
+  //     console.log("Full response:", response);
+  //     console.log(
+  //       "Calculated Acceleration Time Body:",
+  //       response.data.data.calculated_Acceleration_Time_Body
+  //     );
 
-        return newMetrics;
-      });
-    } catch (error) {
-      console.error("Failed to fetch metrics", error);
-    }
-  };
+  //     setMetrics((prevMetrics) => {
+  //       const newMetrics = {
+  //         ...prevMetrics,
+  //         newAcceleration: response.data.data.calculated_Acceleration_Time_Body,
+  //       };
+  //       console.log("New metrics:", newMetrics);
+  //       return newMetrics;
+  //     });
+  //   } catch (error) {
+  //     console.error("Failed to fetch metrics", error);
+  //   }
+  // };
 
-  useEffect(() => {
-    // console.log("Updated metrics:", metrics);
-  }, [metrics]);
+  // useEffect(() => {
+  //   console.log("Updated metrics:", metrics); // Check updated metrics
+  // }, [metrics]);
 
   const data = [
     {
@@ -233,114 +207,21 @@ const Configurator = () => {
     },
   ];
 
-  const getMaxValue = (dataKey) => {
-    return Math.max(...data.map(item => Math.max(item[dataKey], item['New'])));
-  };
-
-  const getRadialDomain = () => {
-    const maxCC = Math.max(metrics.stockCC, metrics.newCC);
-    if (maxCC > 3000) {
-      return [0, Math.ceil(maxCC / 1000) * 1000];
-    }
-    return [0, 3000];
-  };
-
-  const style = {
-    top: '30%',
-    right: 0,
-    transform: 'translate(0, -50%)',
-    lineHeight: '24px',
-  };
-
-  const CustomTooltip = ({ active, payload }) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      return (
-        <div className="custom-tooltip" style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)', padding: '10px', border: '1px solid #ccc' }}>
-          <p className="label" style={{ color: '#fff' }}>{`${data.name}`}</p>
-          <p style={{ color: '#8884d8' }}>{`Stock: ${data.Stock}`}</p>
-          <p style={{ color: '#82ca9d' }}>{`New: ${data.New}`}</p>
-        </div>
-      );
-    }
-    return null;
-  };
-
   return (
     <>
       {/* Graph Display */}
-      <div className="mt-5 backdrop-blur-md rounded-lg g-4 bg-white/10 flex flex-col justify-center items-center w-full container mx-auto px-4">
+      <div className=" mt-5 backdrop-blur-md rounded-lg g-4 bg-white/10 flex flex-col justify-center items-center w-screen container m-auto">
         <div className="text-white text-3xl mb-5">Performance Details</div>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={data}>
-            <CartesianGrid className="text-white" strokeDasharray="3 3" />
-            <XAxis stroke="#FFFFFF" dataKey="name" className="text-white" />
-            <YAxis stroke="#FFFFFF" className="text-white" domain={[0, dataMax => Math.max(dataMax, getMaxValue('Stock'))]} />
-            <Tooltip />
-            <Legend className="text-white" />
-            <Bar dataKey="Stock" fill="#8884d8" />
-            <Bar dataKey="New" fill="#82ca9d" />
-          </BarChart>
-        </ResponsiveContainer>
-
-        {/* Line Chart */}
-        <div className="mt-10 w-full">
-          <div className="text-white text-2xl mb-3">Performance Trend</div>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" stroke="#FFFFFF" />
-              <YAxis stroke="#FFFFFF" domain={[0, dataMax => Math.max(dataMax, getMaxValue('Stock'))]} />
-              <Tooltip />
-              <Legend />
-              <Line type="monotone" dataKey="Stock" stroke="#8884d8" />
-              <Line type="monotone" dataKey="New" stroke="#82ca9d" />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* Radial Chart */}
-        <div className="mt-10 w-full">
-          <div className="text-white text-2xl mb-3">Performance Overview</div>
-          <ResponsiveContainer width="100%" height={400}>
-            <RadialBarChart
-              innerRadius="20%"
-              outerRadius="80%"
-              data={data}
-              startAngle={180}
-              endAngle={0}
-              barGap={2}
-              barCategoryGap={3}
-            >
-              <PolarAngleAxis 
-                type="number" 
-                domain={getRadialDomain()} 
-                angleAxisId={0} 
-                tick={{ fill: "#FFFFFF" }} 
-              />
-              <RadialBar
-                minAngle={15}
-                background
-                clockWise={true}
-                dataKey="Stock"
-                fill="#8884d8"
-                name="Stock"
-              />
-              <RadialBar
-                minAngle={15}
-                background
-                clockWise={true}
-                dataKey="New"
-                fill="#a4de6c"
-                name="New"
-              />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend iconSize={10}  layout="vertical" verticalAlign="middle" wrapperStyle={style} />
-            </RadialBarChart>
-          </ResponsiveContainer>
-        </div>
+        <BarChart width={730} height={250} data={data}>
+          <CartesianGrid className="text-white" strokeDasharray="3 3" />
+          <XAxis stroke="#FFFFFF" dataKey="name" className="text-white" />
+          <YAxis stroke="#FFFFFF" className="text-white" />
+          <Tooltip />
+          <Legend className="text-white" />
+          <Bar dataKey="Stock" fill="#8884d8" />
+          <Bar dataKey="New" fill="#82ca9d" />
+        </BarChart>
       </div>
-      
 
       {/* Button Row */}
       <div className="btn-row fixed top-20 ml-5 flex flex-col gap-4 opacity-0 transition-opacity duration-300 hover:opacity-100 overflow-y-auto h-[80vh]">
@@ -704,14 +585,7 @@ const Configurator = () => {
                   className={`item flex flex-col items-center transition-all duration-400 ${
                     spoiler === 0 ? "item--active" : ""
                   }`}
-                  onClick={() => {
-                    setSpoiler(0);
-                    updateMetrics({
-                      ...bodyData,
-                      dC: bodyData.dC + 0.02,
-                      kW: bodyData.kW - 5,
-                    });
-                  }}
+                  onClick={() => setSpoiler(0)}
                 >
                   <div
                     className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
@@ -725,14 +599,7 @@ const Configurator = () => {
                   className={`item flex flex-col items-center transition-all duration-400 ${
                     spoiler === 1 ? "item--active" : ""
                   }`}
-                  onClick={() => {
-                    setSpoiler(1);
-                    updateMetrics({
-                      ...bodyData,
-                      dC: bodyData.dC - 0.01,
-                      kW: bodyData.kW + 5,
-                    });
-                  }}
+                  onClick={() => setSpoiler(1)}
                 >
                   <div
                     className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
@@ -746,14 +613,7 @@ const Configurator = () => {
                   className={`item flex flex-col items-center transition-all duration-400 ${
                     spoiler === 2 ? "item--active" : ""
                   }`}
-                  onClick={() => {
-                    setSpoiler(2);
-                    updateMetrics({
-                      ...bodyData,
-                      dC: bodyData.dC - 0.02,
-                      kW: bodyData.kW + 7,
-                    });
-                  }}
+                  onClick={() => setSpoiler(2)}
                 >
                   <div
                     className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
@@ -767,14 +627,7 @@ const Configurator = () => {
                   className={`item flex flex-col items-center transition-all duration-400 ${
                     spoiler === 3 ? "item--active" : ""
                   }`}
-                  onClick={() => {
-                    setSpoiler(3);
-                    updateMetrics({
-                      ...bodyData,
-                      dC: bodyData.dC - 0.03,
-                      kW: bodyData.kW + 10,
-                    });
-                  }}
+                  onClick={() => setSpoiler(3)}
                 >
                   <div
                     className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
@@ -864,10 +717,6 @@ const Configurator = () => {
                   onClick={() => {
                     setEngineClick(false);
                     setBonnet(1);
-                    updateMetrics({
-                      ...bodyData,
-                      kW: bodyData.kW + 5,
-                    });
                   }}
                 >
                   <div
@@ -885,13 +734,6 @@ const Configurator = () => {
                   onClick={() => {
                     setEngineClick(false);
                     setBonnet(2);
-                    updateMetrics({
-                      ...bodyData,
-                      kW: bodyData.kW + 3,
-                      dC: bodyData.dC - 0.01,
-                      rpm: bodyData.rpm + 50,
-                      brpm: bodyData.brpm + 50,
-                    });
                   }}
                 >
                   <div
@@ -956,16 +798,6 @@ const Configurator = () => {
                   }`}
                   onClick={() => {
                     setEngine(1);
-                    updateMetrics({
-                      ...bodyData,
-                      p: 320,
-                      t: 400,
-                      r: 2500,
-                      nOC: 4,
-                      bD: 86,
-                      pS: 85.9,
-                      brpm: 6500,
-                    });
                   }}
                 >
                   <div
@@ -982,16 +814,6 @@ const Configurator = () => {
                   }`}
                   onClick={() => {
                     setEngine(2);
-                    updateMetrics({
-                      ...bodyData,
-                      p: 390,
-                      t: 440,
-                      r: 3300,
-                      nOC: 6,
-                      bD: 90,
-                      pS: 90.9,
-                      brpm: 8000,
-                    });
                   }}
                 >
                   <div
@@ -1008,16 +830,6 @@ const Configurator = () => {
                   }`}
                   onClick={() => {
                     setEngine(3);
-                    updateMetrics({
-                      ...bodyData,
-                      p: 430,
-                      t: 480,
-                      r: 3700,
-                      nOC: 8,
-                      bD: 92,
-                      pS: 93,
-                      brpm: 8500,
-                    });
                   }}
                 >
                   <div
@@ -1048,11 +860,6 @@ const Configurator = () => {
                   }`}
                   onClick={() => {
                     setWheels(0);
-                    updateMetrics({
-                      ...bodyData,
-                      kW: bodyData.kW - 10,
-                      dC: bodyData.dC + 0.01,
-                    });
                   }}
                 >
                   <div
@@ -1070,11 +877,6 @@ const Configurator = () => {
                   }`}
                   onClick={() => {
                     setWheels(1);
-                    updateMetrics({
-                      ...bodyData,
-                      kW: bodyData.kW + 5,
-                      dC: bodyData.dC - 0.005,
-                    });
                   }}
                 >
                   <div
@@ -1092,11 +894,6 @@ const Configurator = () => {
                   }`}
                   onClick={() => {
                     setWheels(2);
-                    updateMetrics({
-                      ...bodyData,
-                      kW: bodyData.kW + 10,
-                      dC: bodyData.dC - 0.01,
-                    });
                   }}
                 >
                   <div
@@ -1114,11 +911,6 @@ const Configurator = () => {
                   }`}
                   onClick={() => {
                     setWheels(3);
-                    updateMetrics({
-                      ...bodyData,
-                      kW: bodyData.kW + 15,
-                      dC: bodyData.dC - 0.015,
-                    });
                   }}
                 >
                   <div
@@ -1154,11 +946,6 @@ const Configurator = () => {
                     } else if (silencer === 4) {
                       setSilencer(3);
                     }
-                    updateMetrics({
-                      ...bodyData,
-                      dC: bodyData.dC + 0.02,
-                      kW: bodyData.kW - 5,
-                    });
                   }}
                 >
                   <div
@@ -1180,11 +967,6 @@ const Configurator = () => {
                     } else if (silencer === 4) {
                       setSilencer(3);
                     }
-                    updateMetrics({
-                      ...bodyData,
-                      dC: bodyData.dC - 0.01,
-                      kW: bodyData.kW + 3,
-                    });
                   }}
                 >
                   <div
@@ -1206,11 +988,6 @@ const Configurator = () => {
                     } else if (silencer === 4) {
                       setSilencer(3);
                     }
-                    updateMetrics({
-                      ...bodyData,
-                      dC: bodyData.dC - 0.015,
-                      kW: bodyData.kW + 4,
-                    });
                   }}
                 >
                   <div
@@ -1232,11 +1009,6 @@ const Configurator = () => {
                     } else if (silencer === 3) {
                       setSilencer(4);
                     }
-                    updateMetrics({
-                      ...bodyData,
-                      dC: bodyData.dC - 0.02,
-                      kW: bodyData.kW + 5,
-                    });
                   }}
                 >
                   <div
@@ -1306,11 +1078,6 @@ const Configurator = () => {
                       }`}
                       onClick={() => {
                         setSilencer(1);
-                        updateMetrics({
-                          ...bodyData,
-                          dC: bodyData.dC + 0.01,
-                          kW: bodyData.kW + 2,
-                        });
                       }}
                     >
                       <div
@@ -1328,11 +1095,6 @@ const Configurator = () => {
                       }`}
                       onClick={() => {
                         setSilencer(3);
-                        updateMetrics({
-                          ...bodyData,
-                          dC: bodyData.dC - 0.005,
-                          kW: bodyData.kW + 1,
-                        });
                       }}
                     >
                       <div
@@ -1354,11 +1116,6 @@ const Configurator = () => {
                       }`}
                       onClick={() => {
                         setSilencer(2);
-                        updateMetrics({
-                          ...bodyData,
-                          dC: bodyData.dC + 0.005,
-                          kW: bodyData.kW + 3,
-                        });
                       }}
                     >
                       <div
@@ -1376,11 +1133,6 @@ const Configurator = () => {
                       }`}
                       onClick={() => {
                         setSilencer(4);
-                        updateMetrics({
-                          ...bodyData,
-                          dC: bodyData.dC - 0.01,
-                          kW: bodyData.kW + 2,
-                        });
                       }}
                     >
                       <div
@@ -1411,14 +1163,7 @@ const Configurator = () => {
                   className={`item flex flex-col items-center transition-all duration-400 ${
                     sideKit === 0 ? "item--active" : ""
                   }`}
-                  onClick={() => {
-                    setSideKit(0);
-                    updateMetrics({
-                      ...bodyData,
-                      dC: bodyData.dC + 0.01,
-                      kW: bodyData.kW - 5,
-                    });
-                  }}
+                  onClick={() => setSideKit(0)}
                 >
                   <div
                     className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
@@ -1432,14 +1177,7 @@ const Configurator = () => {
                   className={`item flex flex-col items-center transition-all duration-400 ${
                     sideKit === 1 ? "item--active" : ""
                   }`}
-                  onClick={() => {
-                    setSideKit(1);
-                    updateMetrics({
-                      ...bodyData,
-                      dC: bodyData.dC - 0.01,
-                      kW: bodyData.kW + 5,
-                    });
-                  }}
+                  onClick={() => setSideKit(1)}
                 >
                   <div
                     className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
