@@ -5,6 +5,8 @@ import "../../public/stylesheets/spinner.css";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAuth } from "@contexts/auth_context";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+
 const PostPage = () => {
   const location = useLocation();
   const isDashboard = location.pathname === "/user/blog-dashboard";
@@ -14,6 +16,8 @@ const PostPage = () => {
   const [error, setError] = useState(null);
   const [blogs, setBlogs] = useState([]);
   const [recentBlogs, setRecentBlogs] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredBlogs, setFilteredBlogs] = useState([]);
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -25,11 +29,12 @@ const PostPage = () => {
           : await axios.get(`/blogs/author/${authorId}`);
 
         console.log("Response data:", res.data);
-        const data = res.data; // Assume response is structured correctly
-        setBlogs(data); // Set the fetched blogs
+        const data = res.data;
+        setBlogs(data);
+        setFilteredBlogs(data);
 
         if (isDashboard) {
-          setRecentBlogs(data.slice().reverse().slice(0, 5)); // Get recent blogs for dashboard
+          setRecentBlogs(data.slice().reverse().slice(0, 5));
           console.log("Recent blogs set:", data.slice().reverse().slice(0, 5));
         }
       } catch (error) {
@@ -44,11 +49,20 @@ const PostPage = () => {
     fetchBlogs();
   }, [isDashboard, authorId]);
 
+  useEffect(() => {
+    const results = blogs.filter(blog =>
+      blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      blog.content.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredBlogs(results);
+  }, [searchTerm, blogs]);
+
   const deleteBlog = async (blogId) => {
     try {
       console.log("Deleting blog with ID:", blogId);
       await axios.delete(`/blogs/${blogId}`);
       setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog._id !== blogId));
+      setFilteredBlogs((prevBlogs) => prevBlogs.filter((blog) => blog._id !== blogId));
       setRecentBlogs((prevBlogs) =>
         prevBlogs.filter((blog) => blog._id !== blogId).slice(0, 5)
       );
@@ -69,11 +83,16 @@ const PostPage = () => {
           blog._id === updatedBlog._id ? res.data : blog
         )
       );
+      setFilteredBlogs((prevBlogs) =>
+        prevBlogs.map((blog) =>
+          blog._id === updatedBlog._id ? res.data : blog
+        )
+      );
       setRecentBlogs((prevBlogs) => {
         const filteredBlogs = prevBlogs.filter(
           (blog) => blog._id !== updatedBlog._id
         );
-        return [res.data, ...filteredBlogs].slice(0, 5); // Update recent blogs
+        return [res.data, ...filteredBlogs].slice(0, 5);
       });
       toast.success("Blog updated successfully!");
       console.log("Blog updated:", res.data);
@@ -104,10 +123,23 @@ const PostPage = () => {
   console.log("Blogs loaded:", blogs);
 
   return (
-    <main className={drawerState ? "blur bg-blue-950": "p-3 flex flex-col max-w-7xl mx-auto min-h-screen md:mb-12"}>
-      {isDashboard && <Carousel items={recentBlogs} title="Recently Posted" />}
+    <main className={drawerState ? "blur bg-blue-950" : "p-3 flex flex-col max-w-7xl mx-auto min-h-screen md:mb-12"}>
+      <section className="mb-8">
+        <h2 className="text-2xl font-bold mb-4">Search Blogs</h2>
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search blogs..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="input input-bordered w-full max-w-xs pl-10 pr-4 py-2 rounded-full bg-[#3f3f46] text-white placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+          />
+          <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-indigo-500" />
+        </div>
+      </section>
+      {isDashboard && recentBlogs.length > 0 && searchTerm === "" && <Carousel items={recentBlogs} title="Recently Posted" />}
       <Carousel
-        items={blogs}
+        items={filteredBlogs}
         title={isDashboard ? "All Blogs" : "Author's Blogs"}
         onDelete={deleteBlog}
         onUpdate={updateBlog}
