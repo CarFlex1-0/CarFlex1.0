@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "@services/axios";
-import Carousel from "@components/Carousel";
 import "../../public/stylesheets/spinner.css";
 import { toast } from "react-toastify";
 import Cookies from "js-cookie";
+import FeaturedBlogCard from "@components/FeaturedBlogCard";
+import BlogCard from "@components/BlogCard";
 
 const AuthorPostPage = () => {
-    
   const authorCookie = Cookies.get("user");
-  const author = authorCookie ? JSON.parse(authorCookie) : null; // Parse cookie data
+  const author = authorCookie ? JSON.parse(authorCookie) : null;
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -28,8 +28,8 @@ const AuthorPostPage = () => {
         console.log("Fetching blogs for author ID:", author._id);
         const res = await axios.get(`/blogs/author/${author._id}`);
         console.log("Response data:", res.data);
-        const data = res.data; // Assume response is structured correctly
-        setBlogs(data); // Set the fetched blogs
+        const data = res.data;
+        setBlogs(data);
       } catch (error) {
         console.error("Error fetching blogs:", error);
         setError(error.message);
@@ -40,7 +40,8 @@ const AuthorPostPage = () => {
     };
 
     fetchBlogs();
-  }, []);
+    setLoading(false)
+  }, [author]);
 
   const deleteBlog = async (blogId) => {
     try {
@@ -94,12 +95,33 @@ const AuthorPostPage = () => {
 
   return (
     <main className="p-3 flex flex-col max-w-7xl mx-auto min-h-screen md:mb-12">
-      <Carousel
-        items={blogs}
-        title={"My Blogs"}
-        onDelete={deleteBlog}
-        onUpdate={updateBlog}
-      />
+      <h1 className="text-3xl font-bold mb-5">My Blogs</h1>
+
+      {blogs.length > 0 && (
+        <section className="mb-8">
+          <h2 className="text-2xl font-semibold mb-4">Featured Blog</h2>
+          <FeaturedBlogCard
+            item={blogs[0]}
+            onDelete={deleteBlog}
+            onUpdate={updateBlog}
+          />
+        </section>
+      )}
+
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {blogs.map((blog) => (
+          <BlogCard
+            key={blog._id}
+            item={blog}
+            onDelete={deleteBlog}
+            onUpdate={updateBlog}
+          />
+        ))}
+      </section>
+
+      {blogs.length === 0 && (
+        <p className="text-center text-gray-500 mt-10">No blogs found.</p>
+      )}
     </main>
   );
 };

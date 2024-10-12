@@ -6,11 +6,13 @@ import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAuth } from "@contexts/auth_context";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import FeaturedBlogCard from "@components/FeaturedBlogCard";
+import BlogCard from "@components/BlogCard";
 
 const PostPage = () => {
   const location = useLocation();
   const isDashboard = location.pathname === "/user/blog-dashboard";
-  const authorId = location.pathname.split("/")[3];
+  const authorId = location.pathname.split("/")[4];
   const { drawerState } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -50,9 +52,10 @@ const PostPage = () => {
   }, [isDashboard, authorId]);
 
   useEffect(() => {
-    const results = blogs.filter(blog =>
-      blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      blog.content.toLowerCase().includes(searchTerm.toLowerCase())
+    const results = blogs.filter(
+      (blog) =>
+        blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        blog.content.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredBlogs(results);
   }, [searchTerm, blogs]);
@@ -62,7 +65,9 @@ const PostPage = () => {
       console.log("Deleting blog with ID:", blogId);
       await axios.delete(`/blogs/${blogId}`);
       setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog._id !== blogId));
-      setFilteredBlogs((prevBlogs) => prevBlogs.filter((blog) => blog._id !== blogId));
+      setFilteredBlogs((prevBlogs) =>
+        prevBlogs.filter((blog) => blog._id !== blogId)
+      );
       setRecentBlogs((prevBlogs) =>
         prevBlogs.filter((blog) => blog._id !== blogId).slice(0, 5)
       );
@@ -102,6 +107,8 @@ const PostPage = () => {
     }
   };
 
+  const featuredBlog = filteredBlogs[0]; // Assuming the first blog is featured
+
   if (loading) {
     console.log("Loading... Please wait.");
     return (
@@ -123,7 +130,13 @@ const PostPage = () => {
   console.log("Blogs loaded:", blogs);
 
   return (
-    <main className={drawerState ? "blur bg-blue-950" : "p-3 flex flex-col max-w-7xl mx-auto min-h-screen md:mb-12"}>
+    <main
+      className={
+        drawerState
+          ? "blur bg-blue-950"
+          : "p-3 flex flex-col max-w-7xl mx-auto min-h-screen md:mb-12"
+      }
+    >
       <section className="mb-8">
         <h2 className="text-2xl font-bold mb-4">Search Blogs</h2>
         <div className="relative">
@@ -137,13 +150,22 @@ const PostPage = () => {
           <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-indigo-500" />
         </div>
       </section>
-      {isDashboard && recentBlogs.length > 0 && searchTerm === "" && <Carousel items={recentBlogs} title="Recently Posted" />}
-      <Carousel
-        items={filteredBlogs}
-        title={isDashboard ? "All Blogs" : "Author's Blogs"}
-        onDelete={deleteBlog}
-        onUpdate={updateBlog}
-      />
+
+      {featuredBlog && (
+        <section className="mb-12">
+          <h2 className="text-3xl font-bold mb-6">Featured Post</h2>
+          <FeaturedBlogCard item={featuredBlog} onDelete={deleteBlog} onUpdate={updateBlog} />
+        </section>
+      )}
+
+      <section className="mb-12">
+        <h2 className="text-3xl font-bold mb-6">Latest Posts</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filteredBlogs.slice(1).map((blog) => (
+            <BlogCard key={blog._id} item={blog} onDelete={deleteBlog} onUpdate={updateBlog} />
+          ))}
+        </div>
+      </section>
     </main>
   );
 };

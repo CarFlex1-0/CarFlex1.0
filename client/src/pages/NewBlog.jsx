@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import axios from "@services/axios";
 import { useForm } from "react-hook-form";
 import { Slide } from "react-toastify";
@@ -6,14 +6,20 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Cookies from "js-cookie";
 import { useAuth } from "@contexts/auth_context";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+
 export default function NewBlog() {
-  const { register, handleSubmit, reset } = useForm();
+  const { register, handleSubmit, reset, watch } = useForm();
   const [loading, setLoading] = useState(false);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState("");
   const [plagPercentage, setPlagPercentage] = useState(null);
   const [isSubmitEnabled, setIsSubmitEnabled] = useState(false);
   const { drawerState } = useAuth();
+  const [content, setContent] = useState('');
+  const quillRef = useRef(null);
+
   const defaultImageUrl =
     "https://res.cloudinary.com/dortbtymj/image/upload/v1726523224/default_img_blog_bineg4.webp";
 
@@ -26,13 +32,15 @@ export default function NewBlog() {
     });
   };
 
-  const checkPlagiarism = async (title, content) => {
+  const checkPlagiarism = async (title, subtitle, content) => {
     try {
-      if (title != "" && content != "") {
+      if (title !== "" && content !== "") {
         setLoading(true);
+        const textContent = content.replace(/<[^>]+>/g, '');
         const response = await axios.post("/blogs/plagiarism", {
           title,
-          content,
+          subtitle,
+          content: textContent,
         });
         setLoading(false);
         const percentage = response.data.plagPercentage;
@@ -85,7 +93,8 @@ export default function NewBlog() {
       const user = JSON.parse(Cookies.get("user"));
       const response = await axios.post("/blogs", {
         title: data.title,
-        content: data.content,
+        subtitle: data.subtitle,
+        content: content,
         blogImageUrl: imageBase64,
         author: user._id,
         plagPercentage: plagPercentage,
@@ -105,6 +114,7 @@ export default function NewBlog() {
       setImagePreviewUrl("");
       setPlagPercentage(null);
       setIsSubmitEnabled(false);
+      setContent('');
     } catch (error) {
       console.error("Submit failed:", error);
       toast.error("Blog creation unsuccessful!", {
@@ -152,7 +162,7 @@ export default function NewBlog() {
       <div className="flex justify-center flex-col m-8">
         <div>
           <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-center text-gray-900 dark:text-white">
-            Upload Blog
+            Create New Article
           </h2>
         </div>
 
@@ -176,34 +186,30 @@ export default function NewBlog() {
                   type="text"
                   {...register("title", { required: "Title is required" })}
                   className="border border-gray-300 p-2 w-full hover:bg-white hover:text-black text-white"
-                  placeholder="Blog Title"
+                  placeholder="Article Title"
                 />
               </div>
               <div className="mb-4">
                 <label
                   className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="content"
+                  htmlFor="subtitle"
                 >
-                  Content
+                  Subtitle (Optional, Max 50 characters)
                 </label>
-                <textarea
-                  id="content"
-                  name="content"
-                  {...register("content", { required: "Content is required" })}
+                <input
+                  id="subtitle"
+                  name="subtitle"
+                  type="text"
+                  {...register("subtitle", { maxLength: 50 })}
                   className="border border-gray-300 p-2 w-full hover:bg-white hover:text-black text-white"
-                  placeholder="Blog Content"
-                  onChange={(e) => {
-                    setPlagPercentage(null);
-                    setIsSubmitEnabled(false);
-                  }}
+                  placeholder="Article Subtitle"
                 />
               </div>
-
               <div
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
                 onClick={handleFileInputClick}
-                className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+                className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600 mb-4"
               >
                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
                   <svg
@@ -237,7 +243,7 @@ export default function NewBlog() {
                   accept="image/*"
                 />
               </div>
-              <div className="mt-4">
+              <div className="mt-4 mb-4">
                 {imagePreviewUrl && !loading && (
                   <div>
                     Preview:{" "}
@@ -248,6 +254,26 @@ export default function NewBlog() {
                     />
                   </div>
                 )}
+              </div>
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                  htmlFor="content"
+                >
+                  Content
+                </label>
+                <ReactQuill
+                  ref={quillRef}
+                  value={content}
+                  onChange={setContent}
+                  modules={{
+                    toolbar: [
+                      ['bold', 'italic'],
+                      ['blockquote'],
+                    ],
+                  }}
+                  className="bg-white text-black"
+                />
               </div>
               <div className="flex justify-between">
                 <button
@@ -263,8 +289,9 @@ export default function NewBlog() {
                   type="button"
                   onClick={() =>
                     checkPlagiarism(
-                      document.getElementById("title").value,
-                      document.getElementById("content").value
+                      watch("title"),
+                      watch("subtitle"),
+                      content
                     )
                   }
                   className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 mt-4"

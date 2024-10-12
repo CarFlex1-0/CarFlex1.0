@@ -1,34 +1,45 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "@services/axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { Bounce, Slide, Zoom } from "react-toastify";
-import { ToastContainer, toast } from "react-toastify";
+import { Slide } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import DOMPurify from 'dompurify';
 
 const EditBlog = () => {
-  
-  const { id } = useParams(); // Get blog ID from URL
-  const navigate = useNavigate(); // For navigation after submission
+  const { id } = useParams();
+  const navigate = useNavigate();
   const { register, handleSubmit, reset } = useForm();
   const [loading, setLoading] = useState(false);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState("");
   const [blogData, setBlogData] = useState(null);
+  const [content, setContent] = useState('');
+  const quillRef = useRef(null);
 
   useEffect(() => {
     const fetchBlog = async () => {
       try {
         const response = await axios.get(`blogs/${id}`);
+        console.log("Fetched blog data:", response.data);
         setBlogData(response.data);
         reset({
           title: response.data.title,
-          content: response.data.content,
+          subtitle: response.data.subtitle,
         });
+        setContent(response.data.content);
         setImagePreviewUrl(response.data.blogImageUrl.url);
-        console.log(imagePreviewUrl);
       } catch (error) {
         console.error("Failed to fetch blog data:", error);
+        toast.error("Failed to fetch blog data. Please try again.", {
+          position: "top-left",
+          autoClose: 5000,
+          theme: "dark",
+          transition: Slide,
+        });
       }
     };
 
@@ -39,14 +50,8 @@ const EditBlog = () => {
     return new Promise((resolve, reject) => {
       const fileReader = new FileReader();
       fileReader.readAsDataURL(file);
-
-      fileReader.onload = () => {
-        resolve(fileReader.result);
-      };
-
-      fileReader.onerror = (error) => {
-        reject(error);
-      };
+      fileReader.onload = () => resolve(fileReader.result);
+      fileReader.onerror = (error) => reject(error);
     });
   };
 
@@ -54,19 +59,22 @@ const EditBlog = () => {
     setLoading(true);
 
     try {
-      let imageBase64;
+      let imageBase64 = imageFile ? await convertBase64(imageFile) : imagePreviewUrl;
 
-      if (imageFile) {
-        imageBase64 = await convertBase64(imageFile);
-      } else {
-        imageBase64 = ""; // Keep this if you want to clear image URL when no file is provided
-      }
+      const sanitizedContent = DOMPurify.sanitize(content);
 
-      const response = await axios.put(`blogs/${id}`, {
+      const updateData = {
         title: data.title,
-        content: data.content,
+        subtitle: data.subtitle,
+        content: sanitizedContent,
         blogImageUrl: imageBase64,
-      });
+      };
+
+      console.log("Sending update data:", updateData);
+
+      const response = await axios.put(`blogs/${id}`, updateData);
+
+      console.log("Update response:", response.data);
 
       toast.success("Blog post updated successfully!", {
         position: "top-left",
@@ -74,11 +82,15 @@ const EditBlog = () => {
         theme: "dark",
         transition: Slide,
       });
-      navigate(`/blog/${id}`); // Redirect to the single blog page or any other page
+      navigate(`/user/blog/${id}`);
     } catch (error) {
       console.error("Update failed:", error);
-
-      toast.error("Failed to update blog post. Please try again.", {
+      console.error("Error response:", error.response);
+      let errorMessage = "Failed to update blog post. Please try again.";
+      if (error.response && error.response.data && error.response.data.error) {
+        errorMessage = error.response.data.error;
+      }
+      toast.error(errorMessage, {
         position: "top-left",
         autoClose: 5000,
         theme: "dark",
@@ -94,20 +106,18 @@ const EditBlog = () => {
     if (file) {
       const base64 = await convertBase64(file);
       setImageFile(file);
-      setImagePreviewUrl(base64); // Update preview URL
+      setImagePreviewUrl(base64);
     }
   };
 
-  // Handle drag and drop events
   const handleDrop = async (event) => {
     event.preventDefault();
     event.stopPropagation();
-
     const file = event.dataTransfer.files[0];
     if (file) {
       const base64 = await convertBase64(file);
       setImageFile(file);
-      setImagePreviewUrl(base64); // Update preview URL
+      setImagePreviewUrl(base64);
     }
   };
 
@@ -152,16 +162,17 @@ const EditBlog = () => {
             <div className="mb-4">
               <label
                 className="block text-gray-700 text-sm font-bold mb-2"
-                htmlFor="content"
+                htmlFor="subtitle"
               >
-                Content
+                Subtitle (Optional, Max 50 characters)
               </label>
-              <textarea
-                id="content"
-                name="content"
-                {...register("content", { required: "Content is required" })}
+              <input
+                id="subtitle"
+                name="subtitle"
+                type="text"
+                {...register("subtitle", { maxLength: 50 })}
                 className="border border-gray-300 p-2 w-full hover:bg-white hover:text-black text-white"
-                placeholder="Blog Content"
+                placeholder="Blog Subtitle"
               />
             </div>
             <div
@@ -217,6 +228,26 @@ const EditBlog = () => {
                   />
                 </div>
               )}
+            </div>
+            <div className="mb-4">
+              <label
+                className="block text-gray-700 text-sm font-bold mb-2"
+                htmlFor="content"
+              >
+                Content
+              </label>
+              <ReactQuill
+                ref={quillRef}
+                value={content}
+                onChange={setContent}
+                modules={{
+                  toolbar: [
+                    ['bold', 'italic'],
+                    ['blockquote'],
+                  ],
+                }}
+                className="bg-white text-black"
+              />
             </div>
             <button
               type="submit"

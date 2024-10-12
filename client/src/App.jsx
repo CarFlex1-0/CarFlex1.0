@@ -93,6 +93,8 @@ function App() {
                 }
               />
               {/* Blog User Routes */}
+              {/* 
+
               <Route
                 path="/blog/dashboard"
                 element={
@@ -117,7 +119,7 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              {/* Blog Author Routes */}
+              
               <Route
                 path="/blog/actions/dashboard"
                 element={
@@ -141,7 +143,8 @@ function App() {
                     <EditBlog />
                   </ProtectedRoute>
                 }
-              />
+              /> 
+              */}
               {/* Blog User Route */}
               <Route
                 path="/feedback"
@@ -266,12 +269,13 @@ function App() {
                 <Route path="user-dashboard" element={<Dashboard />} />
                 <Route path="customize-3d-model" element={<CarPreview />} />
                 <Route path="car-enhancements" element={<CarEnhancements />} />
+                {/* Blog Routes */}
                 <Route path="blog-dashboard" element={<PostPage />} />
                 <Route path="blog-create" element={<NewBlog />} />
-                <Route
-                  path="blog-actions-dashboard"
-                  element={<AuthorPostPage />}
-                />
+                <Route path="blog/:id/edit" element={<EditBlog />} />
+                <Route path="blog-actions-dashboard" element={<AuthorPostPage />} />
+                <Route path="blog/author/:id" element={<PostPage />} />
+                <Route path="blog/:id" element={<SingleBlogPage />} />
                 <Route path="subscription" element={<SubscriptionSelect />} />
                 <Route path="profile-page" element={<ProfilePage />} />
                 <Route path="feedback" element={<FeedbackPage />} />
