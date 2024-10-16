@@ -36,10 +36,8 @@ import Users from "@components/admin/Users";
 import AdminDashoardAnalytics from "@components/admin/Dashboard";
 import Upload3DModel from "@components/admin/Upload3DModel";
 import UserDashboard from "@pages/UserDashboard";
-import ForumCommunity from "@pages/ForumCommunity";
-
 import CarPreview from "@components/car_model/CarPreview";
-import ForumPage from "./pages/ForumPage";
+import ForumPage from "@pages/ForumPage";
 // Create a QueryClient instance
 const queryClient = new QueryClient();
 function App() {
@@ -286,8 +284,6 @@ function App() {
                   <Route path="feedback" element={<FeedbackPage />} />
 
                   {/* Forum User Routes */}
-
-                  <Route path="forum" element={<ForumCommunity />} />
                   <Route path="forum-page" element={<ForumPage />} />
                 </Route>
               </Routes>

@@ -365,54 +365,6 @@ const ForumPage = () => {
       </div>
 
       {/* Dialog for creating a question */}
-      {/* {isCreateDialogOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50">
-          <Card className="top-64 left-1/2 -right-10 z-50 w-96 p-6 bg-white/5 backdrop-blur-md rounded-xl shadow-xl">
-            <Typography variant="h5" color="white" className="mb-3">
-              Ask a Question
-            </Typography>
-            <Input
-              label="Title"
-              value={newQuestionTitle}
-              onChange={(e) => setNewQuestionTitle(e.target.value)}
-              className="mb-4"
-            />
-            <Textarea
-              label="Description"
-              value={newQuestionContent}
-              onChange={(e) => setNewQuestionContent(e.target.value)}
-              className="mb-4"
-            />
-            <Select
-              label="Category"
-              value={newQuestionCategory}
-              onChange={(value) => setNewQuestionCategory(value)}
-              className="mb-4"
-            >
-              {categories.map((category) => (
-                <Option key={category} value={category}>
-                  {category}
-                </Option>
-              ))}
-            </Select>
-            <div className="flex justify-end">
-              <Button
-                onClick={handleCreateQuestion}
-                className="bg-blue-600 text-white"
-              >
-                Submit
-              </Button>
-              <Button
-                onClick={() => setIsCreateDialogOpen(false)}
-                className="ml-2 bg-gray-600 text-white"
-              >
-                Cancel
-              </Button>
-            </div>
-          </Card>
-        </div>
-      )} */}
-      {/* Modal structure */}
       <dialog
         id="ask-new-question-modal"
         className="modal modal-bottom sm:modal-middle bg-white/5 backdrop-blur-md rounded-xl shadow-xl"
