@@ -212,7 +212,7 @@ export function SideBar() {
           </Accordion>
 
           <Link
-            to="forum"
+            to="forum-page"
             onClick={() => {
               closeDrawer();
               setDrawerState(false);

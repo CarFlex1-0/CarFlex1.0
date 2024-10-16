@@ -2,11 +2,12 @@ const Question = require('../models/question');
 
 // Ask a new question
 const askQuestion = async (req, res) => {
-    const { title, description, userId } = req.body;
+    const { title, description, userId, category } = req.body;
     try {
         const question = new Question({
             title,
             description,
+            category,
             user: userId,
         });
         await question.save();

@@ -1,11 +1,14 @@
 const Answer = require('../models/answer');
 const Question = require('../models/question');
-
+const checkProfanity = require("../utils/profanity-check");
 // Add a new answer
 const addAnswer = async (req, res) => {
     const { content, userId } = req.body;
     const { questionId } = req.params;
     try {
+        if (checkProfanity(content)){
+            return res.status(406).json({ message: "Profanity detected" });
+        }
         const answer = new Answer({
             content,
             user: userId,
@@ -24,15 +27,22 @@ const addAnswer = async (req, res) => {
     }
 };
 
-// Upvote an answer
 const upvoteAnswer = async (req, res) => {
     const { answerId } = req.params;
-    const { userId } = req.body; // Get user ID from the request
+    const { userId } = req.body;
+
+    if (!userId) {
+        return res.status(400).json({ message: 'User ID is required' });
+    }
 
     try {
         const answer = await Answer.findById(answerId);
 
-        // Check if the user already upvoted
+        // Check if the answer exists
+        if (!answer) {
+            return res.status(404).json({ message: 'Answer not found' });
+        }
+
         const hasUpvoted = answer.upvoters.includes(userId);
         const hasDownvoted = answer.downvoters.includes(userId);
 
@@ -55,19 +65,26 @@ const upvoteAnswer = async (req, res) => {
         await answer.save();
         res.status(200).json(answer);
     } catch (error) {
-        res.status(400).json({ message: 'Failed to upvote answer', error });
+        console.error("Error upvoting answer:", error);
+        res.status(500).json({ message: 'Failed to upvote answer', error });
     }
 };
 
-// Downvote an answer
 const downvoteAnswer = async (req, res) => {
     const { answerId } = req.params;
-    const { userId } = req.body; // Get user ID from the request
+    const { userId } = req.body;
+
+    if (!userId) {
+        return res.status(400).json({ message: 'User ID is required' });
+    }
 
     try {
         const answer = await Answer.findById(answerId);
 
-        // Check if the user already downvoted
+        if (!answer) {
+            return res.status(404).json({ message: 'Answer not found' });
+        }
+
         const hasDownvoted = answer.downvoters.includes(userId);
         const hasUpvoted = answer.upvoters.includes(userId);
 
@@ -90,9 +107,11 @@ const downvoteAnswer = async (req, res) => {
         await answer.save();
         res.status(200).json(answer);
     } catch (error) {
-        res.status(400).json({ message: 'Failed to downvote answer', error });
+        console.error("Error downvoting answer:", error);
+        res.status(500).json({ message: 'Failed to downvote answer', error });
     }
 };
+
 
 // Get all answers for a question
 const getAnswersByQuestionId = async (req, res) => {

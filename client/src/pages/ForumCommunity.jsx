@@ -118,7 +118,11 @@ const ForumCommunity = () => {
 
   return (
     <div
-      className={drawerState ? "blur bg-blue-950 cursor-none" : "min-h-screen backdrop-blur-md bg-white/10 p-4"}
+      className={
+        drawerState
+          ? "blur bg-blue-950 cursor-none"
+          : "min-h-screen backdrop-blur-md bg-white/10 p-4"
+      }
     >
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
@@ -259,7 +263,7 @@ const ForumCommunity = () => {
 
       {isCreateDialogOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <Card className="w-full max-w-md bg-white bg-opacity-90 backdrop-blur-md rounded-lg shadow-xl">
+          <Card className="w-full max-w-md bg-white bg-opacity-90 backdrop-blur-md rounded-lg ">
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
                 <Typography
@@ -285,7 +289,7 @@ const ForumCommunity = () => {
                     placeholder="Question Title"
                     value={newQuestionTitle}
                     onChange={(e) => setNewQuestionTitle(e.target.value)}
-                    className="w-full px-3 py-2 bg-gray-50 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 bg-gray-50 rounded-lg border-none  focus:ring-blue-500 focus:border-transparent"
                     labelProps={{
                       className: "hidden",
                     }}
@@ -305,6 +309,18 @@ const ForumCommunity = () => {
                 </div>
               </div>
               <div className="flex justify-end gap-3 mt-6">
+                <details className="dropdown">
+                  <summary className="btn m-1">Category</summary>
+                  <ul className="menu dropdown-content bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+                    <li>
+                      <a>Item 1</a>
+                    </li>
+                    <li>
+                      <a>Item 2</a>
+                    </li>
+                  </ul>
+                </details>
+
                 <Button
                   variant="text"
                   color="red"
