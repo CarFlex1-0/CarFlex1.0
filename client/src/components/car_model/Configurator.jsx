@@ -635,6 +635,32 @@ const Configurator = () => {
         <button
           className="btn btn-outline btn-primary"
           onClick={() => {
+            setSpoilerClick(false);
+            setRimClick(false);
+            setWindowClick(false);
+            setBonnetClick(false);
+            setLightClick(false);
+            setCarBodyClick(false);
+            setDoorClick(true);
+            setSideKitClick(false);
+            setWheelsClick(false);
+            setBumperFrontClick(false);
+            setBumperBackClick(false);
+            setGrillClick(false);
+            setEngineClick(false);
+            setFenderClick(false);
+            setDiffuserClick(false);
+            setRoofClick(false);
+            setSilencerClick(false);
+            setTrunkClick(false);
+          }}
+        >
+          Door
+        </button>
+
+        <button
+          className="btn btn-outline btn-primary"
+          onClick={() => {
             if (bonnet === 2) {
               setBonnet(4);
             } else if (bonnet === 1) {
@@ -690,7 +716,7 @@ const Configurator = () => {
         </button>
       </div>
 
-      <div className="fixed right-6 bottom-[25vh] w-[360px] p-6 flex flex-col gap-4">
+      <div className="fixed right-6 bottom-[5vh] w-[380px] p-6 flex flex-col gap-2">
         {/* Spoiler Customization */}
         {spoilerClick && (
           <>

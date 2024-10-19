@@ -234,7 +234,9 @@ const Configurator = () => {
   ];
 
   const getMaxValue = (dataKey) => {
-    return Math.max(...data.map(item => Math.max(item[dataKey], item['New'])));
+    return Math.max(
+      ...data.map((item) => Math.max(item[dataKey], item["New"]))
+    );
   };
 
   const getRadialDomain = () => {
@@ -246,20 +248,27 @@ const Configurator = () => {
   };
 
   const style = {
-    top: '30%',
+    top: "30%",
     right: 0,
-    transform: 'translate(0, -50%)',
-    lineHeight: '24px',
+    transform: "translate(0, -50%)",
+    lineHeight: "24px",
   };
 
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="custom-tooltip" style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)', padding: '10px', border: '1px solid #ccc' }}>
-          <p className="label" style={{ color: '#fff' }}>{`${data.name}`}</p>
-          <p style={{ color: '#8884d8' }}>{`Stock: ${data.Stock}`}</p>
-          <p style={{ color: '#82ca9d' }}>{`New: ${data.New}`}</p>
+        <div
+          className="custom-tooltip"
+          style={{
+            backgroundColor: "rgba(0, 0, 0, 0.8)",
+            padding: "10px",
+            border: "1px solid #ccc",
+          }}
+        >
+          <p className="label" style={{ color: "#fff" }}>{`${data.name}`}</p>
+          <p style={{ color: "#8884d8" }}>{`Stock: ${data.Stock}`}</p>
+          <p style={{ color: "#82ca9d" }}>{`New: ${data.New}`}</p>
         </div>
       );
     }
@@ -275,7 +284,11 @@ const Configurator = () => {
           <BarChart data={data}>
             <CartesianGrid className="text-white" strokeDasharray="3 3" />
             <XAxis stroke="#FFFFFF" dataKey="name" className="text-white" />
-            <YAxis stroke="#FFFFFF" className="text-white" domain={[0, dataMax => Math.max(dataMax, getMaxValue('Stock'))]} />
+            <YAxis
+              stroke="#FFFFFF"
+              className="text-white"
+              domain={[0, (dataMax) => Math.max(dataMax, getMaxValue("Stock"))]}
+            />
             <Tooltip />
             <Legend className="text-white" />
             <Bar dataKey="Stock" fill="#8884d8" />
@@ -290,7 +303,13 @@ const Configurator = () => {
             <LineChart data={data}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" stroke="#FFFFFF" />
-              <YAxis stroke="#FFFFFF" domain={[0, dataMax => Math.max(dataMax, getMaxValue('Stock'))]} />
+              <YAxis
+                stroke="#FFFFFF"
+                domain={[
+                  0,
+                  (dataMax) => Math.max(dataMax, getMaxValue("Stock")),
+                ]}
+              />
               <Tooltip />
               <Legend />
               <Line type="monotone" dataKey="Stock" stroke="#8884d8" />
@@ -312,11 +331,11 @@ const Configurator = () => {
               barGap={2}
               barCategoryGap={3}
             >
-              <PolarAngleAxis 
-                type="number" 
-                domain={getRadialDomain()} 
-                angleAxisId={0} 
-                tick={{ fill: "#FFFFFF" }} 
+              <PolarAngleAxis
+                type="number"
+                domain={getRadialDomain()}
+                angleAxisId={0}
+                tick={{ fill: "#FFFFFF" }}
               />
               <RadialBar
                 minAngle={15}
@@ -335,12 +354,16 @@ const Configurator = () => {
                 name="New"
               />
               <Tooltip content={<CustomTooltip />} />
-              <Legend iconSize={10}  layout="vertical" verticalAlign="middle" wrapperStyle={style} />
+              <Legend
+                iconSize={10}
+                layout="vertical"
+                verticalAlign="middle"
+                wrapperStyle={style}
+              />
             </RadialBarChart>
           </ResponsiveContainer>
         </div>
       </div>
-      
 
       {/* Button Row */}
       <div className="btn-row fixed top-20 ml-5 flex flex-col gap-4 opacity-0 transition-opacity duration-300 hover:opacity-100 overflow-y-auto h-[80vh]">
@@ -635,6 +658,32 @@ const Configurator = () => {
         <button
           className="btn btn-outline btn-primary"
           onClick={() => {
+            setSpoilerClick(false);
+            setRimClick(false);
+            setWindowClick(false);
+            setBonnetClick(false);
+            setLightClick(false);
+            setCarBodyClick(false);
+            setDoorClick(true);
+            setSideKitClick(false);
+            setWheelsClick(false);
+            setBumperFrontClick(false);
+            setBumperBackClick(false);
+            setGrillClick(false);
+            setEngineClick(false);
+            setFenderClick(false);
+            setDiffuserClick(false);
+            setRoofClick(false);
+            setSilencerClick(false);
+            setTrunkClick(false);
+          }}
+        >
+          Door
+        </button>
+
+        <button
+          className="btn btn-outline btn-primary"
+          onClick={() => {
             if (bonnet === 2) {
               setBonnet(4);
             } else if (bonnet === 1) {
@@ -690,7 +739,7 @@ const Configurator = () => {
         </button>
       </div>
 
-      <div className="fixed right-6 bottom-[25vh] w-[360px] p-6 flex flex-col gap-4">
+      <div className="absolute right-6 bottom-[5vh] w-[380px] flex flex-col gap-2">
         {/* Spoiler Customization */}
         {spoilerClick && (
           <>
@@ -739,7 +788,7 @@ const Configurator = () => {
                       spoiler === 1 ? "text-white" : "text-gray-400"
                     }`}
                   >
-                    Original Spoiler
+                    Base Spoiler
                   </div>
                 </div>
                 <div
@@ -760,7 +809,7 @@ const Configurator = () => {
                       spoiler === 2 ? "text-white" : "text-gray-400"
                     }`}
                   >
-                    Classic Spoiler
+                    Sporty Spoiler
                   </div>
                 </div>
                 <div
@@ -775,15 +824,7 @@ const Configurator = () => {
                       kW: bodyData.kW + 10,
                     });
                   }}
-                >
-                  <div
-                    className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                      spoiler === 3 ? "text-white" : "text-gray-400"
-                    }`}
-                  >
-                    Spoiler 3
-                  </div>
-                </div>
+                ></div>
               </div>
               <div className="text-white text-center font-bold text-sm capitalize">
                 The Civic Spoiler makes the car aerodynamic and gives it a
@@ -999,33 +1040,7 @@ const Configurator = () => {
                       engine === 2 ? "text-white" : "text-gray-400"
                     }`}
                   >
-                    VTEC D16
-                  </div>
-                </div>
-                <div
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    engine === 3 ? "item--active" : ""
-                  }`}
-                  onClick={() => {
-                    setEngine(3);
-                    updateMetrics({
-                      ...bodyData,
-                      p: 430,
-                      t: 480,
-                      r: 3700,
-                      nOC: 8,
-                      bD: 92,
-                      pS: 93,
-                      brpm: 8500,
-                    });
-                  }}
-                >
-                  <div
-                    className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                      engine === 3 ? "text-white" : "text-gray-400"
-                    }`}
-                  >
-                    2JZ Engine
+                    2ZZ
                   </div>
                 </div>
               </div>

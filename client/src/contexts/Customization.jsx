@@ -1,80 +1,80 @@
 import { createContext, useContext, useState } from "react";
 
-// Define an array of color options for car customization
+// Define an array of realistic car color options for car customization
 
 const colors = [
   {
-    color: "#683434", // brown
-    name: "brown",
+    color: "#4B5154", // Gun Metallic
+    name: "Gun Metallic",
   },
   {
-    color: "#1a5e1a", // green
-    name: "green",
+    color: "#2B2D42", // Cosmic Gray Metallic
+    name: "Cosmic Gray",
   },
   {
-    color: "#659994", // blue
-    name: "blue",
+    color: "#1A1D23", // Lunar Silver Metallic
+    name: "Lunar Silver",
   },
   {
-    color: "#896599", // mauve
-    name: "mauve",
+    color: "#8B0000", // Ruby Flare Pearl
+    name: "Ruby Flare",
   },
   {
-    color: "#ffa500", // orange
-    name: "orange",
+    color: "#FF6347", // Aegean Blue Metallic
+    name: "Aegean Blue",
   },
   {
-    color: "#59555b", // grey
-    name: "grey",
+    color: "#6B7280", // Modern Steel Metallic
+    name: "Modern Steel",
   },
   {
-    color: "#222222", // black
-    name: "black",
+    color: "#3B3F4E", // Obsidian Blue Pearl
+    name: "Obsidian Pearl",
   },
   {
-    color: "#ececec", // white
-    name: "white",
+    color: "#FFFFFF", // Platinum White Pearl
+    name: "Platinum White",
   },
 ];
 
 // Mapping the colors to various car parts
 const spoilerColors = [
   {
-    color: "#683434", // brown
-    name: "brown",
+    color: "#4B5154", // Gun Metallic
+    name: "Gun Metallic",
   },
   {
-    color: "#1a5e1a", // green
-    name: "green",
+    color: "#2B2D42", // Cosmic Gray Metallic
+    name: "Cosmic Gray Metallic",
   },
   {
-    color: "#659994", // blue
-    name: "blue",
+    color: "#1A1D23", // Lunar Silver Metallic
+    name: "Lunar Silver Metallic",
   },
   {
-    color: "#896599", // mauve
-    name: "mauve",
+    color: "#8B0000", // Ruby Flare Pearl
+    name: "Ruby Flare Pearl",
   },
   {
-    color: "#ffa500", // orange
-    name: "orange",
+    color: "#FF6347", // Aegean Blue Metallic
+    name: "Aegean Blue Metallic",
   },
   {
-    color: "#59555b", // grey
-    name: "grey",
+    color: "#6B7280", // Modern Steel Metallic
+    name: "Modern Steel Metallic",
   },
   {
-    color: "#222222", // black
-    name: "black",
+    color: "#3B3F4E", // Obsidian Blue Pearl
+    name: "Obsidian Blue Pearl",
   },
   {
-    color: "#ececec", // white
-    name: "white",
+    color: "#FFFFFF", // Platinum White Pearl
+    name: "Platinum White Pearl",
   },
 ]; // Spoiler color options
 const doorColors = colors.map((x) => x); // Door color options
 const rimColors = colors.map((x) => x); // Rim color options
-const windowColors = colors.map((x) => x); // Window color options
+const windowColors = colors.map((x) => x);
 const bonnetColors = colors.map((x) => x); // Bonnet color options
 const lightColors = colors.map((x) => x); // Light color options
 const sideKitColors = colors.map((x) => x); // Side kit color options
