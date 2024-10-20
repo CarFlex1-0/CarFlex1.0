@@ -38,6 +38,7 @@ import Upload3DModel from "@components/admin/Upload3DModel";
 import UserDashboard from "@pages/UserDashboard";
 import CarPreview from "@components/car_model/CarPreview";
 import ForumPage from "@pages/ForumPage";
+import CarPartsMarketplace from "@components/maketplace_buyer/market-place";
 // Create a QueryClient instance
 const queryClient = new QueryClient();
 function App() {
@@ -282,9 +283,9 @@ function App() {
                   <Route path="subscription" element={<SubscriptionSelect />} />
                   <Route path="profile-page" element={<ProfilePage />} />
                   <Route path="feedback" element={<FeedbackPage />} />
-
                   {/* Forum User Routes */}
                   <Route path="forum-page" element={<ForumPage />} />
+                  <Route path="buy-parts" element={<CarPartsMarketplace />} />
                 </Route>
               </Routes>
             </div>

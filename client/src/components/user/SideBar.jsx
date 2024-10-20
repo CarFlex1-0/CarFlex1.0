@@ -227,6 +227,21 @@ export function SideBar() {
           </Link>
 
           <Link
+            to="buy-parts"
+            onClick={() => {
+              closeDrawer();
+              setDrawerState(false);
+            }}
+          >
+            <ListItem className="text-lg">
+              <ListItemPrefix className="me-3">
+                <RiQuestionnaireFill />
+              </ListItemPrefix>
+              Buy Parts
+            </ListItem>
+          </Link>
+
+          <Link
             to="subscription"
             onClick={() => {
               closeDrawer();
