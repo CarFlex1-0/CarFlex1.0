@@ -12,85 +12,80 @@ import {
 import { Effects } from "./Effects";
 import { useState, useEffect, useRef } from "react";
 import { useCustomization } from "@contexts/Customization";
-import { useSpring, animated } from "@react-spring/three";
-
-// Separate animated component
-const AnimatedGroup = animated(({ rotation, children }) => (
-  <group rotation={rotation}>{children}</group>
-));
 
 const SceneContent = ({ targetRotation }) => {
   const groupRef = useRef();
   const stageRef = useRef();
   const orbitControlsRef = useRef();
 
-  const { rotation } = useSpring({
-    rotation: targetRotation,
-    config: { mass: 1, tension: 180, friction: 12 },
+  useFrame(() => {
+    if (groupRef.current && stageRef.current && targetRotation) {
+      groupRef.current.rotation.y = targetRotation[1];
+      stageRef.current.rotation.y = targetRotation[1];
+    }
+    if (orbitControlsRef.current) {
+      orbitControlsRef.current.update();
+    }
   });
 
   return (
     <>
-      <AnimatedGroup rotation={rotation}>
-        <group ref={groupRef}>
-          <Corolla scale={1} position={[0, -1, 0]} />
-        </group>
-      </AnimatedGroup>
-      <AnimatedGroup rotation={rotation}>
-        <group ref={stageRef}>
-          <hemisphereLight intensity={0.5} />
-          <ContactShadows
+      <group ref={groupRef}>
+        <Corolla scale={1} position={[0, -1, 0]} />
+      </group>
+      <group ref={stageRef}>
+        <hemisphereLight intensity={0.5} />
+        <ContactShadows
+          resolution={1024}
+          frames={1}
+          position={[0, -1, 0]}
+          scale={15}
+          blur={0.5}
+          opacity={1}
+          far={20}
+        />
+        {/* Circular Reflector below the ring lights */}
+        <mesh
+          position={[0, -1.2, 0]}
+          rotation-x={-Math.PI / 2}
+          castShadow
+          receiveShadow
+        >
+          <circleGeometry args={[3, 64]} />
+          <MeshReflectorMaterial
+            envMapIntensity={0.8}
+            color={[0.015, 0.015, 0.015]}
+            roughness={0.7}
+            blur={[1000, 900]}
+            mixBlur={20}
+            mixStrength={80}
+            mixContrast={1}
             resolution={1024}
-            frames={1}
-            position={[0, -1, 0]}
-            scale={15}
-            blur={0.5}
-            opacity={1}
-            far={20}
+            mirror={0.5}
+            depthScale={0.001}
+            minDepthThreshold={0.9}
+            maxDepthThreshold={1}
+            depthToBlurRatioBias={0.75}
+            reflectorOffset={0}
           />
-          {/* Circular Reflector below the ring lights */}
-          <mesh
-            position={[0, -1.2, 0]}
-            rotation-x={-Math.PI / 2}
-            castShadow
-            receiveShadow
-          >
-            <circleGeometry args={[3, 64]} />
-            <MeshReflectorMaterial
-              envMapIntensity={0.8}
-              color={[0.015, 0.015, 0.015]}
-              roughness={0.7}
-              blur={[1000, 900]}
-              mixBlur={20}
-              mixStrength={80}
-              mixContrast={1}
-              resolution={1024}
-              mirror={0.5}
-              depthScale={0.001}
-              minDepthThreshold={0.9}
-              maxDepthThreshold={1}
-              depthToBlurRatioBias={0.75}
-              reflectorOffset={0}
-            />
-          </mesh>
-          <mesh
-            scale={2}
-            position={[0, -1.161, 0.3]}
-            rotation={[-Math.PI / 2, 0, Math.PI / 2.5]}
-          >
-            <ringGeometry args={[0.85, 1, 4, 1]} />
-            <meshStandardMaterial color="white" roughness={0.75} />
-          </mesh>
-          <mesh
-            scale={2}
-            position={[0, -1.161, -0.3]}
-            rotation={[-Math.PI / 2, 0, Math.PI / 2.5]}
-          >
-            <ringGeometry args={[0.85, 1, 3, 1]} />
-            <meshStandardMaterial color="white" roughness={0.75} />
-          </mesh>
-        </group>
-      </AnimatedGroup>
+        </mesh>
+        <mesh
+          scale={2}
+          position={[0, -1.161, 0.3]}
+          rotation={[-Math.PI / 2, 0, Math.PI / 2.5]}
+        >
+          <ringGeometry args={[0.85, 1, 4, 1]} />
+          <meshStandardMaterial color="white" roughness={0.75} />
+        </mesh>
+        <mesh
+          scale={2}
+          position={[0, -1.161, -0.3]}
+          rotation={[-Math.PI / 2, 0, Math.PI / 2.5]}
+        >
+          <ringGeometry args={[0.85, 1, 3, 1]} />
+          <meshStandardMaterial color="white" roughness={0.75} />
+        </mesh>
+      </group>
       <Environment resolution={512}>
         {/* Ceiling */}
         <Lightformer
@@ -306,6 +301,7 @@ const Experience = () => {
         frameloop="demand"
         gl={{ logarithmicDepthBuffer: true, antialias: false }}
         dpr={dpr}
+        // camera={{ position: [0, 0, 10], fov: 25 }}
         camera={{ position: [0, Math.PI / 2.2, 10], fov: 25 }}
         minPolarAngle={Math.PI / 2.2}
         maxPolarAngle={Math.PI / 2.2}

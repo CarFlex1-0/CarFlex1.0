@@ -6,7 +6,7 @@ Command: npx gltfjsx@6.5.2 Corolla.gltf -k -K -E -R -j -M --precision=6
 import React from "react";
 import { useGLTF, useAnimations } from "@react-three/drei";
 import * as THREE from "three";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { useCustomization } from "@contexts/Customization";
 
@@ -49,6 +49,8 @@ export default function Corolla(props) {
     setRimClick,
     rimColor,
     setRimColor,
+    rim,
+    setRim,
     // Wheels
     wheels,
     setWheels,
@@ -127,6 +129,15 @@ export default function Corolla(props) {
     setTrunkClick,
     trunkColor,
     setTrunkColor,
+    door,
+    setDoor,
+    interior,
+    interiorClick,
+    setInterior,
+    interiorColor,
+    interiorColors,
+    setInteriorClick,
+    setInteriorColor,
   } = useCustomization();
 
   const group = React.useRef();
@@ -134,15 +145,270 @@ export default function Corolla(props) {
     "../../../public/assets/models/Corolla.gltf"
   );
   const { actions } = useAnimations(animations, group);
+  useEffect(() => {
+    console.log(animations);
+    setWheels(1);
+    setRim(1);
+    setDiffuser(0);
+  }, []);
+  const [tempDoor, settempDoor] = useState(door);
+  useEffect(() => {
+    if (interiorClick) {
+      settempDoor(door);
+      console.log(door);
+      setDoor(6);
+    } else {
+      setDoor(tempDoor);
+    }
+  }, [interiorClick]);
+
   return (
     <group ref={group} {...props} dispose={null}>
       <group name="Scene">
+        {/* Back Bumper */}
+        <group
+          name="corolla_bumper_b_1_singledualquad_silencer"
+          position={[0.000014, 0.579622, -2.342977]}
+          rotation={[Math.PI / 2, 0, Math.PI]}
+          scale={0.001173}
+          visible={diffuser == 0}
+        >
+          <mesh
+            name="Toyota_Corolla066"
+            geometry={nodes.Toyota_Corolla066.geometry}
+            material={materials.black_m}
+          >
+            <meshStandardMaterial
+              color={0x000000}
+              roughness={0.5}
+              metalness={0}
+              opacity={1}
+              transparent={false}
+              side={2}
+              emissive={0x000000}
+              emissiveIntensity={1}
+              envMapIntensity={1}
+              wireframe={false}
+              flatShading={false}
+              blending={1}
+              depthWrite={true}
+              depthTest={true}
+            />
+          </mesh>
+          <mesh
+            name="Toyota_Corolla066_1"
+            geometry={nodes.Toyota_Corolla066_1.geometry}
+            material={materials.body}
+          >
+            <meshPhysicalMaterial
+              color={bumperBackColor.color}
+              roughness={0.3333333134651184}
+              metalness={0.2638888955116272}
+              opacity={1}
+              transparent={false}
+              side={2}
+              emissive={0x000000}
+              emissiveIntensity={1}
+              envMapIntensity={1}
+              wireframe={false}
+              flatShading={false}
+              blending={1}
+              depthWrite={true}
+              depthTest={true}
+            />
+          </mesh>
+          <mesh
+            name="Toyota_Corolla066_2"
+            geometry={nodes.Toyota_Corolla066_2.geometry}
+            material={materials.r_glass}
+          ></mesh>
+          <mesh
+            name="Toyota_Corolla066_3"
+            geometry={nodes.Toyota_Corolla066_3.geometry}
+            material={materials.chrome_bump}
+          ></mesh>
+        </group>
+
+        <group
+          name="corolla_bumper_b_2_dualquad_silencer"
+          position={[0, 0.517258, -2.361242]}
+          rotation={[Math.PI / 2, 0, Math.PI]}
+          scale={0.001173}
+          visible={diffuser == 1}
+        >
+          <mesh
+            name="Toyota_Corolla024"
+            geometry={nodes.Toyota_Corolla024.geometry}
+            material={materials.black_m}
+          >
+            <meshStandardMaterial
+              color={0x000000}
+              roughness={0.5}
+              metalness={0}
+              opacity={1}
+              transparent={false}
+              side={2}
+              emissive={0x000000}
+              emissiveIntensity={1}
+              envMapIntensity={1}
+              wireframe={false}
+              flatShading={false}
+              blending={1}
+              depthWrite={true}
+              depthTest={true}
+            />
+          </mesh>
+          <mesh
+            name="Toyota_Corolla024_1"
+            geometry={nodes.Toyota_Corolla024_1.geometry}
+            material={materials.body}
+          >
+            <meshPhysicalMaterial
+              color={bumperBackColor.color}
+              roughness={0.3333333134651184}
+              metalness={0.2638888955116272}
+              opacity={1}
+              transparent={false}
+              side={2}
+              emissive={0x000000}
+              emissiveIntensity={1}
+              envMapIntensity={1}
+              wireframe={false}
+              flatShading={false}
+              blending={1}
+              depthWrite={true}
+              depthTest={true}
+            />
+          </mesh>
+          <mesh
+            name="Toyota_Corolla024_2"
+            geometry={nodes.Toyota_Corolla024_2.geometry}
+            material={materials.r_glass}
+          ></mesh>
+          <mesh
+            name="Toyota_Corolla024_3"
+            geometry={nodes.Toyota_Corolla024_3.geometry}
+            material={materials.chrome_bump}
+          ></mesh>
+        </group>
+
+        <group
+          name="corolla_bumper_b_3_single_silencer"
+          position={[0, 0.517258, -2.361242]}
+          rotation={[Math.PI / 2, 0, Math.PI]}
+          scale={0.001173}
+          visible={diffuser == 2}
+        >
+          <mesh
+            name="Toyota_Corolla029"
+            geometry={nodes.Toyota_Corolla029.geometry}
+            material={materials.black_m}
+          >
+            <meshStandardMaterial
+              color={0x000000}
+              roughness={0.5}
+              metalness={0}
+              opacity={1}
+              transparent={false}
+              side={2}
+              emissive={0x000000}
+              emissiveIntensity={1}
+              envMapIntensity={1}
+              wireframe={false}
+              flatShading={false}
+              blending={1}
+              depthWrite={true}
+              depthTest={true}
+            />
+          </mesh>
+          <mesh
+            name="Toyota_Corolla029_1"
+            geometry={nodes.Toyota_Corolla029_1.geometry}
+            material={materials.body}
+          >
+            <meshPhysicalMaterial
+              color={bumperBackColor.color}
+              roughness={0.3333333134651184}
+              metalness={0.2638888955116272}
+              opacity={1}
+              transparent={false}
+              side={2}
+              emissive={0x000000}
+              emissiveIntensity={1}
+              envMapIntensity={1}
+              wireframe={false}
+              flatShading={false}
+              blending={1}
+              depthWrite={true}
+              depthTest={true}
+            />
+          </mesh>
+          <mesh
+            name="Toyota_Corolla029_2"
+            geometry={nodes.Toyota_Corolla029_2.geometry}
+            material={materials.r_glass}
+          ></mesh>
+          <mesh
+            name="Toyota_Corolla029_3"
+            geometry={nodes.Toyota_Corolla029_3.geometry}
+            material={materials.chrome_bump}
+          ></mesh>
+        </group>
+
+        {/* SideKit */}
+        <mesh
+          name="corolla_sideskirts"
+          geometry={nodes.corolla_sideskirts.geometry}
+          material={materials["Material #2.012"]}
+          position={[0, 0.232425, -0.877087]}
+          rotation={[-Math.PI, 0, 0]}
+          scale={[-0.086731, -0.681185, -0.681185]}
+          material-color={sideKitColor.color}
+          visible={sideKit == 1}
+        ></mesh>
+        <mesh
+          name="corolla_widebodykit"
+          geometry={nodes.corolla_widebodykit.geometry}
+          material={nodes.corolla_widebodykit.material}
+          position={[0, 0.534839, -1.700595]}
+          rotation={[0.890102, 0, 0]}
+          scale={[0.025059, 0.031579, 0.033164]}
+          material-color={sideKitColor.color}
+          visible={sideKit == 2}
+        ></mesh>
+        {/* Trunk */}
+        <mesh
+          name="corolla_trunk"
+          geometry={nodes.corolla_trunk.geometry}
+          material={materials.body}
+          position={[0, 1.040025, -2.390526]}
+          rotation={[Math.PI / 2, 0, Math.PI]}
+          scale={0.001173}
+        >
+          <meshPhysicalMaterial
+            color={trunkColor.color}
+            roughness={0.3333333134651184}
+            metalness={0.2638888955116272}
+            opacity={1}
+            transparent={false}
+            side={2}
+            emissive={0x000000}
+            emissiveIntensity={1}
+            envMapIntensity={1}
+            wireframe={false}
+            flatShading={false}
+            blending={1}
+            depthWrite={true}
+            depthTest={true}
+          />
+        </mesh>
         {/* Butterfly Open */}
         <group
           name="corolla_door_fr_butterfly"
           position={[-1.0066, 0.993529, 1.040403]}
           rotation={[2.412686, -0.265097, 2.911771]}
           scale={0.001173}
+          visible={door == 2}
         >
           <mesh
             name="Toyota_Corolla077"
@@ -227,11 +493,9 @@ export default function Corolla(props) {
           ></mesh>
         </group>
 
-
-
-        
         <group
           name="corolla_door_fl_butterfly"
+          visible={door == 2}
           position={[1.006553, 0.993529, 1.040403]}
           rotation={[2.412686, 0.265097, -2.911771]}
           scale={0.001173}
@@ -285,7 +549,7 @@ export default function Corolla(props) {
             geometry={nodes.Toyota_Corolla078_2.geometry}
             material={materials.body}
           >
-             <meshPhysicalMaterial
+            <meshPhysicalMaterial
               color={doorColor.color}
               roughness={0.3333333134651184}
               metalness={0.2638888955116272}
@@ -325,6 +589,7 @@ export default function Corolla(props) {
           position={[-1.153401, 1.191675, 1.047347]}
           rotation={[Math.PI / 2, 0, 2.094393]}
           scale={0.001173}
+          visible={door == 1}
         >
           <mesh
             name="Toyota_Corolla074"
@@ -404,10 +669,12 @@ export default function Corolla(props) {
           ></mesh>
         </group>
 
-        <group name="corolla_sidemirrors_leftdoor_open"
+        <group
+          name="corolla_sidemirrors_leftdoor_open"
           position={[1.153511, 1.191675, 1.041622]}
           rotation={[Math.PI / 2, 0, -2.094395]}
           scale={0.001173}
+          visible={door == 1}
         >
           <mesh
             name="Toyota_Corolla075"
@@ -492,6 +759,7 @@ export default function Corolla(props) {
           position={[-0.934398, 0.993529, 1.040403]}
           rotation={[Math.PI / 2, 0, 2.094395]}
           scale={0.001173}
+          visible={door == 1}
         >
           <mesh
             name="Toyota_Corolla070"
@@ -548,6 +816,7 @@ export default function Corolla(props) {
           position={[-0.820635, 1.051064, -0.245398]}
           rotation={[Math.PI / 2, 0, 2.094395]}
           scale={0.001173}
+          visible={door == 1 || door == 2}
         >
           <mesh
             name="Toyota_Corolla071"
@@ -604,6 +873,7 @@ export default function Corolla(props) {
           position={[0.826228, 1.051064, -0.245398]}
           rotation={[Math.PI / 2, 0, -2.094395]}
           scale={0.001173}
+          visible={door == 1 || door == 2}
         >
           <mesh
             name="Toyota_Corolla072"
@@ -660,6 +930,7 @@ export default function Corolla(props) {
           position={[0.934401, 0.993529, 1.040403]}
           rotation={[Math.PI / 2, 0, -2.094395]}
           scale={0.001173}
+          visible={door == 1}
         >
           <mesh
             name="Toyota_Corolla073"
@@ -713,10 +984,12 @@ export default function Corolla(props) {
         </group>
 
         {/* Closed Doors */}
-        <group name="corolla_sidemirrors_close"
+        <group
+          name="corolla_sidemirrors_close"
           position={[0, 1.191674, 0.854208]}
           rotation={[Math.PI / 2, 0, Math.PI]}
           scale={0.001173}
+          visible={door == 0}
         >
           <mesh
             name="Toyota_Corolla002"
@@ -796,14 +1069,13 @@ export default function Corolla(props) {
             material={materials.chrome_bump}
           ></mesh>
         </group>
-        
-
 
         <group
           name="corolla_door_fr_close"
           position={[-0.934398, 0.993529, 0.310274]}
           rotation={[Math.PI / 2, 0, Math.PI]}
           scale={0.001173}
+          visible={door == 0}
         >
           <mesh
             name="Toyota_Corolla006"
@@ -860,6 +1132,7 @@ export default function Corolla(props) {
           position={[-0.919395, 1.051064, -0.932468]}
           rotation={[Math.PI / 2, 0, Math.PI]}
           scale={0.001173}
+          visible={door == 0}
         >
           <mesh
             name="Toyota_Corolla016"
@@ -917,6 +1190,7 @@ export default function Corolla(props) {
           position={[0.919397, 1.051064, -0.932468]}
           rotation={[Math.PI / 2, 0, Math.PI]}
           scale={0.001173}
+          visible={door == 0}
         >
           <mesh
             name="Toyota_Corolla037"
@@ -973,6 +1247,7 @@ export default function Corolla(props) {
           position={[0.934401, 0.993529, 0.310274]}
           rotation={[Math.PI / 2, 0, Math.PI]}
           scale={0.001173}
+          visible={door == 0}
         >
           <mesh
             name="Toyota_Corolla039"
@@ -1289,6 +1564,8 @@ export default function Corolla(props) {
           visible={engine == 1}
         ></mesh>
 
+        {/* Wheel Config 01 - Tyre 01 */}
+
         <group
           name="corolla_wheel_bl"
           position={[0.875955, 0.382466, -1.502223]}
@@ -1318,11 +1595,13 @@ export default function Corolla(props) {
               material={materials.silver}
             ></mesh>
           </group>
+
           <group
             name="corolla_rim1_bl"
             position={[-0.115297, -0.000244, -0.000068]}
             rotation={[Math.PI / 2, 0, 0]}
             scale={0.001173}
+            visible={rim == 1}
           >
             <mesh
               name="Toyota_Corolla011"
@@ -1352,11 +1631,13 @@ export default function Corolla(props) {
               material={materials.silver}
             ></mesh>
           </group>
+
           <group
             name="corolla_rim2_bl"
             position={[-0.14156, 0, 0]}
             rotation={[-Math.PI, 0.00153, -Math.PI]}
             scale={0.365062}
+            visible={rim == 2}
           >
             <mesh
               name="Circle005"
@@ -1379,6 +1660,7 @@ export default function Corolla(props) {
             position={[-0.14156, 0, 0]}
             rotation={[-Math.PI, 0.004661, -Math.PI]}
             scale={[0.000816, 0.000844, 0.000844]}
+            visible={rim == 3}
           >
             <mesh
               name="ntes003"
@@ -1398,12 +1680,14 @@ export default function Corolla(props) {
             position={[0.019872, -0.000105, 0.000036]}
             rotation={[Math.PI / 2, 0, Math.PI]}
             scale={0.001173}
+            visible={wheels == 1}
           ></mesh>
           <group
             name="corolla_tyre2_bl"
             position={[0.027391, 0, 0]}
             rotation={[-Math.PI, 0.000371, -Math.PI]}
             scale={[0.279956, 0.329967, 0.329967]}
+            visible={wheels == 2}
           >
             <mesh
               name="Circle004"
@@ -1421,6 +1705,7 @@ export default function Corolla(props) {
             position={[0.019872, -0.000105, 0.000036]}
             rotation={[-Math.PI, 0.004661, -Math.PI]}
             scale={[0.000295, 0.000356, 0.000356]}
+            visible={wheels == 3}
           >
             <mesh
               name="Object01_Rubber_T009"
@@ -1465,6 +1750,7 @@ export default function Corolla(props) {
             position={[0.019872, -0.000105, 0.000036]}
             rotation={[-Math.PI, 0.004661, -Math.PI]}
             scale={[0.000295, 0.000356, 0.000356]}
+            visible={wheels == 4}
           >
             <mesh
               name="Object01_Rubber_T011"
@@ -1497,6 +1783,7 @@ export default function Corolla(props) {
             position={[0.019872, -0.000105, 0.000036]}
             rotation={[-Math.PI, 0.004661, -Math.PI]}
             scale={[0.000295, 0.000356, 0.000356]}
+            visible={wheels == 5}
           >
             <mesh
               name="Object01_Rubber_T012"
@@ -1520,6 +1807,9 @@ export default function Corolla(props) {
             ></mesh>
           </group>
         </group>
+
+        {/* Remaining */}
+
         <group
           name="corolla_wheel_fl"
           position={[0.899858, 0.382467, 1.558239]}
@@ -1554,6 +1844,7 @@ export default function Corolla(props) {
             position={[-0.115297, -0.000244, -0.000056]}
             rotation={[Math.PI / 2, 0, 0]}
             scale={0.001173}
+            visible={rim == 1}
           >
             <mesh
               name="Toyota_Corolla014"
@@ -1588,6 +1879,7 @@ export default function Corolla(props) {
             position={[-0.117658, 0, 0]}
             rotation={[-Math.PI, 0.00153, -Math.PI]}
             scale={0.365062}
+            visible={rim == 2}
           >
             <mesh
               name="Circle002"
@@ -1610,6 +1902,7 @@ export default function Corolla(props) {
             position={[-0.117658, 0, 0]}
             rotation={[-Math.PI, 0.004661, -Math.PI]}
             scale={[0.000816, 0.000844, 0.000844]}
+            visible={rim == 3}
           >
             <mesh
               name="ntes001"
@@ -1630,12 +1923,14 @@ export default function Corolla(props) {
             position={[0.019872, -0.000105, 0.000044]}
             rotation={[Math.PI / 2, 0, 0]}
             scale={0.001173}
+            visible={wheels == 1}
           ></mesh>
           <group
             name="corolla_tyre2_fl"
             position={[0.051293, 0, 0]}
             rotation={[-Math.PI, 0.000371, -Math.PI]}
             scale={[0.279956, 0.329967, 0.329967]}
+            visible={wheels == 2}
           >
             <mesh
               name="Circle001"
@@ -1653,6 +1948,7 @@ export default function Corolla(props) {
             position={[0.019872, -0.000105, 0.000044]}
             rotation={[-Math.PI, 0.004661, -Math.PI]}
             scale={[0.000295, 0.000356, 0.000356]}
+            visible={wheels == 3}
           >
             <mesh
               name="Object01_Rubber_T003"
@@ -1697,6 +1993,7 @@ export default function Corolla(props) {
             position={[0.019872, -0.000105, 0.000044]}
             rotation={[-Math.PI, 0.004661, -Math.PI]}
             scale={[0.000295, 0.000356, 0.000356]}
+            visible={wheels == 4}
           >
             <mesh
               name="Object01_Rubber_T004"
@@ -1729,6 +2026,7 @@ export default function Corolla(props) {
             position={[0.019872, -0.000105, 0.000044]}
             rotation={[-Math.PI, 0.004661, -Math.PI]}
             scale={[0.000295, 0.000356, 0.000356]}
+            visible={wheels == 5}
           >
             <mesh
               name="Object01_Rubber_T005"
@@ -1808,6 +2106,7 @@ export default function Corolla(props) {
             position={[0.115325, -0.000245, -0.000061]}
             rotation={[Math.PI / 2, 0, 0]}
             scale={0.001173}
+            visible={rim == 1}
           >
             <mesh
               name="Toyota_Corolla004"
@@ -1842,6 +2141,7 @@ export default function Corolla(props) {
             position={[0.11729, 0, -0.000002]}
             rotation={[0, -0.00153, 0]}
             scale={0.365062}
+            visible={rim == 2}
           >
             <mesh
               name="Circle009"
@@ -1864,6 +2164,7 @@ export default function Corolla(props) {
             position={[0.117143, 0, 0]}
             rotation={[0, -0.004661, 0]}
             scale={[0.000816, 0.000844, 0.000844]}
+            visible={rim == 3}
           >
             <mesh
               name="ntes005"
@@ -1884,12 +2185,14 @@ export default function Corolla(props) {
             position={[-0.019862, -0.000104, 0.000042]}
             rotation={[Math.PI / 2, 0, 0]}
             scale={0.001173}
+            visible={wheels == 1}
           ></mesh>
           <group
             name="corolla_tyre2_fr"
             position={[-0.05053, 0, 0]}
             rotation={[0, -0.000371, 0]}
             scale={[0.279956, 0.329967, 0.329967]}
+            visible={wheels == 2}
           >
             <mesh
               name="Circle008"
@@ -1907,6 +2210,7 @@ export default function Corolla(props) {
             position={[-0.019862, -0.000104, 0.000042]}
             rotation={[0, -0.004661, 0]}
             scale={[0.000295, 0.000356, 0.000356]}
+            visible={wheels == 3}
           >
             <mesh
               name="Object01_Rubber_T010"
@@ -1951,6 +2255,7 @@ export default function Corolla(props) {
             position={[-0.019862, -0.000104, 0.000042]}
             rotation={[0, -0.004661, 0]}
             scale={[0.000295, 0.000356, 0.000356]}
+            visible={wheels == 4}
           >
             <mesh
               name="Object01_Rubber_T001"
@@ -1983,6 +2288,7 @@ export default function Corolla(props) {
             position={[-0.019862, -0.000104, 0.000042]}
             rotation={[0, -0.004661, 0]}
             scale={[0.000295, 0.000356, 0.000356]}
+            visible={wheels == 5}
           >
             <mesh
               name="Object01_Rubber_T002"
@@ -2040,6 +2346,7 @@ export default function Corolla(props) {
             position={[0.115309, -0.000244, -0.000068]}
             rotation={[Math.PI / 2, 0, 0]}
             scale={0.001173}
+            visible={rim == 1}
           >
             <mesh
               name="Toyota_Corolla007"
@@ -2074,6 +2381,7 @@ export default function Corolla(props) {
             position={[0.117281, 0, 0]}
             rotation={[0, -0.00153, 0]}
             scale={0.365062}
+            visible={rim == 2}
           >
             <mesh
               name="Circle007"
@@ -2096,6 +2404,7 @@ export default function Corolla(props) {
             position={[0.117281, 0, 0]}
             rotation={[0, -0.004661, 0]}
             scale={[0.000816, 0.000844, 0.000844]}
+            visible={rim == 3}
           >
             <mesh
               name="ntes002"
@@ -2115,12 +2424,14 @@ export default function Corolla(props) {
             position={[-0.019871, -0.000105, 0.000036]}
             rotation={[Math.PI / 2, 0, 0]}
             scale={0.001173}
+            visible={wheels == 1}
           ></mesh>
           <group
             name="corolla_tyre2_br"
             position={[-0.050539, 0, 0]}
             rotation={[0, -0.000371, 0]}
             scale={[0.279956, 0.329967, 0.329967]}
+            visible={wheels == 2}
           >
             <mesh
               name="Circle006"
@@ -2138,6 +2449,7 @@ export default function Corolla(props) {
             position={[-0.019871, -0.000105, 0.000036]}
             rotation={[0, -0.004661, 0]}
             scale={[0.000295, 0.000356, 0.000356]}
+            visible={wheels == 3}
           >
             <mesh
               name="Object01_Rubber_T006"
@@ -2182,6 +2494,7 @@ export default function Corolla(props) {
             position={[-0.019871, -0.000105, 0.000036]}
             rotation={[0, -0.004661, 0]}
             scale={[0.000295, 0.000356, 0.000356]}
+            visible={wheels == 4}
           >
             <mesh
               name="Object01_Rubber_T007"
@@ -2214,6 +2527,7 @@ export default function Corolla(props) {
             position={[-0.019871, -0.000105, 0.000036]}
             rotation={[0, -0.004661, 0]}
             scale={[0.000295, 0.000356, 0.000356]}
+            visible={wheels == 5}
           >
             <mesh
               name="Object01_Rubber_T008"
@@ -2241,6 +2555,7 @@ export default function Corolla(props) {
           name="corolla_wheel_10_bl"
           position={[0.980481, 0.382466, -1.502222]}
           rotation={[Math.PI, 0, 2.96706]}
+          visible={wheels == 6}
         >
           <mesh
             name="corolla_calliper_10_bl"
@@ -2257,6 +2572,7 @@ export default function Corolla(props) {
             position={[-0.115297, -0.000244, -0.000067]}
             rotation={[Math.PI / 2, 0, 0]}
             scale={0.001173}
+            material-color={rimColor.color}
           ></mesh>
           <group
             name="corolla_tyre_10_bl"
@@ -2301,6 +2617,7 @@ export default function Corolla(props) {
           name="corolla_wheel_10_br"
           position={[-0.980506, 0.382466, -1.502223]}
           rotation={[-Math.PI, 0, -2.96706]}
+          visible={wheels == 6}
         >
           <mesh
             name="corolla_calliper_10_br"
@@ -2361,6 +2678,7 @@ export default function Corolla(props) {
           name="corolla_wheel_10_fl"
           position={[0.980948, 0.382467, 1.558239]}
           rotation={[Math.PI, 0, 2.96706]}
+          visible={wheels == 6}
         >
           <mesh
             name="corolla_callipers_10_fl"
@@ -2421,6 +2739,7 @@ export default function Corolla(props) {
           name="corolla_wheel_10_fr"
           position={[-0.980963, 0.382467, 1.558237]}
           rotation={[-Math.PI, 0, -2.96706]}
+          visible={wheels == 6}
         >
           <mesh
             name="corolla_calliper_10_fr"
@@ -2486,32 +2805,6 @@ export default function Corolla(props) {
           position={[0, 1.02777, 0]}
           scale={0.367834}
         ></group>
-        
-        <mesh
-          name="corolla_wipers"
-          geometry={nodes.corolla_wipers.geometry}
-          position={[-0.148732, 1.131917, 1.413176]}
-          rotation={[Math.PI / 2, 0, Math.PI]}
-          scale={0.001173}
-          material={materials.black_m}
-        >
-          <meshStandardMaterial
-            color={0x000000}
-            roughness={0.5}
-            metalness={0}
-            opacity={1}
-            transparent={false}
-            side={2}
-            emissive={0x000000}
-            emissiveIntensity={1}
-            envMapIntensity={1}
-            wireframe={false}
-            flatShading={false}
-            blending={1}
-            depthWrite={true}
-            depthTest={true}
-          />
-        </mesh>
 
         <group
           name="corolla_headlights"
@@ -2652,17 +2945,17 @@ export default function Corolla(props) {
         </group>
 
         <mesh
-          name="corolla_trunk"
-          geometry={nodes.corolla_trunk.geometry}
-          material={materials.body}
-          position={[0, 1.040025, -2.390526]}
+          name="corolla_wipers"
+          geometry={nodes.corolla_wipers.geometry}
+          position={[-0.148732, 1.131917, 1.413176]}
           rotation={[Math.PI / 2, 0, Math.PI]}
           scale={0.001173}
+          material={materials.black_m}
         >
-          <meshPhysicalMaterial
-            color={0x0024a0}
-            roughness={0.3333333134651184}
-            metalness={0.2638888955116272}
+          <meshStandardMaterial
+            color={0x000000}
+            roughness={0.5}
+            metalness={0}
             opacity={1}
             transparent={false}
             side={2}
@@ -2676,67 +2969,6 @@ export default function Corolla(props) {
             depthTest={true}
           />
         </mesh>
-        <group
-          name="corolla_bumper_b_2_dualquad_silencer"
-          position={[0, 0.517258, -2.361242]}
-          rotation={[Math.PI / 2, 0, Math.PI]}
-          scale={0.001173}
-        >
-          <mesh
-            name="Toyota_Corolla024"
-            geometry={nodes.Toyota_Corolla024.geometry}
-            material={materials.black_m}
-          >
-            <meshStandardMaterial
-              color={0x000000}
-              roughness={0.5}
-              metalness={0}
-              opacity={1}
-              transparent={false}
-              side={2}
-              emissive={0x000000}
-              emissiveIntensity={1}
-              envMapIntensity={1}
-              wireframe={false}
-              flatShading={false}
-              blending={1}
-              depthWrite={true}
-              depthTest={true}
-            />
-          </mesh>
-          <mesh
-            name="Toyota_Corolla024_1"
-            geometry={nodes.Toyota_Corolla024_1.geometry}
-            material={materials.body}
-          >
-            <meshPhysicalMaterial
-              color={0x0024a0}
-              roughness={0.3333333134651184}
-              metalness={0.2638888955116272}
-              opacity={1}
-              transparent={false}
-              side={2}
-              emissive={0x000000}
-              emissiveIntensity={1}
-              envMapIntensity={1}
-              wireframe={false}
-              flatShading={false}
-              blending={1}
-              depthWrite={true}
-              depthTest={true}
-            />
-          </mesh>
-          <mesh
-            name="Toyota_Corolla024_2"
-            geometry={nodes.Toyota_Corolla024_2.geometry}
-            material={materials.r_glass}
-          ></mesh>
-          <mesh
-            name="Toyota_Corolla024_3"
-            geometry={nodes.Toyota_Corolla024_3.geometry}
-            material={materials.chrome_bump}
-          ></mesh>
-        </group>
 
         <mesh
           name="corolla_bumper_f"
@@ -2747,7 +2979,7 @@ export default function Corolla(props) {
           scale={0.001173}
         >
           <meshPhysicalMaterial
-            color={0x0024a0}
+            color={bumperFrontColor.color}
             roughness={0.3333333134651184}
             metalness={0.2638888955116272}
             opacity={1}
@@ -2865,7 +3097,7 @@ export default function Corolla(props) {
             material={materials.body}
           >
             <meshPhysicalMaterial
-              color={0x0024a0}
+              color={0x0024a}
               roughness={0.3333333134651184}
               metalness={0.2638888955116272}
               opacity={1}
@@ -2889,7 +3121,25 @@ export default function Corolla(props) {
           position={[0.007062, 0.818107, -0.494102]}
           rotation={[Math.PI / 2, 0, Math.PI]}
           scale={0.001173}
-        ></mesh>
+          visible={interior == 0}
+        >
+          <meshPhysicalMaterial
+            color={interiorColor.color}
+            roughness={0.6666666865348816}
+            metalness={0}
+            opacity={1}
+            transparent={false}
+            side={2}
+            emissive={0x000000}
+            emissiveIntensity={1}
+            envMapIntensity={1}
+            wireframe={false}
+            flatShading={false}
+            blending={1}
+            depthWrite={true}
+            depthTest={true}
+          />
+        </mesh>
         <group
           name="corolla_dashboard+center_console"
           position={[0.000261, 1.027565, 0.533469]}
@@ -3005,6 +3255,7 @@ export default function Corolla(props) {
           position={[0.808663, 1.358269, -0.808334]}
           rotation={[Math.PI / 2, 0, Math.PI]}
           scale={0.001173}
+          visible={door == 0}
         ></mesh>
         <mesh
           name="corolla_window_fl"
@@ -3013,6 +3264,7 @@ export default function Corolla(props) {
           position={[0.821282, 1.323919, 0.276676]}
           rotation={[Math.PI / 2, 0, Math.PI]}
           scale={0.001173}
+          visible={door == 0}
         ></mesh>
         <mesh
           name="corolla_window_fr"
@@ -3021,6 +3273,7 @@ export default function Corolla(props) {
           position={[-0.821304, 1.32392, 0.276624]}
           rotation={[Math.PI / 2, 0, Math.PI]}
           scale={0.001173}
+          visible={door == 0}
         ></mesh>
         <mesh
           name="corolla_window_br"
@@ -3029,12 +3282,14 @@ export default function Corolla(props) {
           position={[-0.808661, 1.358269, -0.808335]}
           rotation={[Math.PI / 2, 0, Math.PI]}
           scale={0.001173}
+          visible={door == 0}
         ></mesh>
         <group
           name="corolla_seats2"
           position={[0.007062, 0.818107, -0.494103]}
           rotation={[Math.PI / 2, 0, Math.PI]}
           scale={0.001173}
+          visible={interior == 1}
         >
           <mesh
             name="Toyota_Corolla042"
@@ -3042,7 +3297,7 @@ export default function Corolla(props) {
             material={materials.black_m}
           >
             <meshStandardMaterial
-              color={0x000000}
+              color={interiorColor.color}
               roughness={0.5}
               metalness={0}
               opacity={1}
@@ -3067,7 +3322,7 @@ export default function Corolla(props) {
             name="Toyota_Corolla042_2"
             geometry={nodes.Toyota_Corolla042_2.geometry}
             material={materials.leather}
-            // TODO: Add state here
+            material-color={interiorColor.color}
           ></mesh>
           <mesh
             name="Toyota_Corolla042_3"
@@ -3094,89 +3349,9 @@ export default function Corolla(props) {
           position={[0, 0.282511, -2.342977]}
           rotation={[Math.PI / 2, 0, Math.PI]}
           scale={0.096423}
+          visible={silencer == 3}
         ></mesh>
-        <group
-          name="corolla_bumper_b_1_singledualquad_silencer"
-          position={[0.000014, 0.579622, -2.342977]}
-          rotation={[Math.PI / 2, 0, Math.PI]}
-          scale={0.001173}
-        >
-          <mesh
-            name="Toyota_Corolla066"
-            geometry={nodes.Toyota_Corolla066.geometry}
-            material={materials.black_m}
-          >
-            <meshStandardMaterial
-              color={0x000000}
-              roughness={0.5}
-              metalness={0}
-              opacity={1}
-              transparent={false}
-              side={2}
-              emissive={0x000000}
-              emissiveIntensity={1}
-              envMapIntensity={1}
-              wireframe={false}
-              flatShading={false}
-              blending={1}
-              depthWrite={true}
-              depthTest={true}
-            />
-          </mesh>
-          <mesh
-            name="Toyota_Corolla066_1"
-            geometry={nodes.Toyota_Corolla066_1.geometry}
-            material={materials.body}
-          >
-            <meshPhysicalMaterial
-              color={0x0024a0}
-              roughness={0.3333333134651184}
-              metalness={0.2638888955116272}
-              opacity={1}
-              transparent={false}
-              side={2}
-              emissive={0x000000}
-              emissiveIntensity={1}
-              envMapIntensity={1}
-              wireframe={false}
-              flatShading={false}
-              blending={1}
-              depthWrite={true}
-              depthTest={true}
-            />
-          </mesh>
-          <mesh
-            name="Toyota_Corolla066_2"
-            geometry={nodes.Toyota_Corolla066_2.geometry}
-            material={materials.r_glass}
-          ></mesh>
-          <mesh
-            name="Toyota_Corolla066_3"
-            geometry={nodes.Toyota_Corolla066_3.geometry}
-            material={materials.chrome_bump}
-          ></mesh>
-        </group>
 
-        <mesh
-          name="corolla_sideskirts"
-          geometry={nodes.corolla_sideskirts.geometry}
-          material={materials["Material #2.012"]}
-          position={[0, 0.232425, -0.877087]}
-          rotation={[-Math.PI, 0, 0]}
-          scale={[-0.086731, -0.681185, -0.681185]}
-          material-color={sideKitColor.color}
-          visible={sideKit == 1}
-        ></mesh>
-        <mesh
-          name="corolla_widebodykit"
-          geometry={nodes.corolla_widebodykit.geometry}
-          material={nodes.corolla_widebodykit.material}
-          position={[0, 0.534839, -1.700595]}
-          rotation={[0.890102, 0, 0]}
-          scale={[0.025059, 0.031579, 0.033164]}
-          material-color={sideKitColor.color}
-          visible={sideKit == 2}
-        ></mesh>
         <mesh
           name="corolla_silencer2"
           geometry={nodes.corolla_silencer2.geometry}
@@ -3184,6 +3359,7 @@ export default function Corolla(props) {
           position={[0, 0.34513, -2.40308]}
           rotation={[1.211355, 0, Math.PI]}
           scale={0.001173}
+          visible={silencer == 2}
         ></mesh>
         <mesh
           name="corolla_silencer1"
@@ -3192,68 +3368,9 @@ export default function Corolla(props) {
           position={[-0.46851, 0.345132, -2.403075]}
           rotation={[1.211355, 0, Math.PI]}
           scale={0.001173}
+          visible={silencer == 1}
         ></mesh>
-        <group
-          name="corolla_bumper_b_3_single_silencer"
-          position={[0, 0.517258, -2.361242]}
-          rotation={[Math.PI / 2, 0, Math.PI]}
-          scale={0.001173}
-        >
-          <mesh
-            name="Toyota_Corolla029"
-            geometry={nodes.Toyota_Corolla029.geometry}
-            material={materials.black_m}
-          >
-            <meshStandardMaterial
-              color={0x000000}
-              roughness={0.5}
-              metalness={0}
-              opacity={1}
-              transparent={false}
-              side={2}
-              emissive={0x000000}
-              emissiveIntensity={1}
-              envMapIntensity={1}
-              wireframe={false}
-              flatShading={false}
-              blending={1}
-              depthWrite={true}
-              depthTest={true}
-            />
-          </mesh>
-          <mesh
-            name="Toyota_Corolla029_1"
-            geometry={nodes.Toyota_Corolla029_1.geometry}
-            material={materials.body}
-          >
-            <meshPhysicalMaterial
-              color={0x0024a0}
-              roughness={0.3333333134651184}
-              metalness={0.2638888955116272}
-              opacity={1}
-              transparent={false}
-              side={2}
-              emissive={0x000000}
-              emissiveIntensity={1}
-              envMapIntensity={1}
-              wireframe={false}
-              flatShading={false}
-              blending={1}
-              depthWrite={true}
-              depthTest={true}
-            />
-          </mesh>
-          <mesh
-            name="Toyota_Corolla029_2"
-            geometry={nodes.Toyota_Corolla029_2.geometry}
-            material={materials.r_glass}
-          ></mesh>
-          <mesh
-            name="Toyota_Corolla029_3"
-            geometry={nodes.Toyota_Corolla029_3.geometry}
-            material={materials.chrome_bump}
-          ></mesh>
-        </group>
+
         <group
           name="corolla_bumper_f_part_(blackchromebody_color)"
           position={[0.059495, 0.845069, 1.124388]}
@@ -3264,6 +3381,7 @@ export default function Corolla(props) {
             name="Toyota_Corolla050"
             geometry={nodes.Toyota_Corolla050.geometry}
             material={materials.black_m}
+            material-color={grillColor.color}
           >
             <meshStandardMaterial
               color={0x000000}
@@ -3308,14 +3426,31 @@ export default function Corolla(props) {
             name="Toyota_Corolla050_2"
             geometry={nodes.Toyota_Corolla050_2.geometry}
             material={materials.gum}
-          ></mesh>
+          >
+            <meshPhysicalMaterial
+              color={grillColor.color}
+              roughness={0.6666666865348816}
+              metalness={0}
+              opacity={1}
+              transparent={false}
+              side={2}
+              emissive={0x000000}
+              emissiveIntensity={1}
+              envMapIntensity={1}
+              wireframe={false}
+              flatShading={false}
+              blending={1}
+              depthWrite={true}
+              depthTest={true}
+            />
+          </mesh>
           <mesh
             name="Toyota_Corolla050_3"
             geometry={nodes.Toyota_Corolla050_3.geometry}
             material={materials.body}
           >
             <meshPhysicalMaterial
-              color={0x0024a0}
+              color={bumperFrontColor.color}
               roughness={0.3333333134651184}
               metalness={0.2638888955116272}
               opacity={1}
@@ -3359,9 +3494,6 @@ export default function Corolla(props) {
             depthTest={true}
           />
         </mesh>
-
-        
-        
       </group>
     </group>
   );

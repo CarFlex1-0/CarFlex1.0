@@ -23,6 +23,15 @@ import axios from "@services/axios";
 
 const Configurator = () => {
   const {
+    interior,
+    interiorClick,
+    setInterior,
+    interiorColor,
+    interiorColors,
+    setInteriorClick,
+    setInteriorColor,
+    door,
+    setDoor,
     spoilerColors,
     doorColors,
     rimColors,
@@ -60,6 +69,9 @@ const Configurator = () => {
     setRimClick,
     rimColor,
     setRimColor,
+    rim,
+    setRim,
+
     // Wheels
     wheels,
     setWheels,
@@ -388,6 +400,7 @@ const Configurator = () => {
             setRoofClick(false);
             setSilencerClick(false);
             setTrunkClick(false);
+            setInteriorClick(false);
           }}
         >
           Bonnet
@@ -415,6 +428,7 @@ const Configurator = () => {
             setRoofClick(false);
             setSilencerClick(false);
             setTrunkClick(false);
+            setInteriorClick(false);
           }}
         >
           Front Bumper
@@ -442,6 +456,7 @@ const Configurator = () => {
             setRoofClick(false);
             setSilencerClick(false);
             setTrunkClick(false);
+            setInteriorClick(false);
           }}
         >
           Rims
@@ -469,6 +484,7 @@ const Configurator = () => {
             setRoofClick(false);
             setSilencerClick(false);
             setTrunkClick(false);
+            setInteriorClick(false);
           }}
         >
           Wheels
@@ -495,6 +511,7 @@ const Configurator = () => {
             setRoofClick(false);
             setSilencerClick(false);
             setTrunkClick(false);
+            setInteriorClick(false);
           }}
         >
           Spoiler
@@ -521,6 +538,7 @@ const Configurator = () => {
             setRoofClick(false);
             setSilencerClick(false);
             setTrunkClick(true);
+            setInteriorClick(false);
           }}
         >
           Trunk
@@ -547,35 +565,10 @@ const Configurator = () => {
             setRoofClick(false);
             setSilencerClick(false);
             setTrunkClick(false);
+            setInteriorClick(false);
           }}
         >
           SideKit
-        </button>
-
-        <button
-          className="btn btn-outline btn-primary"
-          onClick={() => {
-            setSpoilerClick(false);
-            setRimClick(false);
-            setWindowClick(false);
-            setBonnetClick(false);
-            setLightClick(false);
-            setCarBodyClick(false);
-            setDoorClick(false);
-            setSideKitClick(false);
-            setWheelsClick(false);
-            setBumperFrontClick(false);
-            setBumperBackClick(false);
-            setGrillClick(false);
-            setEngineClick(false);
-            setFenderClick(false);
-            setDiffuserClick(true);
-            setRoofClick(false);
-            setSilencerClick(true);
-            setTrunkClick(false);
-          }}
-        >
-          Diffuser & Silencer
         </button>
 
         <button
@@ -599,6 +592,7 @@ const Configurator = () => {
             setRoofClick(true);
             setSilencerClick(false);
             setTrunkClick(false);
+            setInteriorClick(false);
           }}
         >
           Roof
@@ -620,10 +614,11 @@ const Configurator = () => {
             setGrillClick(false);
             setEngineClick(false);
             setFenderClick(false);
-            setDiffuserClick(false);
+            setDiffuserClick(true);
             setRoofClick(false);
-            setSilencerClick(false);
+            setSilencerClick(true);
             setTrunkClick(false);
+            setInteriorClick(false);
           }}
         >
           Back Bumper
@@ -650,6 +645,7 @@ const Configurator = () => {
             setRoofClick(false);
             setSilencerClick(false);
             setTrunkClick(false);
+            setInteriorClick(false);
           }}
         >
           Fender
@@ -676,6 +672,7 @@ const Configurator = () => {
             setRoofClick(false);
             setSilencerClick(false);
             setTrunkClick(false);
+            setInteriorClick(false);
           }}
         >
           Door
@@ -707,6 +704,7 @@ const Configurator = () => {
             setRoofClick(false);
             setSilencerClick(false);
             setTrunkClick(false);
+            setInteriorClick(false);
           }}
         >
           Engine
@@ -733,9 +731,36 @@ const Configurator = () => {
             setRoofClick(false);
             setSilencerClick(false);
             setTrunkClick(false);
+            setInteriorClick(false);
           }}
         >
           Window
+        </button>
+        <button
+          className="btn btn-outline btn-primary"
+          onClick={() => {
+            setSpoilerClick(false);
+            setRimClick(false);
+            setWindowClick(false);
+            setBonnetClick(false);
+            setLightClick(false);
+            setCarBodyClick(false);
+            setDoorClick(false);
+            setSideKitClick(false);
+            setWheelsClick(false);
+            setBumperFrontClick(false);
+            setBumperBackClick(false);
+            setGrillClick(false);
+            setEngineClick(false);
+            setFenderClick(false);
+            setDiffuserClick(false);
+            setRoofClick(false);
+            setSilencerClick(false);
+            setTrunkClick(false);
+            setInteriorClick(true);
+          }}
+        >
+          Interior
         </button>
       </div>
 
@@ -865,6 +890,99 @@ const Configurator = () => {
                 </div>
               </div>
             )}
+          </>
+        )}
+
+        {/* Interior Customization */}
+        {interiorClick && (
+          <>
+            {/* Spoiler Type Section */}
+            <div className="configurator__section">
+              <div className="uppercase font-bold text-white font-poppins">
+                Interior
+              </div>
+              <div className="flex flex-row gap-8 items-center flex-wrap py-4">
+                <div
+                  className={`item flex flex-col items-center transition-all duration-400 ${
+                    interior === 0 ? "item--active" : ""
+                  }`}
+                  onClick={() => {
+                    setInterior(0);
+                    updateMetrics({
+                      ...bodyData,
+                      dC: bodyData.dC + 0.02,
+                      kW: bodyData.kW - 5,
+                    });
+                  }}
+                >
+                  <div
+                    className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                      interior === 0 ? "text-white" : "text-gray-400"
+                    }`}
+                  >
+                    Base
+                  </div>
+                </div>
+                <div
+                  className={`item flex flex-col items-center transition-all duration-400 ${
+                    interior === 1 ? "item--active" : ""
+                  }`}
+                  onClick={() => {
+                    setInterior(1);
+                    updateMetrics({
+                      ...bodyData,
+                      dC: bodyData.dC - 0.01,
+                      kW: bodyData.kW + 5,
+                    });
+                  }}
+                >
+                  <div
+                    className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                      interior === 1 ? "text-white" : "text-gray-400"
+                    }`}
+                  >
+                    Sport
+                  </div>
+                </div>
+              </div>
+              <div className="text-white text-center font-bold text-sm capitalize">
+                The Civic Interior is a one of kind and changing it gives an
+                amazing comfort boost.
+              </div>
+            </div>
+
+            {/* Spoiler Color Section */}
+
+            <div className="configurator__section">
+              <div className="uppercase font-bold text-white font-poppins">
+                Interior Color
+              </div>
+              <div className="flex flex-row gap-8 items-center flex-wrap py-4">
+                {interiorColors.map((item, index) => (
+                  <div
+                    key={index}
+                    className={`item flex flex-col items-center transition-all duration-400 ${
+                      item.color === interiorColor.color ? "item--active" : ""
+                    }`}
+                    onClick={() => setInteriorColor(item)}
+                  >
+                    <div
+                      className="w-8 h-8 rounded-full border-2"
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <div
+                      className={`text-center font-bold text-sm capitalize ${
+                        item.color === interiorColor.color
+                          ? "text-white"
+                          : "text-gray-400"
+                      }`}
+                    >
+                      {item.name}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </>
         )}
 
@@ -1054,15 +1172,15 @@ const Configurator = () => {
             {/* WheelType Section */}
             <div className="configurator__section">
               <div className="uppercase font-bold text-white font-poppins">
-                Wheel Offset
+                Wheel Selection
               </div>
               <div className="flex flex-row gap-8 items-center flex-wrap py-4">
                 <div
                   className={`item flex flex-col items-center transition-all duration-400 ${
-                    wheels === 0 ? "item--active" : ""
+                    wheels === 1 ? "item--active" : ""
                   }`}
                   onClick={() => {
-                    setWheels(0);
+                    setWheels(1);
                     updateMetrics({
                       ...bodyData,
                       kW: bodyData.kW - 10,
@@ -1072,32 +1190,10 @@ const Configurator = () => {
                 >
                   <div
                     className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                      wheels === 0 ? "text-white" : "text-gray-400"
-                    }`}
-                  >
-                    Stock Wheels
-                  </div>
-                </div>
-
-                <div
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    wheels === 1 ? "item--active" : ""
-                  }`}
-                  onClick={() => {
-                    setWheels(1);
-                    updateMetrics({
-                      ...bodyData,
-                      kW: bodyData.kW + 5,
-                      dC: bodyData.dC - 0.005,
-                    });
-                  }}
-                >
-                  <div
-                    className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
                       wheels === 1 ? "text-white" : "text-gray-400"
                     }`}
                   >
-                    5 degree Offset
+                    Stock
                   </div>
                 </div>
 
@@ -1109,8 +1205,8 @@ const Configurator = () => {
                     setWheels(2);
                     updateMetrics({
                       ...bodyData,
-                      kW: bodyData.kW + 10,
-                      dC: bodyData.dC - 0.01,
+                      kW: bodyData.kW + 5,
+                      dC: bodyData.dC - 0.005,
                     });
                   }}
                 >
@@ -1119,7 +1215,7 @@ const Configurator = () => {
                       wheels === 2 ? "text-white" : "text-gray-400"
                     }`}
                   >
-                    10 degree Offset
+                    Sport
                   </div>
                 </div>
 
@@ -1131,8 +1227,8 @@ const Configurator = () => {
                     setWheels(3);
                     updateMetrics({
                       ...bodyData,
-                      kW: bodyData.kW + 15,
-                      dC: bodyData.dC - 0.015,
+                      kW: bodyData.kW + 10,
+                      dC: bodyData.dC - 0.01,
                     });
                   }}
                 >
@@ -1141,12 +1237,220 @@ const Configurator = () => {
                       wheels === 3 ? "text-white" : "text-gray-400"
                     }`}
                   >
-                    15 degree Offset
+                    Performance
+                  </div>
+                </div>
+
+                <div
+                  className={`item flex flex-col items-center transition-all duration-400 ${
+                    wheels === 6 ? "item--active" : ""
+                  }`}
+                  onClick={() => {
+                    setWheels(6);
+                    updateMetrics({
+                      ...bodyData,
+                      kW: bodyData.kW + 15,
+                      dC: bodyData.dC - 0.015,
+                    });
+                  }}
+                >
+                  <div
+                    className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                      wheels === 6 ? "text-white" : "text-gray-400"
+                    }`}
+                  >
+                    Offset
                   </div>
                 </div>
               </div>
             </div>
           </>
+        )}
+
+        {/* Rim Customization */}
+        {rimClick && (
+          <div className="configurator__section">
+            <div className="uppercase font-bold text-white font-poppins">
+              Rim Color
+            </div>
+            <div className="flex flex-row gap-8 items-center flex-wrap py-4">
+              {rimColors.map((item, index) => (
+                <div
+                  key={index}
+                  className={`item flex flex-col items-center transition-all duration-400 ${
+                    item.color === rimColor.color ? "item--active" : ""
+                  }`}
+                  onClick={() => setRimColor(item)}
+                >
+                  <div
+                    className="w-8 h-8 rounded-full border-2"
+                    style={{ backgroundColor: item.color }}
+                  />
+                  <div
+                    className={`text-center font-bold text-sm text-gray-400 capitalize ${
+                      item.color === rimColor.color ? "text-white" : ""
+                    }`}
+                  >
+                    {item.name}
+                  </div>
+                </div>
+              ))}
+            </div>
+            {wheels !== 6 && (
+              <>
+                <div className="uppercase font-bold text-white font-poppins">
+                  Rim Selection
+                </div>
+                <div className="flex flex-row gap-8 items-center flex-wrap py-4">
+                  {wheels === 1 || wheels === 2 ? (
+                    <>
+                      <div
+                        className={`item flex flex-col items-center transition-all duration-400 ${
+                          rim === 1 ? "item--active" : ""
+                        }`}
+                        onClick={() => {
+                          if (rim === 0) {
+                            setRim(1);
+                          }
+                          setRim(1);
+                          updateMetrics({
+                            ...bodyData,
+                            kW: bodyData.kW + 10,
+                            dC: bodyData.dC - 0.01,
+                          });
+                        }}
+                      >
+                        <div
+                          className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                            rim === 1 ? "text-white" : "text-gray-400"
+                          }`}
+                        >
+                          Rim 1
+                        </div>
+                      </div>
+                      <div
+                        className={`item flex flex-col items-center transition-all duration-400 ${
+                          rim === 2 ? "item--active" : ""
+                        }`}
+                        onClick={() => {
+                          if (rim === 0) {
+                            setRim(1);
+                          }
+                          setRim(2);
+                          updateMetrics({
+                            ...bodyData,
+                            kW: bodyData.kW + 15,
+                            dC: bodyData.dC - 0.015,
+                          });
+                        }}
+                      >
+                        <div
+                          className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                            rim === 2 ? "text-white" : "text-gray-400"
+                          }`}
+                        >
+                          Rim 2
+                        </div>
+                      </div>
+                      <div
+                        className={`item flex flex-col items-center transition-all duration-400 ${
+                          rim === 3 ? "item--active" : ""
+                        }`}
+                        onClick={() => {
+                          if (rim === 0) {
+                            setRim(1);
+                          }
+                          setRim(3);
+                          updateMetrics({
+                            ...bodyData,
+                            kW: bodyData.kW + 20,
+                            dC: bodyData.dC - 0.02,
+                          });
+                        }}
+                      >
+                        <div
+                          className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                            rim === 3 ? "text-white" : "text-gray-400"
+                          }`}
+                        >
+                          Rim 3
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div
+                        className={`item flex flex-col items-center transition-all duration-400 ${
+                          wheels === 3 ? "item--active" : ""
+                        }`}
+                        onClick={() => {
+                          setRim(0);
+                          setWheels(3);
+                          updateMetrics({
+                            ...bodyData,
+                            kW: bodyData.kW + 10,
+                            dC: bodyData.dC - 0.01,
+                          });
+                        }}
+                      >
+                        <div
+                          className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                            wheels === 3 ? "text-white" : "text-gray-400"
+                          }`}
+                        >
+                          Rim 1
+                        </div>
+                      </div>
+                      <div
+                        className={`item flex flex-col items-center transition-all duration-400 ${
+                          wheels === 4 ? "item--active" : ""
+                        }`}
+                        onClick={() => {
+                          setRim(0);
+                          setWheels(4);
+                          updateMetrics({
+                            ...bodyData,
+                            kW: bodyData.kW + 15,
+                            dC: bodyData.dC - 0.015,
+                          });
+                        }}
+                      >
+                        <div
+                          className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                            wheels === 4 ? "text-white" : "text-gray-400"
+                          }`}
+                        >
+                          Rim 2
+                        </div>
+                      </div>
+                      <div
+                        className={`item flex flex-col items-center transition-all duration-400 ${
+                          wheels === 5 ? "item--active" : ""
+                        }`}
+                        onClick={() => {
+                          setRim(0);
+                          setWheels(5);
+                          updateMetrics({
+                            ...bodyData,
+                            kW: bodyData.kW + 20,
+                            dC: bodyData.dC - 0.02,
+                          });
+                        }}
+                      >
+                        <div
+                          className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                            wheels === 5 ? "text-white" : "text-gray-400"
+                          }`}
+                        >
+                          Rim 3
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
         )}
 
         {/* Diffuser Customization */}
@@ -1155,20 +1459,15 @@ const Configurator = () => {
             {/* Diffuser Type Section */}
             <div className="configurator__section">
               <div className="uppercase font-bold text-white font-poppins">
-                Diffusers
+                Back Bumpers
               </div>
               <div className="flex flex-row gap-8 items-center flex-wrap py-4">
                 <div
                   className={`item flex flex-col items-center transition-all duration-400 ${
-                    diffuser === 3 ? "item--active" : ""
+                    diffuser === 0 ? "item--active" : ""
                   }`}
                   onClick={() => {
-                    setDiffuser(3);
-                    if (silencer === 2) {
-                      setSilencer(1);
-                    } else if (silencer === 4) {
-                      setSilencer(3);
-                    }
+                    setDiffuser(0);
                     updateMetrics({
                       ...bodyData,
                       dC: bodyData.dC + 0.02,
@@ -1178,23 +1477,19 @@ const Configurator = () => {
                 >
                   <div
                     className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                      diffuser === 3 ? "text-white" : "text-gray-400"
+                      diffuser === 0 ? "text-white" : "text-gray-400"
                     }`}
                   >
-                    No Diffuser
+                    Stock
                   </div>
                 </div>
                 <div
                   className={`item flex flex-col items-center transition-all duration-400 ${
-                    diffuser === 0 ? "item--active" : ""
+                    diffuser === 1 ? "item--active" : ""
                   }`}
                   onClick={() => {
-                    setDiffuser(0);
-                    if (silencer === 2) {
-                      setSilencer(1);
-                    } else if (silencer === 4) {
-                      setSilencer(3);
-                    }
+                    setDiffuser(1);
+                    if (silencer == 1) setSilencer(2);
                     updateMetrics({
                       ...bodyData,
                       dC: bodyData.dC - 0.01,
@@ -1204,23 +1499,19 @@ const Configurator = () => {
                 >
                   <div
                     className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                      diffuser === 0 ? "text-white" : "text-gray-400"
+                      diffuser === 1 ? "text-white" : "text-gray-400"
                     }`}
                   >
-                    Diffuser 01
+                    Sport (Double)
                   </div>
                 </div>
                 <div
                   className={`item flex flex-col items-center transition-all duration-400 ${
-                    diffuser === 1 ? "item--active" : ""
+                    diffuser === 2 ? "item--active" : ""
                   }`}
                   onClick={() => {
-                    setDiffuser(1);
-                    if (silencer === 2) {
-                      setSilencer(1);
-                    } else if (silencer === 4) {
-                      setSilencer(3);
-                    }
+                    setDiffuser(2);
+                    setSilencer(1);
                     updateMetrics({
                       ...bodyData,
                       dC: bodyData.dC - 0.015,
@@ -1230,74 +1521,14 @@ const Configurator = () => {
                 >
                   <div
                     className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                      diffuser === 1 ? "text-white" : "text-gray-400"
-                    }`}
-                  >
-                    Diffuser 02
-                  </div>
-                </div>
-                <div
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    diffuser === 2 ? "item--active" : ""
-                  }`}
-                  onClick={() => {
-                    setDiffuser(2);
-                    if (silencer === 1) {
-                      setSilencer(2);
-                    } else if (silencer === 3) {
-                      setSilencer(4);
-                    }
-                    updateMetrics({
-                      ...bodyData,
-                      dC: bodyData.dC - 0.02,
-                      kW: bodyData.kW + 5,
-                    });
-                  }}
-                >
-                  <div
-                    className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
                       diffuser === 2 ? "text-white" : "text-gray-400"
                     }`}
                   >
-                    Diffuser 03
+                    Sport (Single)
                   </div>
                 </div>
               </div>
             </div>
-
-            {/* Diffuser Color Section */}
-            {diffuser !== 3 && (
-              <div className="configurator__section">
-                <div className="uppercase font-bold text-white font-poppins">
-                  Diffuser Color
-                </div>
-                <div className="flex flex-row gap-8 items-center flex-wrap py-4">
-                  {diffuserColors.map((item, index) => (
-                    <div
-                      key={index}
-                      className={`item flex flex-col items-center transition-all duration-400 ${
-                        item.color === diffuserColor.color ? "item--active" : ""
-                      }`}
-                      onClick={() => setDiffuserColor(item)}
-                    >
-                      <div
-                        className="w-8 h-8 rounded-full border-2"
-                        style={{ backgroundColor: item.color }}
-                      />
-                      <div
-                        className={`text-center font-bold text-sm capitalize ${
-                          item.color === diffuserColor.color
-                            ? "text-white"
-                            : "text-gray-400"
-                        }`}
-                      >
-                        {item.name}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </>
         )}
 
@@ -1307,13 +1538,11 @@ const Configurator = () => {
             {/* Silencer Type Section */}
             <div className="configurator__section">
               <div className="uppercase font-bold text-white font-poppins">
-                {diffuser === 3 || diffuser === 0 || diffuser === 1
-                  ? "Silencers"
-                  : "Lowered Silencers"}
+                Silencers
               </div>
 
               <div className="flex flex-row gap-8 items-center flex-wrap py-4">
-                {(diffuser === 3 || diffuser === 0 || diffuser === 1) && (
+                {diffuser === 0 && (
                   <>
                     <div
                       className={`item flex flex-col items-center transition-all duration-400 ${
@@ -1333,7 +1562,29 @@ const Configurator = () => {
                           silencer === 1 ? "text-white" : "text-gray-400"
                         }`}
                       >
-                        Silencer Triple
+                        Single
+                      </div>
+                    </div>
+
+                    <div
+                      className={`item flex flex-col items-center transition-all duration-400 ${
+                        silencer === 2 ? "item--active" : ""
+                      }`}
+                      onClick={() => {
+                        setSilencer(2);
+                        updateMetrics({
+                          ...bodyData,
+                          dC: bodyData.dC + 0.005,
+                          kW: bodyData.kW + 3,
+                        });
+                      }}
+                    >
+                      <div
+                        className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                          silencer === 2 ? "text-white" : "text-gray-400"
+                        }`}
+                      >
+                        Dual
                       </div>
                     </div>
 
@@ -1355,13 +1606,13 @@ const Configurator = () => {
                           silencer === 3 ? "text-white" : "text-gray-400"
                         }`}
                       >
-                        Silencer Single
+                        Quad
                       </div>
                     </div>
                   </>
                 )}
 
-                {diffuser === 2 && (
+                {diffuser === 1 && (
                   <>
                     <div
                       className={`item flex flex-col items-center transition-all duration-400 ${
@@ -1381,29 +1632,55 @@ const Configurator = () => {
                           silencer === 2 ? "text-white" : "text-gray-400"
                         }`}
                       >
-                        Triple Silencer
+                        Dual
                       </div>
                     </div>
 
                     <div
                       className={`item flex flex-col items-center transition-all duration-400 ${
-                        silencer === 4 ? "item--active" : ""
+                        silencer === 3 ? "item--active" : ""
                       }`}
                       onClick={() => {
-                        setSilencer(4);
+                        setSilencer(3);
                         updateMetrics({
                           ...bodyData,
-                          dC: bodyData.dC - 0.01,
+                          dC: bodyData.dC - 0.005,
+                          kW: bodyData.kW + 1,
+                        });
+                      }}
+                    >
+                      <div
+                        className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                          silencer === 3 ? "text-white" : "text-gray-400"
+                        }`}
+                      >
+                        Quad
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {diffuser === 2 && (
+                  <>
+                    <div
+                      className={`item flex flex-col items-center transition-all duration-400 ${
+                        silencer === 1 ? "item--active" : ""
+                      }`}
+                      onClick={() => {
+                        setSilencer(1);
+                        updateMetrics({
+                          ...bodyData,
+                          dC: bodyData.dC + 0.01,
                           kW: bodyData.kW + 2,
                         });
                       }}
                     >
                       <div
                         className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                          silencer === 4 ? "text-white" : "text-gray-400"
+                          silencer === 1 ? "text-white" : "text-gray-400"
                         }`}
                       >
-                        Ring Silencer
+                        Single
                       </div>
                     </div>
                   </>
@@ -1440,7 +1717,7 @@ const Configurator = () => {
                       sideKit === 0 ? "text-white" : "text-gray-400"
                     }`}
                   >
-                    Remove Side Kit
+                    Remove Kit
                   </div>
                 </div>
                 <div
@@ -1462,6 +1739,27 @@ const Configurator = () => {
                     }`}
                   >
                     Add Side Kit
+                  </div>
+                </div>
+                <div
+                  className={`item flex flex-col items-center transition-all duration-400 ${
+                    sideKit === 2 ? "item--active" : ""
+                  }`}
+                  onClick={() => {
+                    setSideKit(2);
+                    updateMetrics({
+                      ...bodyData,
+                      dC: bodyData.dC - 0.01,
+                      kW: bodyData.kW + 8,
+                    });
+                  }}
+                >
+                  <div
+                    className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                      sideKit === 2 ? "text-white" : "text-gray-400"
+                    }`}
+                  >
+                    Add Wide Kit
                   </div>
                 </div>
               </div>
@@ -1535,6 +1833,88 @@ const Configurator = () => {
                   </div>
                 </div>
               ))}
+            </div>
+            <div className="flex flex-row gap-8 items-center flex-wrap py-4">
+              <div
+                className={`item flex flex-col items-center transition-all duration-400 ${
+                  door === 0 ? "item--active" : ""
+                }`}
+                onClick={() => {
+                  setDoor(0);
+                  updateMetrics({
+                    ...bodyData,
+                    dC: bodyData.dC + 0.02,
+                    kW: bodyData.kW - 5,
+                  });
+                }}
+              >
+                <div
+                  className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                    door === 0 ? "text-white" : "text-gray-400"
+                  }`}
+                >
+                  Closed Doors
+                </div>
+              </div>
+              <div
+                className={`item flex flex-col items-center transition-all duration-400 ${
+                  door === 1 ? "item--active" : ""
+                }`}
+                onClick={() => {
+                  setDoor(1);
+                  updateMetrics({
+                    ...bodyData,
+                    dC: bodyData.dC - 0.01,
+                    kW: bodyData.kW + 5,
+                  });
+                }}
+              >
+                <div
+                  className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                    door === 1 ? "text-white" : "text-gray-400"
+                  }`}
+                >
+                  Open Doors
+                </div>
+              </div>
+              <div
+                className={`item flex flex-col items-center transition-all duration-400 ${
+                  door === 2 ? "item--active" : ""
+                }`}
+                onClick={() => {
+                  setDoor(2);
+                  updateMetrics({
+                    ...bodyData,
+                    dC: bodyData.dC - 0.02,
+                    kW: bodyData.kW + 7,
+                  });
+                }}
+              >
+                <div
+                  className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                    door === 2 ? "text-white" : "text-gray-400"
+                  }`}
+                >
+                  Butterfly Doors
+                </div>
+              </div>
+              <div
+                className={`item flex flex-col items-center transition-all duration-400 ${
+                  door === 3 ? "item--active" : ""
+                }`}
+                onClick={() => {
+                  setDoor(3);
+                  updateMetrics({
+                    ...bodyData,
+                    dC: bodyData.dC - 0.03,
+                    kW: bodyData.kW + 10,
+                  });
+                }}
+              ></div>
+            </div>
+            <div className="text-white text-center font-bold text-sm capitalize">
+              The Civic Spoiler makes the car aerodynamic and gives it a sporty
+              look.
             </div>
           </div>
         )}
@@ -1640,7 +2020,7 @@ const Configurator = () => {
         {grillClick && (
           <div className="configurator__section">
             <div className="uppercase font-bold text-white font-poppins">
-              Grill Color
+              Grill & Emblem Color
             </div>
             <div className="flex flex-row gap-8 items-center flex-wrap py-4">
               {grillColors.map((item, index) => (
@@ -1722,38 +2102,6 @@ const Configurator = () => {
                   <div
                     className={`text-center font-bold text-sm text-gray-400 capitalize ${
                       item.color === fenderColor.color ? "text-white" : ""
-                    }`}
-                  >
-                    {item.name}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Rim Customization */}
-        {rimClick && (
-          <div className="configurator__section">
-            <div className="uppercase font-bold text-white font-poppins">
-              Rim Color
-            </div>
-            <div className="flex flex-row gap-8 items-center flex-wrap py-4">
-              {rimColors.map((item, index) => (
-                <div
-                  key={index}
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    item.color === rimColor.color ? "item--active" : ""
-                  }`}
-                  onClick={() => setRimColor(item)}
-                >
-                  <div
-                    className="w-8 h-8 rounded-full border-2"
-                    style={{ backgroundColor: item.color }}
-                  />
-                  <div
-                    className={`text-center font-bold text-sm text-gray-400 capitalize ${
-                      item.color === rimColor.color ? "text-white" : ""
                     }`}
                   >
                     {item.name}

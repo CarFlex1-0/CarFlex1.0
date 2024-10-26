@@ -86,6 +86,7 @@ const fenderColors = colors.map((x) => x); // Fender color options
 const diffuserColors = colors.map((x) => x); // Diffuser color options
 const roofColors = colors.map((x) => x); // Roof color options
 const trunkColors = colors.map((x) => x); // Trunk color options
+const interiorColors = colors.map((x) => x); // Interior color options
 
 // Create a context for customization options
 const CustomizationContext = createContext({});
@@ -100,6 +101,10 @@ export const CustomizationProvider = (props) => {
   const [spoiler, setSpoiler] = useState(0); // State for spoiler selection
   const [spoilerClick, setSpoilerClick] = useState(false); // State for spoiler click status
   const [spoilerColor, setSpoilerColor] = useState(spoilerColors[7]); // State for spoiler color
+  // Interior
+  const [interior, setInterior] = useState(0); // State for spoiler selection
+  const [interiorClick, setInteriorClick] = useState(false); // State for spoiler click status
+  const [interiorColor, setInteriorColor] = useState(interiorColors[7]); // State for spoiler color
 
   // Windows
   const [windowClick, setWindowClick] = useState(false); // State for window click status
@@ -108,6 +113,7 @@ export const CustomizationProvider = (props) => {
   // Rims
   const [rimClick, setRimClick] = useState(false); // State for rim click status
   const [rimColor, setRimColor] = useState(rimColors[7]); // State for rim color
+  const [rim, setRim] = useState(0);
 
   // Wheels (assuming color doesn't change for wheels)
   const [wheels, setWheels] = useState(0); // State for wheel selection
@@ -145,6 +151,7 @@ export const CustomizationProvider = (props) => {
   // Doors
   const [doorClick, setDoorClick] = useState(false); // State for door click status
   const [doorColor, setDoorColor] = useState(doorColors[7]); // State for door color
+  const [door, setDoor] = useState(0); // State for spoiler selection
 
   // Engine
   const [engine, setEngine] = useState(1); // State for engine selection
@@ -175,6 +182,13 @@ export const CustomizationProvider = (props) => {
   return (
     <CustomizationContext.Provider
       value={{
+        interior,
+        interiorClick,
+        setInterior,
+        interiorColor,
+        interiorColors,
+        setInteriorClick,
+        setInteriorColor,
         spoilerColors,
         doorColors,
         rimColors,
@@ -290,6 +304,10 @@ export const CustomizationProvider = (props) => {
         setTrunkClick,
         trunkColor,
         setTrunkColor,
+        door,
+        setDoor,
+        rim,
+        setRim,
       }}
     >
       {props.children}
