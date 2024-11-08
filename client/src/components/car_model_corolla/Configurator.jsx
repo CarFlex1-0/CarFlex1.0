@@ -154,41 +154,49 @@ const Configurator = () => {
   } = useCustomization();
 
   const [bodyData, setBodyData] = useState({
-    p: 320, // Power in horsepower
-    kW: 1400, // Kerb weight in kg
-    dC: 0.27, // Drag coefficient
-    w: 1877, // Width in mm
-    h: 1434, // Height in mm
-    t: 400, // Torque in Nm
-    r: 2500, // RPM for HP
+    p: 132, // Power in horsepower
+    kW: 1355, // Kerb weight in kg
+    dC: 0.282, // Drag coefficient
+    w: 1780, // Width in mm
+    h: 1435, // Height in mm
+    t: 159, // Torque in Nm
+    r: 4200, // RPM for torque
     nOC: 4, // Number of cylinders
-    bD: 86, // Bore diameter in mm
-    pS: 85.9, // Piston stroke in mm
-    brpm: 6500, // RPM at max power
+    bD: 80.5, // Bore diameter in mm
+    pS: 78.5, // Piston stroke in mm
+    brpm: 6400, // RPM at max power
   });
 
   const [metrics, setMetrics] = useState({
-    stockAcceleration: 3.48,
+    stockAcceleration: 5.39,
     newAcceleration: 0,
-    stockMaxSpeed: 290.52,
+    stockMaxSpeed: 216,
     newMaxSpeed: 0,
-    stockHorsepower: 140.43,
+    stockHorsepower: 93,
     newHorsepower: 0,
-    stockCC: 1995.91,
+    stockCC: 1598,
     newCC: 0,
-    stockTorque: 350.56,
+    stockTorque: 146.87,
     newTorque: 0,
   });
 
-  const updateMetrics = async (bodyData) => {
+  const updateMetrics = async (changes) => {
     try {
-      console.log("Body data:", bodyData);
+      const updatedBodyData = {
+        ...bodyData,
+        ...changes,
+      };
+
+      setBodyData(updatedBodyData);
+
+      console.log("Updated body data:", updatedBodyData);
+
       const responses = await Promise.all([
-        axios.post("metric01", { bodyData }),
-        axios.post("metric02", { bodyData }),
-        axios.post("metric03", { bodyData }),
-        axios.post("metric04", { bodyData }),
-        axios.post("metric05", { bodyData }),
+        axios.post("metric01", { bodyData: updatedBodyData }),
+        axios.post("metric02", { bodyData: updatedBodyData }),
+        axios.post("metric03", { bodyData: updatedBodyData }),
+        axios.post("metric04", { bodyData: updatedBodyData }),
+        axios.post("metric05", { bodyData: updatedBodyData }),
       ]);
 
       const [acceleration, maxSpeed, horsepower, cc, torque] = responses.map(
@@ -205,7 +213,6 @@ const Configurator = () => {
           newTorque: parseFloat(torque.torque).toFixed(2),
         };
         console.log("New metrics:", newMetrics);
-
         return newMetrics;
       });
     } catch (error) {
@@ -285,6 +292,57 @@ const Configurator = () => {
       );
     }
     return null;
+  };
+
+  const saveConfiguration = async (name) => {
+    try {
+      const configData = {
+        name,
+        performanceMetrics: {
+          bodyData,
+          metrics: {
+            acceleration: metrics.newAcceleration,
+            maxSpeed: metrics.newMaxSpeed,
+            horsepower: metrics.newHorsepower,
+            cc: metrics.newCC,
+            torque: metrics.newTorque
+          }
+        },
+        customization: {
+          interior,
+          interiorColor,
+          door,
+          doorColor,
+          spoiler,
+          spoilerColor,
+          rim,
+          rimColor,
+          wheels,
+          bonnet,
+          bonnetColor,
+          sideKit,
+          sideKitColor,
+          windowColor,
+          carBodyColor,
+          bumperFrontColor,
+          bumperBackColor,
+          grillColor,
+          fenderColor,
+          diffuser,
+          diffuserColor,
+          roofColor,
+          trunkColor,
+          silencer
+        }
+      };
+
+      const response = await axios.post('/api/car-configs', configData);
+      console.log('Configuration saved:', response.data);
+      // Add success notification here
+    } catch (error) {
+      console.error('Failed to save configuration:', error);
+      // Add error notification here
+    }
   };
 
   return (
@@ -781,7 +839,6 @@ const Configurator = () => {
                   onClick={() => {
                     setSpoiler(0);
                     updateMetrics({
-                      ...bodyData,
                       dC: bodyData.dC + 0.02,
                       kW: bodyData.kW - 5,
                     });
@@ -802,7 +859,6 @@ const Configurator = () => {
                   onClick={() => {
                     setSpoiler(1);
                     updateMetrics({
-                      ...bodyData,
                       dC: bodyData.dC - 0.01,
                       kW: bodyData.kW + 5,
                     });
@@ -823,7 +879,6 @@ const Configurator = () => {
                   onClick={() => {
                     setSpoiler(2);
                     updateMetrics({
-                      ...bodyData,
                       dC: bodyData.dC - 0.02,
                       kW: bodyData.kW + 7,
                     });
@@ -844,7 +899,6 @@ const Configurator = () => {
                   onClick={() => {
                     setSpoiler(3);
                     updateMetrics({
-                      ...bodyData,
                       dC: bodyData.dC - 0.03,
                       kW: bodyData.kW + 10,
                     });
@@ -909,7 +963,6 @@ const Configurator = () => {
                   onClick={() => {
                     setInterior(0);
                     updateMetrics({
-                      ...bodyData,
                       dC: bodyData.dC + 0.02,
                       kW: bodyData.kW - 5,
                     });
@@ -930,7 +983,6 @@ const Configurator = () => {
                   onClick={() => {
                     setInterior(1);
                     updateMetrics({
-                      ...bodyData,
                       dC: bodyData.dC - 0.01,
                       kW: bodyData.kW + 5,
                     });
