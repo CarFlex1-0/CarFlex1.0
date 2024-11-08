@@ -59,7 +59,15 @@ const userSchema = mongoose.Schema(
     chatHistory:[{
       type: mongoose.Schema.Types.ObjectId,
       ref: "Chat",
-    }]
+    }],
+    createdCarConfigs: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'CarConfig'
+    }],
+    sharedCarConfigs: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'CarConfig'
+    }],
   },
 
   {

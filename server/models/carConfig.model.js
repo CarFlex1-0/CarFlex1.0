@@ -1,11 +1,15 @@
 const mongoose = require('mongoose');
 
 const carConfigSchema = new mongoose.Schema({
-  userId: {
+  creator: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
   },
+  sharedWith: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }],
   name: {
     type: String,
     required: true

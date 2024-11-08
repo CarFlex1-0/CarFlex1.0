@@ -1,18 +1,24 @@
 const CarConfig = require('../models/carConfig.model');
+const User = require('../models/user');
 
 exports.saveConfiguration = async (req, res) => {
   try {
     const { name, performanceMetrics, customization } = req.body;
-    const userId = req.user._id; // Assuming you have user info in request
+    const creator = req.user._id;
 
     const carConfig = new CarConfig({
-      userId,
+      creator,
       name,
       performanceMetrics,
       customization
     });
 
     await carConfig.save();
+
+    // Add the configuration to user's createdCarConfigs
+    await User.findByIdAndUpdate(creator, {
+      $push: { createdCarConfigs: carConfig._id }
+    });
 
     res.status(201).json({
       success: true,
@@ -29,7 +35,14 @@ exports.saveConfiguration = async (req, res) => {
 exports.getConfigurations = async (req, res) => {
   try {
     const userId = req.user._id;
-    const configurations = await CarConfig.find({ userId });
+    const user = await User.findById(userId)
+      .populate('createdCarConfigs')
+      .populate('sharedCarConfigs');
+
+    const configurations = {
+      created: user.createdCarConfigs || [],
+      shared: user.sharedCarConfigs || []
+    };
 
     res.status(200).json({
       success: true,
@@ -77,15 +90,28 @@ exports.deleteConfiguration = async (req, res) => {
       });
     }
 
-    // Check if user owns this configuration
-    if (config.userId.toString() !== req.user._id.toString()) {
+    // Check if user is the creator of this configuration
+    if (config.creator.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         success: false,
         error: 'Not authorized to delete this configuration'
       });
     }
 
-    await config.remove();
+    // Remove the configuration from user's createdCarConfigs
+    await User.findByIdAndUpdate(req.user._id, {
+      $pull: { createdCarConfigs: config._id }
+    });
+
+    // Remove from sharedWith users' sharedCarConfigs
+    if (config.sharedWith && config.sharedWith.length > 0) {
+      await User.updateMany(
+        { _id: { $in: config.sharedWith } },
+        { $pull: { sharedCarConfigs: config._id } }
+      );
+    }
+
+    await config.deleteOne();
 
     res.status(200).json({
       success: true,
