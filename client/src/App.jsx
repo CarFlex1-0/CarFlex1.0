@@ -43,6 +43,8 @@ import CarPreviewCorolla from "@components/car_model_corolla/CarPreviewCorolla";
 
 import CarPreviewLambo from "@components/lambo-intro-dashboard/CarPreviewLambo";
 
+import ModelSelectionPage from '@pages/ModelSelectionPage';
+import ConfigurationViewer from '@components/ConfigurationViewer';
 
 function App() {
   return (
@@ -98,6 +100,9 @@ function App() {
                   <Route path="profile-page" element={<ProfilePage />} />
                   <Route path="feedback" element={<FeedbackPage />} />
                   <Route path="forum" element={<ForumCommunity />} />
+                  
+                  <Route path="models" element={<ModelSelectionPage />} />
+                  <Route path="models/:id" element={<ConfigurationViewer />} />
                 </Route>
               </Routes>
             </div>

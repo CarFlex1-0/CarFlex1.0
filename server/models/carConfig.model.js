@@ -41,6 +41,11 @@ const carConfigSchema = new mongoose.Schema({
     }
   },
   customization: {
+    modelType: {
+      type: String,
+      enum: ['civic', 'corolla', 'swift'], // Restrict to only these values
+      required: true
+    },
     interior: Number,
     interiorColor: {
       name: String,
@@ -112,5 +117,15 @@ const carConfigSchema = new mongoose.Schema({
     silencer: Number
   }
 });
+
+// Add methods to check permissions
+carConfigSchema.methods.canEdit = function(userId) {
+  return this.creator.equals(userId) || 
+         this.sharedWith.some(id => id.equals(userId));
+};
+
+carConfigSchema.methods.isCreator = function(userId) {
+  return this.creator.equals(userId);
+};
 
 module.exports = mongoose.model('CarConfig', carConfigSchema); 

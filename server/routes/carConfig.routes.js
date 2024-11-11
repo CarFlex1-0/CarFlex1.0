@@ -5,7 +5,10 @@ const {
   saveConfiguration,
   getConfigurations,
   getConfigurationById,
-  deleteConfiguration
+  deleteConfiguration,
+  updateConfiguration,
+  shareConfiguration,
+  removeShare
 } = require('../controllers/carConfig.controller');
 
 // Use authenticate instead of protect
@@ -17,6 +20,11 @@ router.route('/')
 
 router.route('/:id')
   .get(getConfigurationById)
+  .put(updateConfiguration)
   .delete(deleteConfiguration);
+
+router.route('/share')
+  .post(shareConfiguration)
+  .delete(removeShare);
 
 module.exports = router; 

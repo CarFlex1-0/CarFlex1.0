@@ -1,7 +1,8 @@
 import { useCustomization } from "@contexts/Customization";
 import { useAuth } from "@contexts/auth_context";
+import { useLocation } from "react-router-dom";
 import React, { useState, useEffect } from "react";
-import { toast, Slide } from 'react-toastify';
+import { toast, Slide } from "react-toastify";
 import {
   BarChart,
   XAxis,
@@ -26,6 +27,9 @@ import Cookies from "js-cookie";
 
 const Configurator = () => {
   const { user } = useAuth();
+  const location = useLocation();
+  const existingConfig = location.state?.config;
+
   const {
     interior,
     interiorClick,
@@ -158,36 +162,110 @@ const Configurator = () => {
   } = useCustomization();
 
   const [bodyData, setBodyData] = useState({
-    p: 132, // Power in horsepower
-    kW: 1355, // Kerb weight in kg
-    dC: 0.282, // Drag coefficient
-    w: 1780, // Width in mm
-    h: 1435, // Height in mm
-    t: 159, // Torque in Nm
-    r: 4200, // RPM for torque
-    nOC: 4, // Number of cylinders
-    bD: 80.5, // Bore diameter in mm
-    pS: 78.5, // Piston stroke in mm
-    brpm: 6400, // RPM at max power
+    p: 132,
+    kW: 1355,
+    dC: 0.282,
+    w: 1780,
+    h: 1435,
+    t: 159,
+    r: 4200,
+    nOC: 4,
+    bD: 80.5,
+    pS: 78.5,
+    brpm: 6400,
   });
 
   const [metrics, setMetrics] = useState({
     stockAcceleration: 5.39,
-    newAcceleration: 0,
+    newAcceleration: 5.39,
     stockMaxSpeed: 216,
-    newMaxSpeed: 0,
+    newMaxSpeed: 216,
     stockHorsepower: 93,
-    newHorsepower: 0,
+    newHorsepower: 93,
     stockCC: 1598,
-    newCC: 0,
+    newCC: 1598,
     stockTorque: 146.87,
-    newTorque: 0,
+    newTorque: 146.87,
   });
 
   const [isConfigOpen, setIsConfigOpen] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [configName, setConfigName] = useState("");
+
+  useEffect(() => {
+    if (existingConfig) {
+      // Load customization settings
+      setInterior(existingConfig.customization.interior || 0);
+      setInteriorColor(
+        existingConfig.customization.interiorColor || interiorColors[0]
+      );
+      setDoor(existingConfig.customization.door || 0);
+      setDoorColor(existingConfig.customization.doorColor || doorColors[0]);
+      setSpoiler(existingConfig.customization.spoiler || 0);
+      setSpoilerColor(
+        existingConfig.customization.spoilerColor || spoilerColors[0]
+      );
+      setRim(existingConfig.customization.rim || 0);
+      setRimColor(existingConfig.customization.rimColor || rimColors[0]);
+      setWheels(existingConfig.customization.wheels || 1);
+      setBonnet(existingConfig.customization.bonnet || 1);
+      setBonnetColor(
+        existingConfig.customization.bonnetColor || bonnetColors[0]
+      );
+      setSideKit(existingConfig.customization.sideKit || 0);
+      setSideKitColor(
+        existingConfig.customization.sideKitColor || sideKitColors[0]
+      );
+      setWindowColor(
+        existingConfig.customization.windowColor || windowColors[0]
+      );
+      setCarBodyColor(
+        existingConfig.customization.carBodyColor || bodyColors[0]
+      );
+      setBumperFrontColor(
+        existingConfig.customization.bumperFrontColor || bumperFrontColors[0]
+      );
+      setBumperBackColor(
+        existingConfig.customization.bumperBackColor || bumperBackColors[0]
+      );
+      setGrillColor(existingConfig.customization.grillColor || grillColors[0]);
+      setFenderColor(
+        existingConfig.customization.fenderColor || fenderColors[0]
+      );
+      setDiffuser(existingConfig.customization.diffuser || 0);
+      setDiffuserColor(
+        existingConfig.customization.diffuserColor || diffuserColors[0]
+      );
+      setRoofColor(existingConfig.customization.roofColor || roofColors[0]);
+      setTrunkColor(existingConfig.customization.trunkColor || trunkColors[0]);
+      setSilencer(existingConfig.customization.silencer || 1);
+
+      // Load performance metrics
+      if (existingConfig.performanceMetrics) {
+        setBodyData(existingConfig.performanceMetrics.bodyData);
+        setMetrics((prevMetrics) => ({
+          ...prevMetrics,
+          newAcceleration:
+            existingConfig.performanceMetrics.metrics.acceleration,
+          newMaxSpeed: existingConfig.performanceMetrics.metrics.maxSpeed,
+          newHorsepower: existingConfig.performanceMetrics.metrics.horsepower,
+          newCC: existingConfig.performanceMetrics.metrics.cc,
+          newTorque: existingConfig.performanceMetrics.metrics.torque,
+        }));
+      }
+
+      // Set the configuration name if it exists
+      setConfigName(existingConfig.name || "");
+
+      toast.info("Loaded existing configuration", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "dark",
+        transition: Slide,
+      });
+    }
+  }, [existingConfig]);
 
   const updateMetrics = async (changes) => {
     try {
@@ -306,7 +384,7 @@ const Configurator = () => {
   const saveConfiguration = async (name) => {
     try {
       if (!user) {
-        alert('Please login to save your configuration');
+        alert("Please login to save your configuration");
         return;
       }
 
@@ -319,10 +397,11 @@ const Configurator = () => {
             maxSpeed: metrics.newMaxSpeed,
             horsepower: metrics.newHorsepower,
             cc: metrics.newCC,
-            torque: metrics.newTorque
-          }
+            torque: metrics.newTorque,
+          },
         },
         customization: {
+          modelType: "corolla",
           interior,
           interiorColor,
           door,
@@ -346,21 +425,35 @@ const Configurator = () => {
           diffuserColor,
           roofColor,
           trunkColor,
-          silencer
-        }
+          silencer,
+        },
       };
 
-      const token = Cookies.get('token');
-      const response = await axios.post('/car-configs', configData, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      
-      console.log('Configuration saved:', response.data);
+      const token = Cookies.get("token");
+      let response;
+
+      if (existingConfig) {
+        // Update existing configuration
+        response = await axios.put(
+          `/car-configs/${existingConfig._id}`,
+          configData,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        toast.success("Configuration updated successfully!");
+      } else {
+        // Create new configuration
+        response = await axios.post("/car-configs", configData, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        toast.success("Configuration saved successfully!");
+      }
+
+      console.log("Configuration saved:", response.data);
       return response.data;
     } catch (error) {
-      console.error('Failed to save configuration:', error);
+      console.error("Failed to save configuration:", error);
       throw error;
     }
   };
@@ -368,23 +461,23 @@ const Configurator = () => {
   const handleSave = async () => {
     try {
       if (!user) {
-        toast.error('Please login to save your configuration', {
+        toast.error("Please login to save your configuration", {
           position: "top-right",
           autoClose: 3000,
           theme: "dark",
-          transition: Slide
+          transition: Slide,
         });
         return;
       }
 
       setIsModalOpen(true);
     } catch (error) {
-      console.error('Failed to save configuration:', error);
-      toast.error('Failed to save configuration: ' + error.message, {
+      console.error("Failed to save configuration:", error);
+      toast.error("Failed to save configuration: " + error.message, {
         position: "top-right",
         autoClose: 3000,
         theme: "dark",
-        transition: Slide
+        transition: Slide,
       });
     }
   };
@@ -392,8 +485,14 @@ const Configurator = () => {
   const handleModalSave = async () => {
     try {
       setIsSaving(true);
-      
-      if (!configName.trim()) {
+
+      // If editing and name is blank, use existing name
+      const saveName = existingConfig && !configName.trim() 
+        ? existingConfig.name 
+        : configName.trim();
+
+      // If new configuration, require a name
+      if (!existingConfig && !saveName) {
         toast.error('Please enter a configuration name', {
           position: "top-right",
           autoClose: 3000,
@@ -403,8 +502,8 @@ const Configurator = () => {
         return;
       }
 
-      await saveConfiguration(configName);
-      toast.success('Configuration saved successfully!', {
+      await saveConfiguration(saveName);
+      toast.success(`Configuration ${existingConfig ? 'updated' : 'saved'} successfully!`, {
         position: "top-right",
         autoClose: 3000,
         theme: "dark",
@@ -413,7 +512,7 @@ const Configurator = () => {
       setIsModalOpen(false);
       setConfigName("");
     } catch (error) {
-      toast.error('Failed to save configuration: ' + error.message, {
+      toast.error(`Failed to ${existingConfig ? 'update' : 'save'} configuration: ` + error.message, {
         position: "top-right",
         autoClose: 3000,
         theme: "dark",
@@ -426,11 +525,11 @@ const Configurator = () => {
 
   const handleShare = () => {
     // Implement share functionality
-    toast.info('Share functionality coming soon!', {
+    toast.info("Share functionality coming soon!", {
       position: "top-right",
       autoClose: 3000,
       theme: "dark",
-      transition: Slide
+      transition: Slide,
     });
   };
 
@@ -442,18 +541,18 @@ const Configurator = () => {
           onClick={() => setIsConfigOpen(!isConfigOpen)}
           className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-all duration-300 text-white font-medium"
         >
-          {isConfigOpen ? 'Close' : 'Open'} Configurator
+          {isConfigOpen ? "Close" : "Open"} Configurator
         </button>
-        
+
         <div className="flex gap-4">
           <button
             onClick={handleSave}
             disabled={isSaving}
             className="px-4 py-2 rounded-lg bg-blue-500/80 hover:bg-blue-500 transition-all duration-300 text-white font-medium disabled:opacity-50"
           >
-            {isSaving ? 'Saving...' : 'Save Configuration'}
+            {isSaving ? "Saving..." : "Save Configuration"}
           </button>
-          
+
           <button
             onClick={handleShare}
             className="px-4 py-2 rounded-lg bg-green-500/80 hover:bg-green-500 transition-all duration-300 text-white font-medium"
@@ -467,12 +566,14 @@ const Configurator = () => {
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
           <div className="bg-gray-900 rounded-lg p-6 w-96 border border-white/10">
-            <h2 className="text-xl font-bold text-white mb-4">Save Configuration</h2>
+            <h2 className="text-xl font-bold text-white mb-4">
+              {existingConfig ? 'Rename Configuration' : 'Save Configuration'}
+            </h2>
             <input
               type="text"
               value={configName}
               onChange={(e) => setConfigName(e.target.value)}
-              placeholder="Enter configuration name"
+              placeholder={existingConfig ? existingConfig.name : "Enter configuration name"}
               className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-white/10 focus:outline-none focus:border-blue-500 mb-4"
             />
             <div className="flex justify-end gap-4">
@@ -490,7 +591,7 @@ const Configurator = () => {
                 disabled={isSaving}
                 className="px-4 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 transition-all duration-300 text-white disabled:opacity-50"
               >
-                {isSaving ? 'Saving...' : 'Save'}
+                {isSaving ? 'Saving...' : existingConfig ? 'Update' : 'Save'}
               </button>
             </div>
           </div>
@@ -586,7 +687,11 @@ const Configurator = () => {
       </div>
 
       {/* Button Row - Always visible */}
-      <div className={`btn-row fixed top-20 ml-5 flex flex-col gap-4 ${isConfigOpen ? 'opacity-100' : 'hidden'} transition-opacity duration-300 overflow-y-auto h-[80vh]`}>
+      <div
+        className={`btn-row fixed top-20 ml-5 flex flex-col gap-4 ${
+          isConfigOpen ? "opacity-100" : "hidden"
+        } transition-opacity duration-300 overflow-y-auto h-[80vh]`}
+      >
         <button
           className="btn btn-outline btn-primary"
           onClick={() => {
@@ -1074,7 +1179,9 @@ const Configurator = () => {
                       <div
                         key={index}
                         className={`item flex flex-col items-center transition-all duration-400 ${
-                          item.color === spoilerColor.color ? "item--active" : ""
+                          item.color === spoilerColor.color
+                            ? "item--active"
+                            : ""
                         }`}
                         onClick={() => setSpoilerColor(item)}
                       >
@@ -1968,8 +2075,8 @@ const Configurator = () => {
                   </div>
                 </div>
                 <div className="text-white text-center font-bold text-sm capitalize">
-                  A Side kit is a great option for a sporty look addition to your
-                  Car.
+                  A Side kit is a great option for a sporty look addition to
+                  your Car.
                 </div>
               </div>
 
@@ -1984,7 +2091,9 @@ const Configurator = () => {
                       <div
                         key={index}
                         className={`item flex flex-col items-center transition-all duration-400 ${
-                          item.color === sideKitColor.color ? "item--active" : ""
+                          item.color === sideKitColor.color
+                            ? "item--active"
+                            : ""
                         }`}
                         onClick={() => setSideKitColor(item)}
                       >
@@ -2117,8 +2226,8 @@ const Configurator = () => {
                 ></div>
               </div>
               <div className="text-white text-center font-bold text-sm capitalize">
-                The Civic Spoiler makes the car aerodynamic and gives it a sporty
-                look.
+                The Civic Spoiler makes the car aerodynamic and gives it a
+                sporty look.
               </div>
             </div>
           )}
@@ -2263,7 +2372,9 @@ const Configurator = () => {
                   <div
                     key={index}
                     className={`item flex flex-col items-center transition-all duration-400 ${
-                      item.color === bumperFrontColor.color ? "item--active" : ""
+                      item.color === bumperFrontColor.color
+                        ? "item--active"
+                        : ""
                     }`}
                     onClick={() => setBumperFrontColor(item)}
                   >
@@ -2273,7 +2384,9 @@ const Configurator = () => {
                     />
                     <div
                       className={`text-center font-bold text-sm text-gray-400 capitalize ${
-                        item.color === bumperFrontColor.color ? "text-white" : ""
+                        item.color === bumperFrontColor.color
+                          ? "text-white"
+                          : ""
                       }`}
                     >
                       {item.name}

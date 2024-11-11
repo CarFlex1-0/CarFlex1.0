@@ -109,7 +109,7 @@ export function SideBar() {
           </Link>
 
           <Link
-            to="customize-3d-model"
+            to="models"
             onClick={() => {
               closeDrawer();
               setDrawerState(false);
