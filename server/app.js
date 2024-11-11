@@ -19,7 +19,7 @@ const feedbackRoutes = require("./routes/feedback_routes");
 
 const questionRoutes = require("./routes/question");
 const answerRoutes = require("./routes/answer");
-const userRoutes = require("./routes/user");
+const userRoutes = require("./routes/user.routes");
 const paymentRoutes = require("./routes/payment");
 const subRoutes = require("./routes/subscription");
 const aiRoutes = require("./routes/ai_model");
@@ -65,7 +65,7 @@ app.use(express.urlencoded({ extended: true })); // To handle form submissions
 app.use("/api/location", locRoutes);
 app.use("/api/questions", questionRoutes);
 app.use("/api/answer", answerRoutes);
-app.use("/api/user", userRoutes);
+app.use("/api/users", userRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/", subRoutes);
 app.use("/api/ai", aiRoutes);

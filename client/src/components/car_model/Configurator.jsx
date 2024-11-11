@@ -20,6 +20,11 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import axios from "@services/axios";
+import { useAuth } from "@contexts/auth_context";
+import { useTheme } from '@contexts/ThemeContext';
+import { useLocation } from "react-router-dom";
+import { toast, Slide } from "react-toastify";
+import Cookies from "js-cookie";
 
 const Configurator = () => {
   const {
@@ -157,15 +162,15 @@ const Configurator = () => {
 
   const [metrics, setMetrics] = useState({
     stockAcceleration: 3.48,
-    newAcceleration: 0,
+    newAcceleration: 3.48,
     stockMaxSpeed: 290.52,
-    newMaxSpeed: 0,
+    newMaxSpeed: 290.52,
     stockHorsepower: 140.43,
-    newHorsepower: 0,
+    newHorsepower: 140.43,
     stockCC: 1995.91,
-    newCC: 0,
+    newCC: 1995.91,
     stockTorque: 350.56,
-    newTorque: 0,
+    newTorque: 350.56,
   });
 
   const updateMetrics = async (bodyData) => {
@@ -266,18 +271,266 @@ const Configurator = () => {
     return null;
   };
 
+  const { isDarkMode, toggleTheme } = useTheme();
+  const { user } = useAuth();
+  const location = useLocation();
+  const existingConfig = location.state?.config;
+
+  // Add these new states
+  const [isConfigOpen, setIsConfigOpen] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [configName, setConfigName] = useState("");
+
+  // Add useEffect for loading existing configuration
+  useEffect(() => {
+    if (existingConfig) {
+      // Load customization settings
+      setSpoiler(existingConfig.customization.spoiler || 0);
+      setSpoilerColor(existingConfig.customization.spoilerColor || spoilerColors[0]);
+      setRimColor(existingConfig.customization.rimColor || rimColors[0]);
+      setWindowColor(existingConfig.customization.windowColor || windowColors[0]);
+      setBonnet(existingConfig.customization.bonnet || 1);
+      setBonnetColor(existingConfig.customization.bonnetColor || bonnetColors[0]);
+      setSideKit(existingConfig.customization.sideKit || 0);
+      setSideKitColor(existingConfig.customization.sideKitColor || sideKitColors[0]);
+      setCarBodyColor(existingConfig.customization.carBodyColor || bodyColors[0]);
+      setBumperFrontColor(existingConfig.customization.bumperFrontColor || bumperFrontColors[0]);
+      setBumperBackColor(existingConfig.customization.bumperBackColor || bumperBackColors[0]);
+      setGrillColor(existingConfig.customization.grillColor || grillColors[0]);
+      setFenderColor(existingConfig.customization.fenderColor || fenderColors[0]);
+      setDiffuser(existingConfig.customization.diffuser || 0);
+      setDiffuserColor(existingConfig.customization.diffuserColor || diffuserColors[0]);
+      setRoofColor(existingConfig.customization.roofColor || roofColors[0]);
+      setTrunkColor(existingConfig.customization.trunkColor || trunkColors[0]);
+      setSilencer(existingConfig.customization.silencer || 1);
+
+      // Load performance metrics
+      if (existingConfig.performanceMetrics) {
+        setBodyData(existingConfig.performanceMetrics.bodyData);
+        setMetrics(prevMetrics => ({
+          ...prevMetrics,
+          newAcceleration: existingConfig.performanceMetrics.metrics.acceleration,
+          newMaxSpeed: existingConfig.performanceMetrics.metrics.maxSpeed,
+          newHorsepower: existingConfig.performanceMetrics.metrics.horsepower,
+          newCC: existingConfig.performanceMetrics.metrics.cc,
+          newTorque: existingConfig.performanceMetrics.metrics.torque
+        }));
+      }
+
+      setConfigName(existingConfig.name || "");
+
+      toast.info('Loaded existing configuration', {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "dark",
+        transition: Slide
+      });
+    }
+  }, [existingConfig]);
+
+  const saveConfiguration = async (name) => {
+    try {
+      if (!user) {
+        alert('Please login to save your configuration');
+        return;
+      }
+
+      const configData = {
+        name,
+        performanceMetrics: {
+          bodyData,
+          metrics: {
+            acceleration: metrics.newAcceleration,
+            maxSpeed: metrics.newMaxSpeed,
+            horsepower: metrics.newHorsepower,
+            cc: metrics.newCC,
+            torque: metrics.newTorque
+          }
+        },
+        customization: {
+          modelType: 'civic',
+          spoiler,
+          spoilerColor,
+          rimColor,
+          windowColor,
+          bonnet,
+          bonnetColor,
+          sideKit,
+          sideKitColor,
+          carBodyColor,
+          bumperFrontColor,
+          bumperBackColor,
+          grillColor,
+          fenderColor,
+          diffuser,
+          diffuserColor,
+          roofColor,
+          trunkColor,
+          silencer
+        }
+      };
+
+      const token = Cookies.get('token');
+      let response;
+      
+      if (existingConfig) {
+        response = await axios.put(`/car-configs/${existingConfig._id}`, configData, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        toast.success('Configuration updated successfully!');
+      } else {
+        response = await axios.post('/car-configs', configData, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        toast.success('Configuration saved successfully!');
+      }
+      
+      return response.data;
+    } catch (error) {
+      console.error('Failed to save configuration:', error);
+      throw error;
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      if (!user) {
+        toast.error("Please login to save your configuration", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "dark",
+          transition: Slide,
+        });
+        return;
+      }
+
+      setIsModalOpen(true);
+    } catch (error) {
+      toast.error("Failed to save configuration: " + error.message);
+    }
+  };
+
+  const handleModalSave = async () => {
+    try {
+      setIsSaving(true);
+
+      const saveName = existingConfig && !configName.trim() 
+        ? existingConfig.name 
+        : configName.trim();
+
+      if (!existingConfig && !saveName) {
+        toast.error('Please enter a configuration name');
+        return;
+      }
+
+      await saveConfiguration(saveName);
+      setIsModalOpen(false);
+      setConfigName("");
+    } catch (error) {
+      toast.error(`Failed to ${existingConfig ? 'update' : 'save'} configuration: ` + error.message);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
     <>
+      {/* Top Bar */}
+      <div className="fixed top-0 left-0 right-0 h-16 bg-black/60 backdrop-blur-xl z-50 flex border-b border-white/20 shadow-lg">
+        <button
+          onClick={() => setIsConfigOpen(!isConfigOpen)}
+          className="flex-1 h-full bg-white/5 hover:bg-red-500/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.3)] transition-all duration-300 text-white font-medium border-r border-white/10"
+        >
+          {isConfigOpen ? "Close" : "Open"} Configurator
+        </button>
+
+        <button
+          onClick={handleSave}
+          disabled={isSaving}
+          className="flex-1 h-full bg-white/5 hover:bg-green-500/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.3)] transition-all duration-300 text-white font-medium disabled:opacity-50 border-r border-white/10"
+        >
+          {isSaving ? "Saving..." : "Save Configuration"}
+        </button>
+
+        {/* Theme Toggle Button */}
+        <button 
+          onClick={toggleTheme} 
+          className="w-16 h-full bg-white/5 hover:bg-blue-500/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.3)] transition-all duration-300 flex items-center justify-center"
+          aria-label="Toggle theme"
+        >
+          {isDarkMode ? (
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+          )}
+        </button>
+      </div>
+
+      {/* Save Configuration Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="bg-gray-900 rounded-lg p-6 w-96 border border-white/10">
+            <h2 className="text-xl font-bold text-white mb-4">
+              {existingConfig ? 'Rename Configuration' : 'Save Configuration'}
+            </h2>
+            <input
+              type="text"
+              value={configName}
+              onChange={(e) => setConfigName(e.target.value)}
+              placeholder={existingConfig ? existingConfig.name : "Enter configuration name"}
+              className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-white/10 focus:outline-none focus:border-blue-500 mb-4"
+            />
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={() => {
+                  setIsModalOpen(false);
+                  setConfigName("");
+                }}
+                className="px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 transition-all duration-300 text-white"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleModalSave}
+                disabled={isSaving}
+                className="px-4 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 transition-all duration-300 text-white disabled:opacity-50"
+              >
+                {isSaving ? 'Saving...' : existingConfig ? 'Update' : 'Save'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Graph Display */}
-      <div className="mt-5 backdrop-blur-md rounded-lg g-4 bg-white/10 flex flex-col justify-center items-center w-full container mx-auto px-4">
-        <div className="text-white text-3xl mb-5">Performance Details</div>
+      <div className={`mt-20 backdrop-blur-md rounded-lg g-4 ${
+        isDarkMode ? 'bg-gray-900/50' : 'bg-blue-50/70'
+      } flex flex-col justify-center items-center w-full container mx-auto px-4`}>
+        <div className={`text-${isDarkMode ? 'white' : 'gray-800'} text-3xl mb-5`}>Performance Details</div>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={data}>
-            <CartesianGrid className="text-white" strokeDasharray="3 3" />
-            <XAxis stroke="#FFFFFF" dataKey="name" className="text-white" />
-            <YAxis stroke="#FFFFFF" className="text-white" domain={[0, dataMax => Math.max(dataMax, getMaxValue('Stock'))]} />
-            <Tooltip />
-            <Legend className="text-white" />
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis 
+              dataKey="name" 
+              stroke={isDarkMode ? "#FFFFFF" : "#000000"}
+              tick={{ fill: isDarkMode ? '#FFFFFF' : '#000000' }}
+            />
+            <YAxis 
+              stroke={isDarkMode ? "#FFFFFF" : "#000000"}
+              domain={[0, dataMax => Math.max(dataMax, getMaxValue('Stock'))]}
+              tick={{ fill: isDarkMode ? '#FFFFFF' : '#000000' }}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend 
+              wrapperStyle={{
+                color: isDarkMode ? '#FFFFFF' : '#000000'
+              }}
+            />
             <Bar dataKey="Stock" fill="#8884d8" />
             <Bar dataKey="New" fill="#82ca9d" />
           </BarChart>
@@ -285,14 +538,26 @@ const Configurator = () => {
 
         {/* Line Chart */}
         <div className="mt-10 w-full">
-          <div className="text-white text-2xl mb-3">Performance Trend</div>
+          <div className={`text-${isDarkMode ? 'white' : 'gray-800'} text-2xl mb-3`}>Performance Trend</div>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={data}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" stroke="#FFFFFF" />
-              <YAxis stroke="#FFFFFF" domain={[0, dataMax => Math.max(dataMax, getMaxValue('Stock'))]} />
-              <Tooltip />
-              <Legend />
+              <XAxis 
+                dataKey="name" 
+                stroke={isDarkMode ? "#FFFFFF" : "#000000"}
+                tick={{ fill: isDarkMode ? '#FFFFFF' : '#000000' }}
+              />
+              <YAxis 
+                stroke={isDarkMode ? "#FFFFFF" : "#000000"}
+                domain={[0, dataMax => Math.max(dataMax, getMaxValue('Stock'))]}
+                tick={{ fill: isDarkMode ? '#FFFFFF' : '#000000' }}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend 
+                wrapperStyle={{
+                  color: isDarkMode ? '#FFFFFF' : '#000000'
+                }}
+              />
               <Line type="monotone" dataKey="Stock" stroke="#8884d8" />
               <Line type="monotone" dataKey="New" stroke="#82ca9d" />
             </LineChart>
@@ -301,7 +566,7 @@ const Configurator = () => {
 
         {/* Radial Chart */}
         <div className="mt-10 w-full">
-          <div className="text-white text-2xl mb-3">Performance Overview</div>
+          <div className={`text-${isDarkMode ? 'white' : 'gray-800'} text-2xl mb-3`}>Performance Overview</div>
           <ResponsiveContainer width="100%" height={400}>
             <RadialBarChart
               innerRadius="20%"
@@ -309,14 +574,11 @@ const Configurator = () => {
               data={data}
               startAngle={180}
               endAngle={0}
-              barGap={2}
-              barCategoryGap={3}
             >
-              <PolarAngleAxis 
-                type="number" 
-                domain={getRadialDomain()} 
-                angleAxisId={0} 
-                tick={{ fill: "#FFFFFF" }} 
+              <PolarAngleAxis
+                type="number"
+                domain={getRadialDomain()}
+                tick={{ fill: isDarkMode ? '#FFFFFF' : '#000000' }}
               />
               <RadialBar
                 minAngle={15}
@@ -331,11 +593,19 @@ const Configurator = () => {
                 background
                 clockWise={true}
                 dataKey="New"
-                fill="#a4de6c"
+                fill="#82ca9d"
                 name="New"
               />
               <Tooltip content={<CustomTooltip />} />
-              <Legend iconSize={10}  layout="vertical" verticalAlign="middle" wrapperStyle={style} />
+              <Legend
+                iconSize={10}
+                layout="vertical"
+                verticalAlign="middle"
+                wrapperStyle={{
+                  ...style,
+                  color: isDarkMode ? '#FFFFFF' : '#000000'
+                }}
+              />
             </RadialBarChart>
           </ResponsiveContainer>
         </div>
@@ -343,7 +613,9 @@ const Configurator = () => {
       
 
       {/* Button Row */}
-      <div className="btn-row fixed top-20 ml-5 flex flex-col gap-4 opacity-0 transition-opacity duration-300 hover:opacity-100 overflow-y-auto h-[80vh]">
+      <div className={`btn-row fixed top-20 ml-5 flex flex-col gap-4 ${
+        isConfigOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+      } transition-opacity duration-300 overflow-y-auto h-[80vh]`}>
         <button
           className="btn btn-outline btn-primary"
           onClick={() => {

@@ -307,8 +307,9 @@ const Experience = () => {
         gl={{ logarithmicDepthBuffer: true, antialias: false }}
         dpr={dpr}
         camera={{ position: [0, Math.PI / 2.2, 10], fov: 25 }}
-        minPolarAngle={Math.PI / 2.2}
-        maxPolarAngle={Math.PI / 2.2}
+        
+        
+        
       >
         <PerformanceMonitor
           onIncline={() => setDpr(2)}

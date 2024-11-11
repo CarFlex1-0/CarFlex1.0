@@ -1,5 +1,6 @@
 import { useCustomization } from "@contexts/Customization";
 import { useAuth } from "@contexts/auth_context";
+import { useTheme } from '@contexts/ThemeContext';
 import { useLocation } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { toast, Slide } from "react-toastify";
@@ -26,6 +27,7 @@ import axios from "@services/axios";
 import Cookies from "js-cookie";
 
 const Configurator = () => {
+  const { isDarkMode, toggleTheme } = useTheme();
   const { user } = useAuth();
   const location = useLocation();
   const existingConfig = location.state?.config;
@@ -523,43 +525,43 @@ const Configurator = () => {
     }
   };
 
-  const handleShare = () => {
-    // Implement share functionality
-    toast.info("Share functionality coming soon!", {
-      position: "top-right",
-      autoClose: 3000,
-      theme: "dark",
-      transition: Slide,
-    });
-  };
+  
 
   return (
     <>
-      {/* Top Bar with Frosted Glass Effect */}
-      <div className="fixed top-0 left-0 right-0 h-16 bg-black/30 backdrop-blur-md z-50 flex justify-between items-center px-24 border-b border-white/10">
+      {/* Top Bar */}
+      <div className="fixed top-0 left-0 right-0 h-16 bg-black/60 backdrop-blur-xl z-50 flex border-b border-white/20 shadow-lg">
         <button
           onClick={() => setIsConfigOpen(!isConfigOpen)}
-          className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-all duration-300 text-white font-medium"
+          className="flex-1 h-full bg-white/5 hover:bg-red-500/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.3)] transition-all duration-300 text-white font-medium border-r border-white/10"
         >
           {isConfigOpen ? "Close" : "Open"} Configurator
         </button>
 
-        <div className="flex gap-4">
-          <button
-            onClick={handleSave}
-            disabled={isSaving}
-            className="px-4 py-2 rounded-lg bg-blue-500/80 hover:bg-blue-500 transition-all duration-300 text-white font-medium disabled:opacity-50"
-          >
-            {isSaving ? "Saving..." : "Save Configuration"}
-          </button>
+        <button
+          onClick={handleSave}
+          disabled={isSaving}
+          className="flex-1 h-full bg-white/5 hover:bg-green-500/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.3)] transition-all duration-300 text-white font-medium disabled:opacity-50 border-r border-white/10"
+        >
+          {isSaving ? "Saving..." : "Save Configuration"}
+        </button>
 
-          <button
-            onClick={handleShare}
-            className="px-4 py-2 rounded-lg bg-green-500/80 hover:bg-green-500 transition-all duration-300 text-white font-medium"
-          >
-            Share Configuration
-          </button>
-        </div>
+        {/* Theme Toggle Button */}
+        <button 
+          onClick={toggleTheme} 
+          className="w-16 h-full bg-white/5 hover:bg-blue-500/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.3)] transition-all duration-300 flex items-center justify-center"
+          aria-label="Toggle theme"
+        >
+          {isDarkMode ? (
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+          )}
+        </button>
       </div>
 
       {/* Save Configuration Modal */}
@@ -599,19 +601,32 @@ const Configurator = () => {
       )}
 
       {/* Graph Display - Always visible */}
-      <div className="mt-20 backdrop-blur-md rounded-lg g-4 bg-white/10 flex flex-col justify-center items-center w-full container mx-auto px-4">
-        <div className="text-white text-3xl mb-5">Performance Details</div>
+      <div className={`mt-20 backdrop-blur-md rounded-lg g-4 ${
+        isDarkMode ? 'bg-gray-900/50' : 'bg-blue-50/70'
+      } flex flex-col justify-center items-center w-full container mx-auto px-4`}>
+        <div className={`text-${isDarkMode ? 'white' : 'gray-800'} text-3xl mb-5`}>Performance Details</div>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={data}>
-            <CartesianGrid className="text-white" strokeDasharray="3 3" />
-            <XAxis stroke="#FFFFFF" dataKey="name" className="text-white" />
-            <YAxis
-              stroke="#FFFFFF"
-              className="text-white"
-              domain={[0, (dataMax) => Math.max(dataMax, getMaxValue("Stock"))]}
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis 
+              dataKey="name" 
+              stroke={isDarkMode ? "#FFFFFF" : "#000000"}
+              tick={{ fill: isDarkMode ? '#FFFFFF' : '#000000' }}
+              height={30}
+              tickSize={8}
+              padding={{ left: 0, right: 0 }}
             />
-            <Tooltip />
-            <Legend className="text-white" />
+            <YAxis 
+              stroke={isDarkMode ? "#FFFFFF" : "#000000"}
+              domain={[0, (dataMax) => Math.max(dataMax, getMaxValue("Stock"))]}
+              tick={{ fill: isDarkMode ? '#FFFFFF' : '#000000' }}
+              width={60}
+              tickSize={8}
+              allowDecimals={false}
+              padding={{ top: 10, bottom: 0 }}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend />
             <Bar dataKey="Stock" fill="#8884d8" />
             <Bar dataKey="New" fill="#82ca9d" />
           </BarChart>
@@ -619,19 +634,28 @@ const Configurator = () => {
 
         {/* Line Chart */}
         <div className="mt-10 w-full">
-          <div className="text-white text-2xl mb-3">Performance Trend</div>
+          <div className={`text-${isDarkMode ? 'white' : 'gray-800'} text-2xl mb-3`}>Performance Trend</div>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={data}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" stroke="#FFFFFF" />
-              <YAxis
-                stroke="#FFFFFF"
-                domain={[
-                  0,
-                  (dataMax) => Math.max(dataMax, getMaxValue("Stock")),
-                ]}
+              <XAxis 
+                dataKey="name" 
+                stroke={isDarkMode ? "#FFFFFF" : "#000000"}
+                tick={{ fill: isDarkMode ? '#FFFFFF' : '#000000' }}
+                height={30}
+                tickSize={8}
+                padding={{ left: 0, right: 0 }}
               />
-              <Tooltip />
+              <YAxis 
+                stroke={isDarkMode ? "#FFFFFF" : "#000000"}
+                domain={[0, (dataMax) => Math.max(dataMax, getMaxValue("Stock"))]}
+                tick={{ fill: isDarkMode ? '#FFFFFF' : '#000000' }}
+                width={60}
+                tickSize={8}
+                allowDecimals={false}
+                padding={{ top: 10, bottom: 0 }}
+              />
+              <Tooltip content={<CustomTooltip />} />
               <Legend />
               <Line type="monotone" dataKey="Stock" stroke="#8884d8" />
               <Line type="monotone" dataKey="New" stroke="#82ca9d" />
@@ -656,7 +680,9 @@ const Configurator = () => {
                 type="number"
                 domain={getRadialDomain()}
                 angleAxisId={0}
-                tick={{ fill: "#FFFFFF" }}
+                tick={{ fill: isDarkMode ? '#FFFFFF' : '#000000' }}
+                tickCount={6}
+                allowDecimals={false}
               />
               <RadialBar
                 minAngle={15}
