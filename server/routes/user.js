@@ -2,6 +2,10 @@ const express = require('express');
 const { check, validationResult } = require('express-validator');
 const userController = require('../controllers/user_controller');
 const router = express.Router();
+const User = require("../models/user");
+
+// Search users route
+router.get('/search', userController.searchUsers);
 
 // @route   POST /api/users/register
 // @desc    Register a new user
@@ -60,4 +64,5 @@ router.put('/profile/:id', userController.updateUserProfile);
 
 // Route to update user's subscription
 router.patch('/:id/subscribe', userController.activateSubscription);
+
 module.exports = router;

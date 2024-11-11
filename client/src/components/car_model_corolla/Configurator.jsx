@@ -602,7 +602,7 @@ const Configurator = () => {
 
       {/* Graph Display - Always visible */}
       <div className={`mt-20 backdrop-blur-md rounded-lg g-4 ${
-        isDarkMode ? 'bg-gray-900/50' : 'bg-blue-50/70'
+        isDarkMode ? 'bg-gray-900/50' : 'bg-gray-100/30'
       } flex flex-col justify-center items-center w-full container mx-auto px-4`}>
         <div className={`text-${isDarkMode ? 'white' : 'gray-800'} text-3xl mb-5`}>Performance Details</div>
         <ResponsiveContainer width="100%" height={300}>

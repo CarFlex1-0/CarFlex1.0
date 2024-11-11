@@ -40,4 +40,4 @@ const BackgroundIcons = () => {
   );
 };
 
-export default BackgroundIcons; 
+export default BackgroundIcons;

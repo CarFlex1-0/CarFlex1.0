@@ -18,8 +18,9 @@ const ConfigurationViewer = () => {
   const [shareEmail, setShareEmail] = useState("");
   const [showShareModal, setShowShareModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [userSuggestions, setUserSuggestions] = useState([]);
-  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
     fetchConfiguration();
@@ -38,40 +39,6 @@ const ConfigurationViewer = () => {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const fetchUserSuggestions = async (searchTerm) => {
-    if (!searchTerm || searchTerm.length < 2) {
-      setUserSuggestions([]);
-      return;
-    }
-
-    try {
-      setIsLoadingSuggestions(true);
-      const token = Cookies.get("token");
-      const response = await axios.get(`/users/search?email=${searchTerm}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      if (response.data?.success && Array.isArray(response.data.data)) {
-        const validUsers = response.data.data.filter(user => 
-          user && typeof user === 'object' && user._id && user.email
-        );
-        setUserSuggestions(validUsers);
-      } else {
-        setUserSuggestions([]);
-      }
-    } catch (error) {
-      console.error("Failed to fetch user suggestions:", error);
-      setUserSuggestions([]);
-    } finally {
-      setIsLoadingSuggestions(false);
-    }
-  };
-
-  const handleEmailChange = (e) => {
-    setShareEmail(e.target.value);
-    fetchUserSuggestions(e.target.value);
   };
 
   const handleShare = async () => {
@@ -133,6 +100,39 @@ const ConfigurationViewer = () => {
         return "Unknown Model";
     }
   };
+
+  const searchUsers = async (searchTerm) => {
+    if (!searchTerm || searchTerm.length < 2) {
+      setSearchResults([]);
+      return;
+    }
+
+    try {
+      setIsSearching(true);
+      const token = Cookies.get('token');
+      const response = await axios.get(`/user/search?email=${searchTerm}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (response.data.success) {
+        setSearchResults(response.data.data);
+      }
+    } catch (error) {
+      console.error('Error searching users:', error);
+      toast.error('Failed to search users');
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  // Debounce search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      searchUsers(shareEmail);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [shareEmail]);
 
   if (isLoading) {
     return (
@@ -382,57 +382,53 @@ const ConfigurationViewer = () => {
           </div>
         </div>
 
-        {/* Share Modal */}
+        {/* Enhanced Share Modal */}
         {showShareModal && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-            <div className={`modal-box ${isDarkMode ? 'bg-gray-800' : 'bg-white'} p-6 rounded-lg w-[480px] relative`}>
-              <h3 className="font-bold text-2xl mb-2">Share Configuration</h3>
-              <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mb-6`}>
-                Enter the email address of the user you want to share this configuration with
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+            <div className={`w-full max-w-md transform transition-all ${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg p-6 shadow-xl`}>
+              <h3 className="text-xl font-bold mb-2">Share Configuration</h3>
+              <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mb-4`}>
+                Enter the email address of the user you want to share with
               </p>
               
               <div className="relative">
                 <input
                   type="email"
                   placeholder="Enter email address"
-                  className={`input input-bordered w-full ${
-                    isDarkMode 
-                      ? 'bg-gray-700 border-gray-600 text-white' 
-                      : 'bg-gray-50 border-gray-200 text-gray-900'
-                  } focus:ring-2 focus:ring-blue-500`}
+                  className={`input input-bordered w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'}`}
                   value={shareEmail}
-                  onChange={handleEmailChange}
+                  onChange={(e) => {
+                    setShareEmail(e.target.value);
+                    setSelectedUser(null);
+                  }}
                 />
                 
-                {/* Email Suggestions Dropdown */}
-                {userSuggestions.length > 0 && (
+                {/* Search Results Dropdown */}
+                {searchResults.length > 0 && !selectedUser && (
                   <div className={`absolute w-full mt-1 rounded-lg shadow-lg ${
                     isDarkMode ? 'bg-gray-700' : 'bg-white'
-                  } border ${isDarkMode ? 'border-gray-600' : 'border-gray-200'} z-50`}>
-                    {userSuggestions.map((user) => (
+                  } border ${isDarkMode ? 'border-gray-600' : 'border-gray-200'}`}>
+                    {searchResults.map((user) => (
                       <div
                         key={user._id}
-                        className={`px-4 py-2 cursor-pointer ${
-                          isDarkMode 
-                            ? 'hover:bg-gray-600' 
-                            : 'hover:bg-gray-50'
-                        } flex items-center gap-3`}
+                        className={`flex items-center gap-3 p-3 cursor-pointer hover:${
+                          isDarkMode ? 'bg-gray-600' : 'bg-gray-50'
+                        } transition-colors duration-150`}
                         onClick={() => {
                           setShareEmail(user.email);
-                          setUserSuggestions([]);
+                          setSelectedUser(user);
+                          setSearchResults([]);
                         }}
                       >
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                          isDarkMode ? 'bg-gray-600' : 'bg-gray-100'
+                          isDarkMode ? 'bg-gray-500' : 'bg-gray-200'
                         }`}>
-                          {user?.firstName ? user.firstName.charAt(0).toUpperCase() : '?'}
+                          {user.name[0].toUpperCase()}
                         </div>
                         <div>
-                          <p className="font-medium">
-                            {user ? `${user.firstName} ${user.lastName}` : 'Unknown User'}
-                          </p>
+                          <p className="font-medium">{user.name}</p>
                           <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                            {user?.email || 'No email'}
+                            {user.email}
                           </p>
                         </div>
                       </div>
@@ -441,37 +437,49 @@ const ConfigurationViewer = () => {
                 )}
 
                 {/* Loading Indicator */}
-                {isLoadingSuggestions && (
-                  <div className={`absolute right-3 top-3 ${isDarkMode ? 'text-white' : 'text-gray-500'}`}>
-                    <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
+                {isSearching && (
+                  <div className="absolute right-3 top-3">
+                    <div className="w-5 h-5 border-2 border-blue-500 rounded-full animate-spin border-t-transparent"></div>
                   </div>
                 )}
               </div>
 
-              <div className="modal-action flex justify-end gap-4 mt-8">
+              {selectedUser && (
+                <div className={`mt-4 p-3 rounded-lg ${
+                  isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
+                } flex items-center gap-3`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                    isDarkMode ? 'bg-gray-600' : 'bg-gray-200'
+                  }`}>
+                    {selectedUser.name[0].toUpperCase()}
+                  </div>
+                  <div>
+                    <p className="font-medium">{selectedUser.name}</p>
+                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      {selectedUser.email}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex justify-end gap-3 mt-6">
                 <button
-                  className={`px-4 py-2 rounded-lg ${
-                    isDarkMode 
-                      ? 'bg-gray-700 hover:bg-gray-600' 
-                      : 'bg-gray-100 hover:bg-gray-200'
-                  } transition-colors duration-200`}
+                  className={`px-4 py-2 rounded-lg ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-200 hover:bg-gray-300'} transition-colors duration-150`}
                   onClick={() => {
                     setShowShareModal(false);
-                    setShareEmail("");
-                    setUserSuggestions([]);
+                    setShareEmail('');
+                    setSelectedUser(null);
+                    setSearchResults([]);
                   }}
                 >
                   Cancel
                 </button>
                 <button
-                  className="px-4 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white transition-colors duration-200"
+                  className={`px-4 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed`}
                   onClick={handleShare}
                   disabled={!shareEmail.trim()}
                 >
-                  Share Configuration
+                  Share
                 </button>
               </div>
             </div>
