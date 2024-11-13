@@ -1074,7 +1074,7 @@ const Configurator = () => {
 
       <div className="fixed right-6 bottom-[5vh] w-[380px] p-6 flex flex-col gap-2">
         {/* Spoiler Customization */}
-        {spoilerClick && (
+        {spoilerClick && isConfigOpen && (
           <>
             {/* Spoiler Type Section */}
             <div className="configurator__section">
@@ -1210,7 +1210,7 @@ const Configurator = () => {
         )}
 
         {/* Bonnet Customization */}
-        {bonnetClick && (
+        {bonnetClick && isConfigOpen && (
           <>
             {/* Bonnet Type Section */}
             <div className="configurator__section">
@@ -1324,7 +1324,7 @@ const Configurator = () => {
         )}
 
         {/* Engine Customization */}
-        {engineClick && (
+        {engineClick && isConfigOpen && (
           <>
             {/* Engine Type Section */}
             <div className="configurator__section">
@@ -1416,7 +1416,7 @@ const Configurator = () => {
         )}
 
         {/* Wheel Customization */}
-        {wheelsClick && (
+        {wheelsClick && isConfigOpen && (
           <>
             {/* WheelType Section */}
             <div className="configurator__section">
@@ -1517,7 +1517,7 @@ const Configurator = () => {
         )}
 
         {/* Diffuser Customization */}
-        {diffuserClick && (
+        {diffuserClick && isConfigOpen && (
           <>
             {/* Diffuser Type Section */}
             <div className="configurator__section">
@@ -1669,7 +1669,7 @@ const Configurator = () => {
         )}
 
         {/* Silencer Selection Customization (Not done yet) */}
-        {silencerClick && (
+        {silencerClick && isConfigOpen && (
           <>
             {/* Silencer Type Section */}
             <div className="configurator__section">
@@ -1781,7 +1781,7 @@ const Configurator = () => {
         )}
 
         {/* SideKit Customization */}
-        {sideKitClick && (
+        {sideKitClick && isConfigOpen && (
           <>
             {/* Sidekit Type Section */}
             <div className="configurator__section">
@@ -1875,7 +1875,7 @@ const Configurator = () => {
         )}
 
         {/* Door Customization */}
-        {doorClick && (
+        {doorClick && isConfigOpen && (
           <div className="configurator__section">
             <div className="uppercase font-bold text-white font-poppins">
               Door Color
@@ -1908,7 +1908,7 @@ const Configurator = () => {
 
         {/* bumperBack Customization */}
 
-        {bumperBackClick && (
+        {bumperBackClick && isConfigOpen && (
           <div className="configurator__section">
             <div className="uppercase font-bold text-white font-poppins">
               Back Bumper Color
@@ -1940,7 +1940,7 @@ const Configurator = () => {
         )}
 
         {/* Trunk Customization */}
-        {trunkClick && (
+        {trunkClick && isConfigOpen && (
           <div className="configurator__section">
             <div className="uppercase font-bold text-white font-poppins">
               Trunk Color
@@ -1972,7 +1972,7 @@ const Configurator = () => {
         )}
 
         {/* Roof Customization */}
-        {roofClick && (
+        {roofClick && isConfigOpen && (
           <div className="configurator__section">
             <div className="uppercase font-bold text-white font-poppins">
               Roof Color
@@ -2004,7 +2004,7 @@ const Configurator = () => {
         )}
 
         {/* Grill Customization */}
-        {grillClick && (
+        {grillClick && isConfigOpen && (
           <div className="configurator__section">
             <div className="uppercase font-bold text-white font-poppins">
               Grill Color
@@ -2036,7 +2036,7 @@ const Configurator = () => {
         )}
 
         {/* Front Customization */}
-        {bumperFrontClick && (
+        {bumperFrontClick && isConfigOpen && (
           <div className="configurator__section">
             <div className="uppercase font-bold text-white font-poppins">
               Front bumper Color
@@ -2068,7 +2068,7 @@ const Configurator = () => {
         )}
 
         {/* Fender Customization */}
-        {fenderClick && (
+        {fenderClick && isConfigOpen && (
           <div className="configurator__section">
             <div className="uppercase font-bold text-white font-poppins">
               Fender Color
@@ -2100,7 +2100,7 @@ const Configurator = () => {
         )}
 
         {/* Rim Customization */}
-        {rimClick && (
+        {rimClick && isConfigOpen && (
           <div className="configurator__section">
             <div className="uppercase font-bold text-white font-poppins">
               Rim Color
@@ -2132,7 +2132,7 @@ const Configurator = () => {
         )}
 
         {/* Window Customization */}
-        {windowClick && (
+        {windowClick && isConfigOpen && (
           <div className="configurator__section">
             <div className="uppercase font-bold text-white font-poppins">
               Window Color
@@ -2200,7 +2200,7 @@ const Configurator = () => {
         )} */}
 
         {/* Body Customization */}
-        {carBodyClick && ( // Make sure bodyColorClick is defined in the context
+        {carBodyClick && isConfigOpen && ( // Make sure bodyColorClick is defined in the context
           <div className="configurator__section">
             <div className="uppercase font-bold text-white font-poppins">
               Body Color
