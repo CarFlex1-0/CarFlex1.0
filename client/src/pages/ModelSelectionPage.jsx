@@ -144,16 +144,16 @@ const ModelSelectionPage = () => {
             </Link>
 
             {/* Swift Card */}
-            <div onClick={handleSwiftClick}
-              className={`card ${isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50'} shadow-xl transition-all duration-300 cursor-pointer`}>
+            <Link to="/user/customize-3d-model-swift"
+              className={`card ${isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50'} shadow-xl transition-all duration-300`}>
               <div className="card-body">
                 <h3 className="card-title">Suzuki Swift</h3>
-                <p>Coming Soon! Be ready to customize your Suzuki Swift</p>
+                <p>Create your perfect Suzuki Swift with custom modifications</p>
                 <div className="card-actions justify-end">
-                  <button className="btn btn-disabled">Coming Soon</button>
+                  <button className="btn btn-primary">Start Customizing</button>
                 </div>
               </div>
-            </div>
+            </Link>
           </div>
         </section>
 

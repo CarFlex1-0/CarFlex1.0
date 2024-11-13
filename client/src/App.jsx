@@ -39,6 +39,7 @@ import ForumCommunity from "@pages/ForumCommunity";
 import { ThemeProvider } from '@contexts/ThemeContext';
 import CarPreview from "@components/car_model/CarPreview";
 import CarPreviewCorolla from "@components/car_model_corolla/CarPreviewCorolla";
+import CarPreviewSwift from "@components/car_model_swift/CarPreviewSwift";
 
 
 import CarPreviewLambo from "@components/lambo-intro-dashboard/CarPreviewLambo";
@@ -89,6 +90,7 @@ function App() {
                   <Route path="user-dashboard" element={<Dashboard />} />
                   <Route path="customize-3d-model" element={<CarPreview />} />
                   <Route path="customize-3d-model-corolla" element={<CarPreviewCorolla />} />
+                  <Route path="customize-3d-model-swift" element={<CarPreviewSwift />} />
                   <Route path="car-enhancements" element={<CarEnhancements />} />
                   <Route path="blog-dashboard" element={<PostPage />} />
                   <Route path="blog-create" element={<NewBlog />} />
