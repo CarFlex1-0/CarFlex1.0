@@ -1,6 +1,6 @@
 import { useCustomization } from "@contexts/Customization";
 import { useAuth } from "@contexts/auth_context";
-import { useTheme } from '@contexts/ThemeContext';
+import { useTheme } from "@contexts/ThemeContext";
 import { useLocation } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { toast, Slide } from "react-toastify";
@@ -164,30 +164,30 @@ const Configurator = () => {
   } = useCustomization();
 
   const [bodyData, setBodyData] = useState({
-    p: 132,
-    kW: 1355,
-    dC: 0.282,
-    w: 1780,
-    h: 1435,
-    t: 159,
-    r: 4200,
-    nOC: 4,
-    bD: 80.5,
-    pS: 78.5,
-    brpm: 6400,
+    p: 280, // Power from engine.power.value
+    kW: 1292.5, // Weight from engine.kerbWeight.value
+    dC: 0.346, // Drag coefficient from dimensions.dragCoefficient.value
+    w: 1805, // Width from dimensions.width.value
+    h: 1455, // Height from dimensions.height.value
+    t: 390, // Torque from engine.torque.value
+    r: 3250, // RPM from engine.torque.rpm
+    nOC: 3, // Number of cylinders from engine.numberOfCylinders
+    bD: 87.5, // Bore diameter from engine.bore.value
+    pS: 89.7, // Piston stroke from engine.stroke.value
+    brpm: 6500, // RPM at max power from engine.power.rpm
   });
 
   const [metrics, setMetrics] = useState({
-    stockAcceleration: 5.39,
-    newAcceleration: 5.39,
-    stockMaxSpeed: 216,
-    newMaxSpeed: 216,
-    stockHorsepower: 93,
-    newHorsepower: 93,
-    stockCC: 1598,
-    newCC: 1598,
-    stockTorque: 146.87,
-    newTorque: 146.87,
+    stockAcceleration: 3.79,
+    newAcceleration: 3.79,
+    stockMaxSpeed: 257.93,
+    newMaxSpeed: 257.93,
+    stockHorsepower: 178.0,
+    newHorsepower: 178.0,
+    stockCC: 1618.15,
+    newCC: 1618.15,
+    stockTorque: 306.74,
+    newTorque: 306.74,
   });
 
   const [isConfigOpen, setIsConfigOpen] = useState(true);
@@ -489,43 +489,49 @@ const Configurator = () => {
       setIsSaving(true);
 
       // If editing and name is blank, use existing name
-      const saveName = existingConfig && !configName.trim() 
-        ? existingConfig.name 
-        : configName.trim();
+      const saveName =
+        existingConfig && !configName.trim()
+          ? existingConfig.name
+          : configName.trim();
 
       // If new configuration, require a name
       if (!existingConfig && !saveName) {
-        toast.error('Please enter a configuration name', {
+        toast.error("Please enter a configuration name", {
           position: "top-right",
           autoClose: 3000,
           theme: "dark",
-          transition: Slide
+          transition: Slide,
         });
         return;
       }
 
       await saveConfiguration(saveName);
-      toast.success(`Configuration ${existingConfig ? 'updated' : 'saved'} successfully!`, {
-        position: "top-right",
-        autoClose: 3000,
-        theme: "dark",
-        transition: Slide
-      });
+      toast.success(
+        `Configuration ${existingConfig ? "updated" : "saved"} successfully!`,
+        {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "dark",
+          transition: Slide,
+        }
+      );
       setIsModalOpen(false);
       setConfigName("");
     } catch (error) {
-      toast.error(`Failed to ${existingConfig ? 'update' : 'save'} configuration: ` + error.message, {
-        position: "top-right",
-        autoClose: 3000,
-        theme: "dark",
-        transition: Slide
-      });
+      toast.error(
+        `Failed to ${existingConfig ? "update" : "save"} configuration: ` +
+          error.message,
+        {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "dark",
+          transition: Slide,
+        }
+      );
     } finally {
       setIsSaving(false);
     }
   };
-
-  
 
   return (
     <>
@@ -547,18 +553,40 @@ const Configurator = () => {
         </button>
 
         {/* Theme Toggle Button */}
-        <button 
-          onClick={toggleTheme} 
+        <button
+          onClick={toggleTheme}
           className="w-16 h-full bg-white/5 hover:bg-blue-500/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.3)] transition-all duration-300 flex items-center justify-center"
           aria-label="Toggle theme"
         >
           {isDarkMode ? (
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+              />
             </svg>
           ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+              />
             </svg>
           )}
         </button>
@@ -569,13 +597,17 @@ const Configurator = () => {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
           <div className="bg-gray-900 rounded-lg p-6 w-96 border border-white/10">
             <h2 className="text-xl font-bold text-white mb-4">
-              {existingConfig ? 'Rename Configuration' : 'Save Configuration'}
+              {existingConfig ? "Rename Configuration" : "Save Configuration"}
             </h2>
             <input
               type="text"
               value={configName}
               onChange={(e) => setConfigName(e.target.value)}
-              placeholder={existingConfig ? existingConfig.name : "Enter configuration name"}
+              placeholder={
+                existingConfig
+                  ? existingConfig.name
+                  : "Enter configuration name"
+              }
               className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-white/10 focus:outline-none focus:border-blue-500 mb-4"
             />
             <div className="flex justify-end gap-4">
@@ -593,7 +625,7 @@ const Configurator = () => {
                 disabled={isSaving}
                 className="px-4 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 transition-all duration-300 text-white disabled:opacity-50"
               >
-                {isSaving ? 'Saving...' : existingConfig ? 'Update' : 'Save'}
+                {isSaving ? "Saving..." : existingConfig ? "Update" : "Save"}
               </button>
             </div>
           </div>
@@ -601,25 +633,31 @@ const Configurator = () => {
       )}
 
       {/* Graph Display - Always visible */}
-      <div className={`mt-20 backdrop-blur-md rounded-lg g-4 ${
-        isDarkMode ? 'bg-gray-900/50' : 'bg-gray-100/30'
-      } flex flex-col justify-center items-center w-full container mx-auto px-4`}>
-        <div className={`text-${isDarkMode ? 'white' : 'gray-800'} text-3xl mb-5`}>Performance Details</div>
+      <div
+        className={`mt-20 backdrop-blur-md rounded-lg g-4 ${
+          isDarkMode ? "bg-gray-900/50" : "bg-gray-100/30"
+        } flex flex-col justify-center items-center w-full container mx-auto px-4`}
+      >
+        <div
+          className={`text-${isDarkMode ? "white" : "gray-800"} text-3xl mb-5`}
+        >
+          Performance Details
+        </div>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis 
-              dataKey="name" 
+            <XAxis
+              dataKey="name"
               stroke={isDarkMode ? "#FFFFFF" : "#000000"}
-              tick={{ fill: isDarkMode ? '#FFFFFF' : '#000000' }}
+              tick={{ fill: isDarkMode ? "#FFFFFF" : "#000000" }}
               height={30}
               tickSize={8}
               padding={{ left: 0, right: 0 }}
             />
-            <YAxis 
+            <YAxis
               stroke={isDarkMode ? "#FFFFFF" : "#000000"}
               domain={[0, (dataMax) => Math.max(dataMax, getMaxValue("Stock"))]}
-              tick={{ fill: isDarkMode ? '#FFFFFF' : '#000000' }}
+              tick={{ fill: isDarkMode ? "#FFFFFF" : "#000000" }}
               width={60}
               tickSize={8}
               allowDecimals={false}
@@ -634,22 +672,31 @@ const Configurator = () => {
 
         {/* Line Chart */}
         <div className="mt-10 w-full">
-          <div className={`text-${isDarkMode ? 'white' : 'gray-800'} text-2xl mb-3`}>Performance Trend</div>
+          <div
+            className={`text-${
+              isDarkMode ? "white" : "gray-800"
+            } text-2xl mb-3`}
+          >
+            Performance Trend
+          </div>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={data}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis 
-                dataKey="name" 
+              <XAxis
+                dataKey="name"
                 stroke={isDarkMode ? "#FFFFFF" : "#000000"}
-                tick={{ fill: isDarkMode ? '#FFFFFF' : '#000000' }}
+                tick={{ fill: isDarkMode ? "#FFFFFF" : "#000000" }}
                 height={30}
                 tickSize={8}
                 padding={{ left: 0, right: 0 }}
               />
-              <YAxis 
+              <YAxis
                 stroke={isDarkMode ? "#FFFFFF" : "#000000"}
-                domain={[0, (dataMax) => Math.max(dataMax, getMaxValue("Stock"))]}
-                tick={{ fill: isDarkMode ? '#FFFFFF' : '#000000' }}
+                domain={[
+                  0,
+                  (dataMax) => Math.max(dataMax, getMaxValue("Stock")),
+                ]}
+                tick={{ fill: isDarkMode ? "#FFFFFF" : "#000000" }}
                 width={60}
                 tickSize={8}
                 allowDecimals={false}
@@ -680,7 +727,7 @@ const Configurator = () => {
                 type="number"
                 domain={getRadialDomain()}
                 angleAxisId={0}
-                tick={{ fill: isDarkMode ? '#FFFFFF' : '#000000' }}
+                tick={{ fill: isDarkMode ? "#FFFFFF" : "#000000" }}
                 tickCount={6}
                 allowDecimals={false}
               />
@@ -785,34 +832,6 @@ const Configurator = () => {
             setCarBodyClick(false);
             setDoorClick(false);
             setSideKitClick(false);
-            setWheelsClick(false);
-            setBumperFrontClick(false);
-            setBumperBackClick(false);
-            setGrillClick(false);
-            setEngineClick(false);
-            setFenderClick(false);
-            setDiffuserClick(false);
-            setRoofClick(false);
-            setSilencerClick(false);
-            setTrunkClick(false);
-            setInteriorClick(false);
-          }}
-        >
-          Rims
-        </button>
-
-        {/* Wheel */}
-        <button
-          className="btn btn-outline btn-primary"
-          onClick={() => {
-            setSpoilerClick(false);
-            setRimClick(false);
-            setWindowClick(false);
-            setBonnetClick(false);
-            setLightClick(false);
-            setCarBodyClick(false);
-            setDoorClick(false);
-            setSideKitClick(false);
             setWheelsClick(true);
             setBumperFrontClick(false);
             setBumperBackClick(false);
@@ -826,7 +845,7 @@ const Configurator = () => {
             setInteriorClick(false);
           }}
         >
-          Wheels
+          Tyres
         </button>
 
         <button
@@ -1020,9 +1039,9 @@ const Configurator = () => {
         <button
           className="btn btn-outline btn-primary"
           onClick={() => {
-            if (bonnet === 1) {
+            if (bonnet === 1 && engine !== 2) {
               setBonnet(0);
-            } 
+            } else setBonnet(1);
             setSpoilerClick(false);
             setRimClick(false);
             setWindowClick(false);
@@ -1187,7 +1206,7 @@ const Configurator = () => {
                   ></div>
                 </div>
                 <div className="text-white text-center font-bold text-sm capitalize">
-                  The Civic Spoiler makes the car aerodynamic and gives it a
+                  The Swift Spoiler makes the car aerodynamic and gives it a
                   sporty look.
                 </div>
               </div>
@@ -1233,59 +1252,6 @@ const Configurator = () => {
           {/* Interior Customization */}
           {interiorClick && (
             <>
-              {/* Spoiler Type Section */}
-              <div className="configurator__section">
-                <div className="uppercase font-bold text-white font-poppins">
-                  Interior
-                </div>
-                <div className="flex flex-row gap-8 items-center flex-wrap py-4">
-                  <div
-                    className={`item flex flex-col items-center transition-all duration-400 ${
-                      interior === 0 ? "item--active" : ""
-                    }`}
-                    onClick={() => {
-                      setInterior(0);
-                      updateMetrics({
-                        dC: bodyData.dC + 0.02,
-                        kW: bodyData.kW - 5,
-                      });
-                    }}
-                  >
-                    <div
-                      className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                        interior === 0 ? "text-white" : "text-gray-400"
-                      }`}
-                    >
-                      Base
-                    </div>
-                  </div>
-                  <div
-                    className={`item flex flex-col items-center transition-all duration-400 ${
-                      interior === 1 ? "item--active" : ""
-                    }`}
-                    onClick={() => {
-                      setInterior(1);
-                      updateMetrics({
-                        dC: bodyData.dC - 0.01,
-                        kW: bodyData.kW + 5,
-                      });
-                    }}
-                  >
-                    <div
-                      className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                        interior === 1 ? "text-white" : "text-gray-400"
-                      }`}
-                    >
-                      Sport
-                    </div>
-                  </div>
-                </div>
-                <div className="text-white text-center font-bold text-sm capitalize">
-                  The Civic Interior is a one of kind and changing it gives an
-                  amazing comfort boost.
-                </div>
-              </div>
-
               {/* Spoiler Color Section */}
 
               <div className="configurator__section">
@@ -1330,27 +1296,28 @@ const Configurator = () => {
                   Bonnets
                 </div>
                 <div className="flex flex-row gap-8 items-center flex-wrap py-4">
-                  <div
-                    className={`item flex flex-col items-center transition-all duration-400 ${
-                      bonnet === 0 ? "item--active" : ""
-                    }`}
-                    onClick={() => {
-                      setEngineClick(true);
-                      if (bonnet === 1) {
-                        setBonnet(0);
-                      } 
-                    }}
-                  >
+                  {engine !== 2 && (
                     <div
-                      className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                        bonnet === 0 
-                          ? "text-white"
-                          : "text-gray-400"
+                      className={`item flex flex-col items-center transition-all duration-400 ${
+                        bonnet === 0 ? "item--active" : ""
                       }`}
+                      onClick={() => {
+                        setEngineClick(true);
+                        if (bonnet === 1) {
+                          setBonnet(0);
+                        }
+                      }}
                     >
-                      Open Bonnet
+                      <div
+                        className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                          bonnet === 0 ? "text-white" : "text-gray-400"
+                        }`}
+                      >
+                        Open Bonnet
+                      </div>
                     </div>
-                  </div>
+                  )}
+
                   <div
                     className={`item flex flex-col items-center transition-all duration-400 ${
                       bonnet === 1 ? "item--active" : ""
@@ -1372,7 +1339,6 @@ const Configurator = () => {
                       Original Bonnet
                     </div>
                   </div>
-                  
                 </div>
               </div>
 
@@ -1429,13 +1395,17 @@ const Configurator = () => {
                       setEngine(1);
                       updateMetrics({
                         ...bodyData,
-                        p: 320,
-                        t: 400,
-                        r: 2500,
-                        nOC: 4,
-                        bD: 86,
-                        pS: 85.9,
-                        brpm: 6500,
+                        p: 280, // Power from engine.power.value
+                        kW: 1292.5, // Weight from engine.kerbWeight.value
+                        dC: 0.346, // Drag coefficient from dimensions.dragCoefficient.value
+                        w: 1805, // Width from dimensions.width.value
+                        h: 1455, // Height from dimensions.height.value
+                        t: 390, // Torque from engine.torque.value
+                        r: 3250, // RPM from engine.torque.rpm
+                        nOC: 3, // Number of cylinders from engine.numberOfCylinders
+                        bD: 87.5, // Bore diameter from engine.bore.value
+                        pS: 89.7, // Piston stroke from engine.stroke.value
+                        brpm: 6500, // RPM at max power from engine.power.rpm
                       });
                     }}
                   >
@@ -1453,10 +1423,11 @@ const Configurator = () => {
                     }`}
                     onClick={() => {
                       setEngine(2);
+                      setBonnet(1);
                       updateMetrics({
                         ...bodyData,
                         p: 390,
-                        t: 440,
+                        t: 490,
                         r: 3300,
                         nOC: 6,
                         bD: 90,
@@ -1470,7 +1441,7 @@ const Configurator = () => {
                         engine === 2 ? "text-white" : "text-gray-400"
                       }`}
                     >
-                      2ZZ
+                      Turbo (V6 Back)
                     </div>
                   </div>
                 </div>
@@ -1479,9 +1450,9 @@ const Configurator = () => {
           )}
 
           {/* Wheel Customization */}
-          {wheelsClick && (
+          {(rimClick || wheelsClick) && (
             <>
-              {/* WheelType Section */}
+              {/* Wheel Type Section */}
               <div className="configurator__section">
                 <div className="uppercase font-bold text-white font-poppins">
                   Wheel Selection
@@ -1493,6 +1464,7 @@ const Configurator = () => {
                     }`}
                     onClick={() => {
                       setWheels(1);
+                      setRim(1);
                       updateMetrics({
                         ...bodyData,
                         kW: bodyData.kW - 10,
@@ -1515,6 +1487,7 @@ const Configurator = () => {
                     }`}
                     onClick={() => {
                       setWheels(2);
+                      setRim(2);
                       updateMetrics({
                         ...bodyData,
                         kW: bodyData.kW + 5,
@@ -1530,473 +1503,36 @@ const Configurator = () => {
                       Sport
                     </div>
                   </div>
-
-                  <div
-                    className={`item flex flex-col items-center transition-all duration-400 ${
-                      wheels === 3 ? "item--active" : ""
-                    }`}
-                    onClick={() => {
-                      setWheels(3);
-                      updateMetrics({
-                        ...bodyData,
-                        kW: bodyData.kW + 10,
-                        dC: bodyData.dC - 0.01,
-                      });
-                    }}
-                  >
-                    <div
-                      className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                        wheels === 3 ? "text-white" : "text-gray-400"
-                      }`}
-                    >
-                      Performance
-                    </div>
-                  </div>
-
-                  <div
-                    className={`item flex flex-col items-center transition-all duration-400 ${
-                      wheels === 6 ? "item--active" : ""
-                    }`}
-                    onClick={() => {
-                      setWheels(6);
-                      updateMetrics({
-                        ...bodyData,
-                        kW: bodyData.kW + 15,
-                        dC: bodyData.dC - 0.015,
-                      });
-                    }}
-                  >
-                    <div
-                      className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                        wheels === 6 ? "text-white" : "text-gray-400"
-                      }`}
-                    >
-                      Offset
-                    </div>
-                  </div>
                 </div>
               </div>
-            </>
-          )}
 
-          {/* Rim Customization */}
-          {rimClick && (
-            <div className="configurator__section">
-              <div className="uppercase font-bold text-white font-poppins">
-                Rim Color
-              </div>
-              <div className="flex flex-row gap-8 items-center flex-wrap py-4">
-                {rimColors.map((item, index) => (
-                  <div
-                    key={index}
-                    className={`item flex flex-col items-center transition-all duration-400 ${
-                      item.color === rimColor.color ? "item--active" : ""
-                    }`}
-                    onClick={() => setRimColor(item)}
-                  >
-                    <div
-                      className="w-8 h-8 rounded-full border-2"
-                      style={{ backgroundColor: item.color }}
-                    />
-                    <div
-                      className={`text-center font-bold text-sm text-gray-400 capitalize ${
-                        item.color === rimColor.color ? "text-white" : ""
-                      }`}
-                    >
-                      {item.name}
-                    </div>
-                  </div>
-                ))}
-              </div>
-              {wheels !== 6 && (
-                <>
-                  <div className="uppercase font-bold text-white font-poppins">
-                    Rim Selection
-                  </div>
-                  <div className="flex flex-row gap-8 items-center flex-wrap py-4">
-                    {wheels === 1 || wheels === 2 ? (
-                      <>
-                        <div
-                          className={`item flex flex-col items-center transition-all duration-400 ${
-                            rim === 1 ? "item--active" : ""
-                          }`}
-                          onClick={() => {
-                            if (rim === 0) {
-                              setRim(1);
-                            }
-                            setRim(1);
-                            updateMetrics({
-                              ...bodyData,
-                              kW: bodyData.kW + 10,
-                              dC: bodyData.dC - 0.01,
-                            });
-                          }}
-                        >
-                          <div
-                            className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                              rim === 1 ? "text-white" : "text-gray-400"
-                            }`}
-                          >
-                            Rim 1
-                          </div>
-                        </div>
-                        <div
-                          className={`item flex flex-col items-center transition-all duration-400 ${
-                            rim === 2 ? "item--active" : ""
-                          }`}
-                          onClick={() => {
-                            if (rim === 0) {
-                              setRim(1);
-                            }
-                            setRim(2);
-                            updateMetrics({
-                              ...bodyData,
-                              kW: bodyData.kW + 15,
-                              dC: bodyData.dC - 0.015,
-                            });
-                          }}
-                        >
-                          <div
-                            className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                              rim === 2 ? "text-white" : "text-gray-400"
-                            }`}
-                          >
-                            Rim 2
-                          </div>
-                        </div>
-                        <div
-                          className={`item flex flex-col items-center transition-all duration-400 ${
-                            rim === 3 ? "item--active" : ""
-                          }`}
-                          onClick={() => {
-                            if (rim === 0) {
-                              setRim(1);
-                            }
-                            setRim(3);
-                            updateMetrics({
-                              ...bodyData,
-                              kW: bodyData.kW + 20,
-                              dC: bodyData.dC - 0.02,
-                            });
-                          }}
-                        >
-                          <div
-                            className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                              rim === 3 ? "text-white" : "text-gray-400"
-                            }`}
-                          >
-                            Rim 3
-                          </div>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div
-                          className={`item flex flex-col items-center transition-all duration-400 ${
-                            wheels === 3 ? "item--active" : ""
-                          }`}
-                          onClick={() => {
-                            setRim(0);
-                            setWheels(3);
-                            updateMetrics({
-                              ...bodyData,
-                              kW: bodyData.kW + 10,
-                              dC: bodyData.dC - 0.01,
-                            });
-                          }}
-                        >
-                          <div
-                            className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                              wheels === 3 ? "text-white" : "text-gray-400"
-                            }`}
-                          >
-                            Rim 1
-                          </div>
-                        </div>
-                        <div
-                          className={`item flex flex-col items-center transition-all duration-400 ${
-                            wheels === 4 ? "item--active" : ""
-                          }`}
-                          onClick={() => {
-                            setRim(0);
-                            setWheels(4);
-                            updateMetrics({
-                              ...bodyData,
-                              kW: bodyData.kW + 15,
-                              dC: bodyData.dC - 0.015,
-                            });
-                          }}
-                        >
-                          <div
-                            className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                              wheels === 4 ? "text-white" : "text-gray-400"
-                            }`}
-                          >
-                            Rim 2
-                          </div>
-                        </div>
-                        <div
-                          className={`item flex flex-col items-center transition-all duration-400 ${
-                            wheels === 5 ? "item--active" : ""
-                          }`}
-                          onClick={() => {
-                            setRim(0);
-                            setWheels(5);
-                            updateMetrics({
-                              ...bodyData,
-                              kW: bodyData.kW + 20,
-                              dC: bodyData.dC - 0.02,
-                            });
-                          }}
-                        >
-                          <div
-                            className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                              wheels === 5 ? "text-white" : "text-gray-400"
-                            }`}
-                          >
-                            Rim 3
-                          </div>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </>
-              )}
-            </div>
-          )}
-
-          {/* Diffuser Customization */}
-          {diffuserClick && (
-            <>
-              {/* Diffuser Type Section */}
+              {/* Rim Color Selection */}
               <div className="configurator__section">
                 <div className="uppercase font-bold text-white font-poppins">
-                  Back Bumpers
+                  Rim Color
                 </div>
                 <div className="flex flex-row gap-8 items-center flex-wrap py-4">
-                  <div
-                    className={`item flex flex-col items-center transition-all duration-400 ${
-                      diffuser === 0 ? "item--active" : ""
-                    }`}
-                    onClick={() => {
-                      setDiffuser(0);
-                      updateMetrics({
-                        ...bodyData,
-                        dC: bodyData.dC + 0.02,
-                        kW: bodyData.kW - 5,
-                      });
-                    }}
-                  >
+                  {rimColors.map((item, index) => (
                     <div
-                      className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                        diffuser === 0 ? "text-white" : "text-gray-400"
+                      key={index}
+                      className={`item flex flex-col items-center transition-all duration-400 ${
+                        item.color === rimColor.color ? "item--active" : ""
                       }`}
+                      onClick={() => setRimColor(item)}
                     >
-                      Stock
+                      <div
+                        className="w-8 h-8 rounded-full border-2"
+                        style={{ backgroundColor: item.color }}
+                      />
+                      <div
+                        className={`text-center font-bold text-sm text-gray-400 capitalize ${
+                          item.color === rimColor.color ? "text-white" : ""
+                        }`}
+                      >
+                        {item.name}
+                      </div>
                     </div>
-                  </div>
-                  <div
-                    className={`item flex flex-col items-center transition-all duration-400 ${
-                      diffuser === 1 ? "item--active" : ""
-                    }`}
-                    onClick={() => {
-                      setDiffuser(1);
-                      if (silencer == 1) setSilencer(2);
-                      updateMetrics({
-                        ...bodyData,
-                        dC: bodyData.dC - 0.01,
-                        kW: bodyData.kW + 3,
-                      });
-                    }}
-                  >
-                    <div
-                      className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                        diffuser === 1 ? "text-white" : "text-gray-400"
-                      }`}
-                    >
-                      Sport (Double)
-                    </div>
-                  </div>
-                  <div
-                    className={`item flex flex-col items-center transition-all duration-400 ${
-                      diffuser === 2 ? "item--active" : ""
-                    }`}
-                    onClick={() => {
-                      setDiffuser(2);
-                      setSilencer(1);
-                      updateMetrics({
-                        ...bodyData,
-                        dC: bodyData.dC - 0.015,
-                        kW: bodyData.kW + 4,
-                      });
-                    }}
-                  >
-                    <div
-                      className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                        diffuser === 2 ? "text-white" : "text-gray-400"
-                      }`}
-                    >
-                      Sport (Single)
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
-
-          {/* Silencer Selection Customization (Not done yet) */}
-          {silencerClick && (
-            <>
-              {/* Silencer Type Section */}
-              <div className="configurator__section">
-                <div className="uppercase font-bold text-white font-poppins">
-                  Silencers
-                </div>
-
-                <div className="flex flex-row gap-8 items-center flex-wrap py-4">
-                  {diffuser === 0 && (
-                    <>
-                      <div
-                        className={`item flex flex-col items-center transition-all duration-400 ${
-                          silencer === 1 ? "item--active" : ""
-                        }`}
-                        onClick={() => {
-                          setSilencer(1);
-                          updateMetrics({
-                            ...bodyData,
-                            dC: bodyData.dC + 0.01,
-                            kW: bodyData.kW + 2,
-                          });
-                        }}
-                      >
-                        <div
-                          className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                            silencer === 1 ? "text-white" : "text-gray-400"
-                          }`}
-                        >
-                          Single
-                        </div>
-                      </div>
-
-                      <div
-                        className={`item flex flex-col items-center transition-all duration-400 ${
-                          silencer === 2 ? "item--active" : ""
-                        }`}
-                        onClick={() => {
-                          setSilencer(2);
-                          updateMetrics({
-                            ...bodyData,
-                            dC: bodyData.dC + 0.005,
-                            kW: bodyData.kW + 3,
-                          });
-                        }}
-                      >
-                        <div
-                          className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                            silencer === 2 ? "text-white" : "text-gray-400"
-                          }`}
-                        >
-                          Dual
-                        </div>
-                      </div>
-
-                      <div
-                        className={`item flex flex-col items-center transition-all duration-400 ${
-                          silencer === 3 ? "item--active" : ""
-                        }`}
-                        onClick={() => {
-                          setSilencer(3);
-                          updateMetrics({
-                            ...bodyData,
-                            dC: bodyData.dC - 0.005,
-                            kW: bodyData.kW + 1,
-                          });
-                        }}
-                      >
-                        <div
-                          className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                            silencer === 3 ? "text-white" : "text-gray-400"
-                          }`}
-                        >
-                          Quad
-                        </div>
-                      </div>
-                    </>
-                  )}
-
-                  {diffuser === 1 && (
-                    <>
-                      <div
-                        className={`item flex flex-col items-center transition-all duration-400 ${
-                          silencer === 2 ? "item--active" : ""
-                        }`}
-                        onClick={() => {
-                          setSilencer(2);
-                          updateMetrics({
-                            ...bodyData,
-                            dC: bodyData.dC + 0.005,
-                            kW: bodyData.kW + 3,
-                          });
-                        }}
-                      >
-                        <div
-                          className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                            silencer === 2 ? "text-white" : "text-gray-400"
-                          }`}
-                        >
-                          Dual
-                        </div>
-                      </div>
-
-                      <div
-                        className={`item flex flex-col items-center transition-all duration-400 ${
-                          silencer === 3 ? "item--active" : ""
-                        }`}
-                        onClick={() => {
-                          setSilencer(3);
-                          updateMetrics({
-                            ...bodyData,
-                            dC: bodyData.dC - 0.005,
-                            kW: bodyData.kW + 1,
-                          });
-                        }}
-                      >
-                        <div
-                          className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                            silencer === 3 ? "text-white" : "text-gray-400"
-                          }`}
-                        >
-                          Quad
-                        </div>
-                      </div>
-                    </>
-                  )}
-
-                  {diffuser === 2 && (
-                    <>
-                      <div
-                        className={`item flex flex-col items-center transition-all duration-400 ${
-                          silencer === 1 ? "item--active" : ""
-                        }`}
-                        onClick={() => {
-                          setSilencer(1);
-                          updateMetrics({
-                            ...bodyData,
-                            dC: bodyData.dC + 0.01,
-                            kW: bodyData.kW + 2,
-                          });
-                        }}
-                      >
-                        <div
-                          className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                            silencer === 1 ? "text-white" : "text-gray-400"
-                          }`}
-                        >
-                          Single
-                        </div>
-                      </div>
-                    </>
-                  )}
+                  ))}
                 </div>
               </div>
             </>
@@ -2005,6 +1541,55 @@ const Configurator = () => {
           {/* SideKit Customization */}
           {sideKitClick && (
             <>
+              {/* Splitter Section */}
+              <div className="configurator__section">
+                <div className="uppercase font-bold text-white font-poppins">
+                  Splitter
+                </div>
+                <div className="flex flex-row gap-8 items-center flex-wrap py-4">
+                  <div
+                    className={`item flex flex-col items-center transition-all duration-400 ${
+                      [3, 4, 5].includes(sideKit) ? "item--active" : ""
+                    }`}
+                    onClick={() => {
+                      if (sideKit === 0) setSideKit(3);
+                      else if (sideKit === 1) setSideKit(4);
+                      else if (sideKit === 2) setSideKit(5);
+                    }}
+                  >
+                    <div
+                      className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                        [3, 4, 5].includes(sideKit)
+                          ? "text-white"
+                          : "text-gray-400"
+                      }`}
+                    >
+                      Add Splitter
+                    </div>
+                  </div>
+                  <div
+                    className={`item flex flex-col items-center transition-all duration-400 ${
+                      ![3, 4, 5].includes(sideKit) ? "item--active" : ""
+                    }`}
+                    onClick={() => {
+                      if (sideKit === 3) setSideKit(0);
+                      else if (sideKit === 4) setSideKit(1);
+                      else if (sideKit === 5) setSideKit(2);
+                    }}
+                  >
+                    <div
+                      className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                        ![3, 4, 5].includes(sideKit)
+                          ? "text-white"
+                          : "text-gray-400"
+                      }`}
+                    >
+                      Remove Splitter
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* Sidekit Type Section */}
               <div className="configurator__section">
                 <div className="uppercase font-bold text-white font-poppins">
@@ -2013,10 +1598,10 @@ const Configurator = () => {
                 <div className="flex flex-row gap-8 items-center flex-wrap py-4">
                   <div
                     className={`item flex flex-col items-center transition-all duration-400 ${
-                      sideKit === 0 ? "item--active" : ""
+                      [0, 3].includes(sideKit) ? "item--active" : ""
                     }`}
                     onClick={() => {
-                      setSideKit(0);
+                      setSideKit(sideKit === 3 ? 3 : 0);
                       updateMetrics({
                         ...bodyData,
                         dC: bodyData.dC + 0.01,
@@ -2026,7 +1611,9 @@ const Configurator = () => {
                   >
                     <div
                       className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                        sideKit === 0 ? "text-white" : "text-gray-400"
+                        [0, 3].includes(sideKit)
+                          ? "text-white"
+                          : "text-gray-400"
                       }`}
                     >
                       Remove Kit
@@ -2034,10 +1621,10 @@ const Configurator = () => {
                   </div>
                   <div
                     className={`item flex flex-col items-center transition-all duration-400 ${
-                      sideKit === 1 ? "item--active" : ""
+                      [1, 4].includes(sideKit) ? "item--active" : ""
                     }`}
                     onClick={() => {
-                      setSideKit(1);
+                      setSideKit(sideKit === 4 ? 4 : 1);
                       updateMetrics({
                         ...bodyData,
                         dC: bodyData.dC - 0.01,
@@ -2047,18 +1634,20 @@ const Configurator = () => {
                   >
                     <div
                       className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                        sideKit === 1 ? "text-white" : "text-gray-400"
+                        [1, 4].includes(sideKit)
+                          ? "text-white"
+                          : "text-gray-400"
                       }`}
                     >
-                      Add Side Kit
+                      Sidekit
                     </div>
                   </div>
                   <div
                     className={`item flex flex-col items-center transition-all duration-400 ${
-                      sideKit === 2 ? "item--active" : ""
+                      [2, 5].includes(sideKit) ? "item--active" : ""
                     }`}
                     onClick={() => {
-                      setSideKit(2);
+                      setSideKit(sideKit === 5 ? 5 : 2);
                       updateMetrics({
                         ...bodyData,
                         dC: bodyData.dC - 0.01,
@@ -2068,10 +1657,12 @@ const Configurator = () => {
                   >
                     <div
                       className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                        sideKit === 2 ? "text-white" : "text-gray-400"
+                        [2, 5].includes(sideKit)
+                          ? "text-white"
+                          : "text-gray-400"
                       }`}
                     >
-                      Add Wide Kit
+                      Widekit
                     </div>
                   </div>
                 </div>
@@ -2081,11 +1672,11 @@ const Configurator = () => {
                 </div>
               </div>
 
-              {/* SideKit Color Section */}
+              {/* Kit Color Section */}
               {sideKit !== 0 && (
                 <div className="configurator__section">
                   <div className="uppercase font-bold text-white font-poppins">
-                    Side Kit Color
+                    Kit Color
                   </div>
                   <div className="flex flex-row gap-8 items-center flex-wrap py-4">
                     {sideKitColors.map((item, index) => (
@@ -2227,7 +1818,7 @@ const Configurator = () => {
                 ></div>
               </div>
               <div className="text-white text-center font-bold text-sm capitalize">
-                The Civic Spoiler makes the car aerodynamic and gives it a
+                The Swift Spoiler makes the car aerodynamic and gives it a
                 sporty look.
               </div>
             </div>
@@ -2235,36 +1826,45 @@ const Configurator = () => {
 
           {/* bumperBack Customization */}
 
-          {bumperBackClick && (
-            <div className="configurator__section">
-              <div className="uppercase font-bold text-white font-poppins">
-                Back Bumper Color
-              </div>
-              <div className="flex flex-row gap-8 items-center flex-wrap py-4">
-                {bumperBackColors.map((item, index) => (
-                  <div
-                    key={index}
-                    className={`item flex flex-col items-center transition-all duration-400 ${
-                      item.color === bumperBackColor.color ? "item--active" : ""
-                    }`}
-                    onClick={() => setBumperBackColor(item)}
-                  >
+          {bumperBackClick &&
+            (engine !== 2 ? (
+              <div className="configurator__section">
+                <div className="uppercase font-bold text-white font-poppins">
+                  Back Bumper Color
+                </div>
+                <div className="flex flex-row gap-8 items-center flex-wrap py-4">
+                  {bumperBackColors.map((item, index) => (
                     <div
-                      className="w-8 h-8 rounded-full border-2"
-                      style={{ backgroundColor: item.color }}
-                    />
-                    <div
-                      className={`text-center font-bold text-sm text-gray-400 capitalize ${
-                        item.color === bumperBackColor.color ? "text-white" : ""
+                      key={index}
+                      className={`item flex flex-col items-center transition-all duration-400 ${
+                        item.color === bumperBackColor.color
+                          ? "item--active"
+                          : ""
                       }`}
+                      onClick={() => setBumperBackColor(item)}
                     >
-                      {item.name}
+                      <div
+                        className="w-8 h-8 rounded-full border-2"
+                        style={{ backgroundColor: item.color }}
+                      />
+                      <div
+                        className={`text-center font-bold text-sm text-gray-400 capitalize ${
+                          item.color === bumperBackColor.color
+                            ? "text-white"
+                            : ""
+                        }`}
+                      >
+                        {item.name}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            ) : (
+              <div className="font-bold text-white font-poppins">
+                Please Select Stock Engine to Customize Back Bumper
+              </div>
+            ))}
 
           {/* Trunk Customization */}
           {trunkClick && (

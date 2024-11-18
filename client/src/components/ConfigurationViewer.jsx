@@ -72,6 +72,8 @@ const ConfigurationViewer = () => {
       navigate(`/user/customize-3d-model`, { state: { config } });
     } else if (modelType === "corolla") {
       navigate(`/user/customize-3d-model-corolla`, { state: { config } });
+    } else if (modelType === "swift") {
+      navigate(`/user/customize-3d-model-swift`, { state: { config } });
     }
   };
 
@@ -109,17 +111,17 @@ const ConfigurationViewer = () => {
 
     try {
       setIsSearching(true);
-      const token = Cookies.get('token');
+      const token = Cookies.get("token");
       const response = await axios.get(`/user/search?email=${searchTerm}`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.data.success) {
         setSearchResults(response.data.data);
       }
     } catch (error) {
-      console.error('Error searching users:', error);
-      toast.error('Failed to search users');
+      console.error("Error searching users:", error);
+      toast.error("Failed to search users");
     } finally {
       setIsSearching(false);
     }
@@ -385,34 +387,48 @@ const ConfigurationViewer = () => {
         {/* Enhanced Share Modal */}
         {showShareModal && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
-            <div className={`w-full max-w-md transform transition-all ${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg p-6 shadow-xl`}>
+            <div
+              className={`w-full max-w-md transform transition-all ${
+                isDarkMode ? "bg-gray-800" : "bg-white"
+              } rounded-lg p-6 shadow-xl`}
+            >
               <h3 className="text-xl font-bold mb-2">Share Configuration</h3>
-              <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mb-4`}>
+              <p
+                className={`text-sm ${
+                  isDarkMode ? "text-gray-400" : "text-gray-600"
+                } mb-4`}
+              >
                 Enter the email address of the user you want to share with
               </p>
-              
+
               <div className="relative">
                 <input
                   type="email"
                   placeholder="Enter email address"
-                  className={`input input-bordered w-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-50'}`}
+                  className={`input input-bordered w-full ${
+                    isDarkMode ? "bg-gray-700" : "bg-gray-50"
+                  }`}
                   value={shareEmail}
                   onChange={(e) => {
                     setShareEmail(e.target.value);
                     setSelectedUser(null);
                   }}
                 />
-                
+
                 {/* Search Results Dropdown */}
                 {searchResults.length > 0 && !selectedUser && (
-                  <div className={`absolute w-full mt-1 rounded-lg shadow-lg ${
-                    isDarkMode ? 'bg-gray-700' : 'bg-white'
-                  } border ${isDarkMode ? 'border-gray-600' : 'border-gray-200'}`}>
+                  <div
+                    className={`absolute w-full mt-1 rounded-lg shadow-lg ${
+                      isDarkMode ? "bg-gray-700" : "bg-white"
+                    } border ${
+                      isDarkMode ? "border-gray-600" : "border-gray-200"
+                    }`}
+                  >
                     {searchResults.map((user) => (
                       <div
                         key={user._id}
                         className={`flex items-center gap-3 p-3 cursor-pointer hover:${
-                          isDarkMode ? 'bg-gray-600' : 'bg-gray-50'
+                          isDarkMode ? "bg-gray-600" : "bg-gray-50"
                         } transition-colors duration-150`}
                         onClick={() => {
                           setShareEmail(user.email);
@@ -420,14 +436,20 @@ const ConfigurationViewer = () => {
                           setSearchResults([]);
                         }}
                       >
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                          isDarkMode ? 'bg-gray-500' : 'bg-gray-200'
-                        }`}>
+                        <div
+                          className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                            isDarkMode ? "bg-gray-500" : "bg-gray-200"
+                          }`}
+                        >
                           {user.name[0].toUpperCase()}
                         </div>
                         <div>
                           <p className="font-medium">{user.name}</p>
-                          <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                          <p
+                            className={`text-sm ${
+                              isDarkMode ? "text-gray-400" : "text-gray-500"
+                            }`}
+                          >
                             {user.email}
                           </p>
                         </div>
@@ -445,17 +467,25 @@ const ConfigurationViewer = () => {
               </div>
 
               {selectedUser && (
-                <div className={`mt-4 p-3 rounded-lg ${
-                  isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
-                } flex items-center gap-3`}>
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                    isDarkMode ? 'bg-gray-600' : 'bg-gray-200'
-                  }`}>
+                <div
+                  className={`mt-4 p-3 rounded-lg ${
+                    isDarkMode ? "bg-gray-700" : "bg-gray-100"
+                  } flex items-center gap-3`}
+                >
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                      isDarkMode ? "bg-gray-600" : "bg-gray-200"
+                    }`}
+                  >
                     {selectedUser.name[0].toUpperCase()}
                   </div>
                   <div>
                     <p className="font-medium">{selectedUser.name}</p>
-                    <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    <p
+                      className={`text-sm ${
+                        isDarkMode ? "text-gray-400" : "text-gray-500"
+                      }`}
+                    >
                       {selectedUser.email}
                     </p>
                   </div>
@@ -464,10 +494,14 @@ const ConfigurationViewer = () => {
 
               <div className="flex justify-end gap-3 mt-6">
                 <button
-                  className={`px-4 py-2 rounded-lg ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-200 hover:bg-gray-300'} transition-colors duration-150`}
+                  className={`px-4 py-2 rounded-lg ${
+                    isDarkMode
+                      ? "bg-gray-700 hover:bg-gray-600"
+                      : "bg-gray-200 hover:bg-gray-300"
+                  } transition-colors duration-150`}
                   onClick={() => {
                     setShowShareModal(false);
-                    setShareEmail('');
+                    setShareEmail("");
                     setSelectedUser(null);
                     setSearchResults([]);
                   }}

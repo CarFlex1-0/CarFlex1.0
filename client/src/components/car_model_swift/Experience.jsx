@@ -20,6 +20,8 @@ const AnimatedGroup = animated(({ rotation, children }) => (
 ));
 
 const SceneContent = ({ targetRotation }) => {
+  console.log("SceneContent rendering with rotation:", targetRotation);
+
   const groupRef = useRef();
   const stageRef = useRef();
   const orbitControlsRef = useRef();
@@ -172,6 +174,7 @@ const Experience = () => {
     roofClick,
     SilencerClick,
     trunkClick,
+    engine,
   } = useCustomization();
 
   const [dpr, setDpr] = useState(0.7);
@@ -234,6 +237,14 @@ const Experience = () => {
 
     const clickedPart = clickedParts.findIndex((part) => part);
     const partName = partNames[clickedPart];
+
+    console.log("Clicked part:", partName, "Engine value:", engine, "EngineClick:", engineClick);
+
+    if (engine === 2 && engineClick) {
+      console.log("Engine is 2, setting back view");
+      setTargetRotation(viewRotations.back);
+      return;
+    }
 
     if (partName) {
       switch (partName) {
@@ -298,7 +309,17 @@ const Experience = () => {
     roofClick,
     SilencerClick,
     trunkClick,
+    engine,
   ]);
+
+  useEffect(() => {
+    console.log(engine);
+    console.log(targetRotation);
+  }, [engine])
+
+  useEffect(() => {
+    console.log("Target rotation updated to:", targetRotation);
+  }, [targetRotation]);
 
   return (
     <>

@@ -1189,7 +1189,7 @@ const Configurator = () => {
                   ></div>
                 </div>
                 <div className="text-white text-center font-bold text-sm capitalize">
-                  The Civic Spoiler makes the car aerodynamic and gives it a
+                  The Corolla Spoiler makes the car aerodynamic and gives it a
                   sporty look.
                 </div>
               </div>
@@ -1283,7 +1283,7 @@ const Configurator = () => {
                   </div>
                 </div>
                 <div className="text-white text-center font-bold text-sm capitalize">
-                  The Civic Interior is a one of kind and changing it gives an
+                  The Corolla Interior is a one of kind and changing it gives an
                   amazing comfort boost.
                 </div>
               </div>
@@ -2252,7 +2252,7 @@ const Configurator = () => {
                 ></div>
               </div>
               <div className="text-white text-center font-bold text-sm capitalize">
-                The Civic Spoiler makes the car aerodynamic and gives it a
+                The Corolla Spoiler makes the car aerodynamic and gives it a
                 sporty look.
               </div>
             </div>
