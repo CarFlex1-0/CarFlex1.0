@@ -202,7 +202,7 @@ const Configurator = () => {
       setInteriorColor(
         existingConfig.customization.interiorColor || interiorColors[0]
       );
-      setDoor(existingConfig.customization.door || 0);
+      setDoor(existingConfig.customization.door || 1);
       setDoorColor(existingConfig.customization.doorColor || doorColors[0]);
       setSpoiler(existingConfig.customization.spoiler || 0);
       setSpoilerColor(
@@ -1140,7 +1140,7 @@ const Configurator = () => {
                       setSpoiler(0);
                       updateMetrics({
                         dC: bodyData.dC + 0.02,
-                        kW: bodyData.kW - 5,
+                        kW: bodyData.kW - 15,
                       });
                     }}
                   >
@@ -1159,8 +1159,8 @@ const Configurator = () => {
                     onClick={() => {
                       setSpoiler(1);
                       updateMetrics({
-                        dC: bodyData.dC - 0.01,
-                        kW: bodyData.kW + 5,
+                        dC: bodyData.dC - 0.02,
+                        kW: bodyData.kW + 15,
                       });
                     }}
                   >
@@ -1180,7 +1180,7 @@ const Configurator = () => {
                       setSpoiler(2);
                       updateMetrics({
                         dC: bodyData.dC - 0.02,
-                        kW: bodyData.kW + 7,
+                        kW: bodyData.kW + 17,
                       });
                     }}
                   >
@@ -1192,18 +1192,7 @@ const Configurator = () => {
                       Sporty Spoiler
                     </div>
                   </div>
-                  <div
-                    className={`item flex flex-col items-center transition-all duration-400 ${
-                      spoiler === 3 ? "item--active" : ""
-                    }`}
-                    onClick={() => {
-                      setSpoiler(3);
-                      updateMetrics({
-                        dC: bodyData.dC - 0.03,
-                        kW: bodyData.kW + 10,
-                      });
-                    }}
-                  ></div>
+                  
                 </div>
                 <div className="text-white text-center font-bold text-sm capitalize">
                   The Swift Spoiler makes the car aerodynamic and gives it a
@@ -1782,44 +1771,6 @@ const Configurator = () => {
                     Open Doors
                   </div>
                 </div>
-                <div
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    door === 2 ? "item--active" : ""
-                  }`}
-                  onClick={() => {
-                    setDoor(2);
-                    updateMetrics({
-                      ...bodyData,
-                      dC: bodyData.dC - 0.02,
-                      kW: bodyData.kW + 7,
-                    });
-                  }}
-                >
-                  <div
-                    className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                      door === 2 ? "text-white" : "text-gray-400"
-                    }`}
-                  >
-                    Butterfly Doors
-                  </div>
-                </div>
-                <div
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    door === 3 ? "item--active" : ""
-                  }`}
-                  onClick={() => {
-                    setDoor(3);
-                    updateMetrics({
-                      ...bodyData,
-                      dC: bodyData.dC - 0.03,
-                      kW: bodyData.kW + 10,
-                    });
-                  }}
-                ></div>
-              </div>
-              <div className="text-white text-center font-bold text-sm capitalize">
-                The Swift Spoiler makes the car aerodynamic and gives it a
-                sporty look.
               </div>
             </div>
           )}

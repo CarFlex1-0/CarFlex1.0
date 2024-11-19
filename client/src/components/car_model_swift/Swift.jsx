@@ -147,6 +147,7 @@ export default function Swift(props) {
     setWheels(1);
     setRim(1);
     setDiffuser(0);
+    
   }, []);
 
   const [tempDoor, settempDoor] = useState(door);
@@ -164,6 +165,155 @@ export default function Swift(props) {
  return (
     <group {...props} dispose={null}>
      <group name="Scene">
+       
+       {/* Closed Doors */}
+       <group name="door_bl_close" rotation={[-0.010521, 0, 0]} scale={0.001729} visible={door===0}>
+          <mesh name="door_bl" geometry={nodes.door_bl.geometry} material={materials.body} ><meshStandardMaterial
+  color={doorColor.color}
+  emissive="#000000"
+  emissiveIntensity={1}
+  metalness={0.6323829889297485}
+  roughness={0.7548746466636658}
+  opacity={1}
+  transparent={false}
+  side={2}
+  wireframe={false}
+  flatShading={false}
+  
+/></mesh>
+          <mesh name="door_bl_1" geometry={nodes.door_bl_1.geometry} material={materials.interior} />
+          <mesh name="door_bl_2" geometry={nodes.door_bl_2.geometry} material={materials.plastic} />
+        </group>
+<group name="door_br_close" rotation={[-0.010521, 0, 0]} scale={0.001729} visible={door===0}>
+          <mesh name="door_br" geometry={nodes.door_br.geometry} material={materials.body} ><meshStandardMaterial
+  color={doorColor.color}
+  emissive="#000000"
+  emissiveIntensity={1}
+  metalness={0.6323829889297485}
+  roughness={0.7548746466636658}
+  opacity={1}
+  transparent={false}
+  side={2}
+  wireframe={false}
+  flatShading={false}
+  
+/></mesh>
+          <mesh name="door_br_1" geometry={nodes.door_br_1.geometry} material={materials.interior} />
+          <mesh name="door_br_2" geometry={nodes.door_br_2.geometry} material={materials.plastic} />
+        </group>
+<group name="door_fl_close" rotation={[-0.010521, 0, 0]} scale={0.001729} visible={door===0}>
+          <mesh name="door_fl" geometry={nodes.door_fl.geometry} material={materials.body} ><meshStandardMaterial
+  color={doorColor.color}
+  emissive="#000000"
+  emissiveIntensity={1}
+  metalness={0.6323829889297485}
+  roughness={0.7548746466636658}
+  opacity={1}
+  transparent={false}
+  side={2}
+  wireframe={false}
+  flatShading={false}
+  
+/></mesh>
+          <mesh name="door_fl_1" geometry={nodes.door_fl_1.geometry} material={materials.interior} />
+          <mesh name="door_fl_2" geometry={nodes.door_fl_2.geometry} material={materials.plastic} />
+        </group>
+<group name="door_fr_close" rotation={[-0.010521, 0, 0]} scale={0.001729} visible={door===0}>
+          <mesh name="door_fr" geometry={nodes.door_fr.geometry} material={materials.body} ><meshStandardMaterial
+  color={doorColor.color}
+  emissive="#000000"
+  emissiveIntensity={1}
+  metalness={0.6323829889297485}
+  roughness={0.7548746466636658}
+  opacity={1}
+  transparent={false}
+  side={2}
+  wireframe={false}
+  flatShading={false}
+  
+/></mesh>
+          <mesh name="door_fr_1" geometry={nodes.door_fr_1.geometry} material={materials.interior} />
+          <mesh name="door_fr_2" geometry={nodes.door_fr_2.geometry} material={materials.plastic} />
+       </group>
+
+       
+
+       {/* Open Doors */}
+       <group name="door_bl_open" position={[1.287782, 1.101864, -0.566193]} rotation={[0.746531, -1.331984, 0.762752]} scale={0.001729}  visible={door===1}>
+          <mesh name="door_bl001" geometry={nodes.door_bl001.geometry} material={materials.body} ><meshStandardMaterial
+  color={doorColor.color}
+  emissive="#000000"
+  emissiveIntensity={1}
+  metalness={0.6323829889297485}
+  roughness={0.7548746466636658}
+  opacity={1}
+  transparent={false}
+  side={2}
+  wireframe={false}
+  flatShading={false}
+  
+/></mesh>
+          <mesh name="door_bl001_1" geometry={nodes.door_bl001_1.geometry} material={materials.interior} />
+          <mesh name="door_bl001_2" geometry={nodes.door_bl001_2.geometry} material={materials.plastic} />
+       </group>
+       <group name="door_br_open" position={[-1.287706, 1.101863, -0.566193]} rotation={[0.746531, 1.331984, -0.762752]} scale={0.001729} visible={door===1}>
+          <mesh name="door_br001" geometry={nodes.door_br001.geometry} material={materials.body} ><meshStandardMaterial
+  color={doorColor.color}
+  emissive="#000000"
+  emissiveIntensity={1}
+  metalness={0.6323829889297485}
+  roughness={0.7548746466636658}
+  opacity={1}
+  transparent={false}
+  side={2}
+  wireframe={false}
+  flatShading={false}
+  
+/></mesh>
+          <mesh name="door_br001_1" geometry={nodes.door_br001_1.geometry} material={materials.interior} />
+          <mesh name="door_br001_2" geometry={nodes.door_br001_2.geometry} material={materials.plastic} />
+        </group>
+        
+        <group name="door_fl_open" position={[1.348255, 1.356961, 1.092892]} rotation={[-0.024891, -1.134345, -0.022559]} scale={0.001729} visible={door===1}>
+          <mesh name="door_fl003" geometry={nodes.door_fl003.geometry} material={materials.body} ><meshStandardMaterial
+  color={doorColor.color}
+  emissive="#000000"
+  emissiveIntensity={1}
+  metalness={0.6323829889297485}
+  roughness={0.7548746466636658}
+  opacity={1}
+  transparent={false}
+  side={2}
+  wireframe={false}
+  flatShading={false}
+  
+/></mesh>
+          <mesh name="door_fl003_1" geometry={nodes.door_fl003_1.geometry} material={materials.interior} />
+          <mesh name="door_fl003_2" geometry={nodes.door_fl003_2.geometry} material={materials.plastic} />
+          <mesh name="door_fl003_3" geometry={nodes.door_fl003_3.geometry} material={materials.turn_signals} />
+          <mesh name="door_fl003_4" geometry={nodes.door_fl003_4.geometry} material={materials.side_mirrors_glass} />
+        </group>
+        
+        <group name="door_fr_open" position={[-1.348708, 1.356962, 1.092947]} rotation={[-0.024891, 1.134345, 0.022559]} scale={0.001729} visible={door===1}>
+          <mesh name="door_fr001" geometry={nodes.door_fr001.geometry} material={materials.body} ><meshStandardMaterial
+  color={doorColor.color}
+  emissive="#000000"
+  emissiveIntensity={1}
+  metalness={0.6323829889297485}
+  roughness={0.7548746466636658}
+  opacity={1}
+  transparent={false}
+  side={2}
+  wireframe={false}
+  flatShading={false}
+  
+/></mesh>
+          <mesh name="door_fr001_1" geometry={nodes.door_fr001_1.geometry} material={materials.interior} />
+          <mesh name="door_fr001_2" geometry={nodes.door_fr001_2.geometry} material={materials.plastic} />
+          <mesh name="door_fr001_3" geometry={nodes.door_fr001_3.geometry} material={materials.turn_signals} />
+          <mesh name="door_fr001_4" geometry={nodes.door_fr001_4.geometry} material={materials.side_mirrors_glass} />
+       </group>
+       
        {/* Miscellaneous */}
      <mesh name="silencer1" geometry={nodes.silencer1.geometry} material={materials.chrome_trim} rotation={[1.104903, -0.000001, Math.PI]} scale={0.001173} visible={engine !== 2} />
      <mesh name="skeleton" geometry={nodes.skeleton.geometry} material={materials.interior} rotation={[-0.010521, 0, 0]} scale={0.001729} />
@@ -277,7 +427,7 @@ export default function Swift(props) {
           <mesh name="windows_f_b_2" geometry={nodes.windows_f_b_2.geometry} material={materials.defrost_lines} />
           <mesh name="windows_f_b_3" geometry={nodes.windows_f_b_3.geometry} material={materials.plastic} />
         </group>
-        <mesh name="windows_r_l" geometry={nodes.windows_r_l.geometry} material={materials.lights_glass} material-opacity={0.8} material-transparent={true} material-color={windowColor.color} rotation={[-0.010521, 0, 0]} scale={0.001729} />
+        <mesh name="windows_r_l" geometry={nodes.windows_r_l.geometry} material={materials.lights_glass} material-opacity={0.8} material-transparent={true} material-color={windowColor.color} rotation={[-0.010521, 0, 0]} scale={0.001729} visible={door==0} />
         <group name="windowshade" rotation={[-0.010521, 0, 0]} scale={0.001729}>
           <mesh name="windowshade_1" geometry={nodes.windowshade_1.geometry} material={materials.body} />
           <mesh name="windowshade_2" geometry={nodes.windowshade_2.geometry} material={materials.plastic} />
@@ -470,50 +620,10 @@ export default function Swift(props) {
         
        
         
-        <group name="door_bl_close" rotation={[-0.010521, 0, 0]} scale={0.001729}>
-          <mesh name="door_bl" geometry={nodes.door_bl.geometry} material={materials.body} />
-          <mesh name="door_bl_1" geometry={nodes.door_bl_1.geometry} material={materials.interior} />
-          <mesh name="door_bl_2" geometry={nodes.door_bl_2.geometry} material={materials.plastic} />
-        </group>
-        <group name="door_bl_open" position={[1.287782, 1.101864, -0.566193]} rotation={[0.746531, -1.331984, 0.762752]} scale={0.001729}>
-          <mesh name="door_bl001" geometry={nodes.door_bl001.geometry} material={materials.body} />
-          <mesh name="door_bl001_1" geometry={nodes.door_bl001_1.geometry} material={materials.interior} />
-          <mesh name="door_bl001_2" geometry={nodes.door_bl001_2.geometry} material={materials.plastic} />
-        </group>
-        <group name="door_br_close" rotation={[-0.010521, 0, 0]} scale={0.001729}>
-          <mesh name="door_br" geometry={nodes.door_br.geometry} material={materials.body} />
-          <mesh name="door_br_1" geometry={nodes.door_br_1.geometry} material={materials.interior} />
-          <mesh name="door_br_2" geometry={nodes.door_br_2.geometry} material={materials.plastic} />
-        </group>
-        <group name="door_br_open" position={[-1.287706, 1.101863, -0.566193]} rotation={[0.746531, 1.331984, -0.762752]} scale={0.001729}>
-          <mesh name="door_br001" geometry={nodes.door_br001.geometry} material={materials.body} />
-          <mesh name="door_br001_1" geometry={nodes.door_br001_1.geometry} material={materials.interior} />
-          <mesh name="door_br001_2" geometry={nodes.door_br001_2.geometry} material={materials.plastic} />
-        </group>
-        <group name="door_fl_close" rotation={[-0.010521, 0, 0]} scale={0.001729}>
-          <mesh name="door_fl" geometry={nodes.door_fl.geometry} material={materials.body} />
-          <mesh name="door_fl_1" geometry={nodes.door_fl_1.geometry} material={materials.interior} />
-          <mesh name="door_fl_2" geometry={nodes.door_fl_2.geometry} material={materials.plastic} />
-        </group>
-        <group name="door_fl_open" position={[1.348255, 1.356961, 1.092892]} rotation={[-0.024891, -1.134345, -0.022559]} scale={0.001729}>
-          <mesh name="door_fl003" geometry={nodes.door_fl003.geometry} material={materials.body} />
-          <mesh name="door_fl003_1" geometry={nodes.door_fl003_1.geometry} material={materials.interior} />
-          <mesh name="door_fl003_2" geometry={nodes.door_fl003_2.geometry} material={materials.plastic} />
-          <mesh name="door_fl003_3" geometry={nodes.door_fl003_3.geometry} material={materials.turn_signals} />
-          <mesh name="door_fl003_4" geometry={nodes.door_fl003_4.geometry} material={materials.side_mirrors_glass} />
-        </group>
-        <group name="door_fr_close" rotation={[-0.010521, 0, 0]} scale={0.001729}>
-          <mesh name="door_fr" geometry={nodes.door_fr.geometry} material={materials.body} />
-          <mesh name="door_fr_1" geometry={nodes.door_fr_1.geometry} material={materials.interior} />
-          <mesh name="door_fr_2" geometry={nodes.door_fr_2.geometry} material={materials.plastic} />
-        </group>
-        <group name="door_fr_open" position={[-1.348708, 1.356962, 1.092947]} rotation={[-0.024891, 1.134345, 0.022559]} scale={0.001729}>
-          <mesh name="door_fr001" geometry={nodes.door_fr001.geometry} material={materials.body} />
-          <mesh name="door_fr001_1" geometry={nodes.door_fr001_1.geometry} material={materials.interior} />
-          <mesh name="door_fr001_2" geometry={nodes.door_fr001_2.geometry} material={materials.plastic} />
-          <mesh name="door_fr001_3" geometry={nodes.door_fr001_3.geometry} material={materials.turn_signals} />
-          <mesh name="door_fr001_4" geometry={nodes.door_fr001_4.geometry} material={materials.side_mirrors_glass} />
-        </group>
+        
+        
+        
+        
         
         <mesh name="interior" geometry={nodes.interior.geometry} material={materials.interior} rotation={[-0.010521, 0, 0]} scale={0.001729} />
         <group name="lights_b" rotation={[-0.010521, 0, 0]} scale={0.001729}>
@@ -540,15 +650,39 @@ export default function Swift(props) {
         <mesh name="seat_fl" geometry={nodes.seat_fl.geometry} material={materials.interior} rotation={[-0.010521, 0, 0]} scale={0.001729} />
         <mesh name="seat_fr" geometry={nodes.seat_fr.geometry} material={materials.interior} rotation={[-0.010521, 0, 0]} scale={0.001729} />
 
-        <group name="sidemirror_l" rotation={[-0.010521, 0, 0]} scale={0.001729}>
-          <mesh name="sidemirror_l_1" geometry={nodes.sidemirror_l_1.geometry} material={materials.body} />
+        <group name="sidemirror_l" rotation={[-0.010521, 0, 0]} scale={0.001729} visible={door==0}>
+          <mesh name="sidemirror_l_1" geometry={nodes.sidemirror_l_1.geometry} material={materials.body} ><meshStandardMaterial
+  color={doorColor.color}
+  emissive="#000000"
+  emissiveIntensity={1}
+  metalness={0.6323829889297485}
+  roughness={0.7548746466636658}
+  opacity={1}
+  transparent={false}
+  side={2}
+  wireframe={false}
+  flatShading={false}
+  
+/></mesh>
           <mesh name="sidemirror_l_2" geometry={nodes.sidemirror_l_2.geometry} material={materials.turn_signals} />
           <mesh name="sidemirror_l_3" geometry={nodes.sidemirror_l_3.geometry} material={materials.plastic} />
           <mesh name="sidemirror_l_4" geometry={nodes.sidemirror_l_4.geometry} material={materials.side_mirrors_glass} />
         </group>
 
-        <group name="sidemirror_r" rotation={[-0.010521, 0, 0]} scale={0.001729}>
-          <mesh name="sidemirror_r_1" geometry={nodes.sidemirror_r_1.geometry} material={materials.body} />
+        <group name="sidemirror_r" rotation={[-0.010521, 0, 0]} scale={0.001729} visible={door==0}>
+          <mesh name="sidemirror_r_1" geometry={nodes.sidemirror_r_1.geometry} material={materials.body} ><meshStandardMaterial
+  color={doorColor.color}
+  emissive="#000000"
+  emissiveIntensity={1}
+  metalness={0.6323829889297485}
+  roughness={0.7548746466636658}
+  opacity={1}
+  transparent={false}
+  side={2}
+  wireframe={false}
+  flatShading={false}
+  
+/></mesh>
           <mesh name="sidemirror_r_2" geometry={nodes.sidemirror_r_2.geometry} material={materials.turn_signals} />
           <mesh name="sidemirror_r_3" geometry={nodes.sidemirror_r_3.geometry} material={materials.plastic} />
           <mesh name="sidemirror_r_4" geometry={nodes.sidemirror_r_4.geometry} material={materials.side_mirrors_glass} />
