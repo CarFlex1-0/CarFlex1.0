@@ -5,7 +5,6 @@ import PieChart from "./PieChart";
 import { FaUserCircle } from "react-icons/fa";
 import SummaryCard from "./SummaryCard";
 import DashboardHeader from "./DashboardHeader";
-import AreaChartComponent from "./AreaChart";
 import Footer from "./Footer";
 import { useAuth } from "@contexts/auth_context";
 import {  Typography } from "@material-tailwind/react";

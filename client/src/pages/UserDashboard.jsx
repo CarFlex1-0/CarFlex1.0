@@ -1,7 +1,5 @@
-import React from "react";
 import { SideBar } from "@components/user/SideBar";
 import { Outlet, useLocation } from "react-router-dom";
-import Dashboard from "@components/Dashboard";
 export default function UserDashboard() {
   const location = useLocation(); // Get the current route
 
@@ -16,8 +14,8 @@ export default function UserDashboard() {
       <div
         className={`flex-1 ${
           isBuyPartsRoute
-            ? "bg-gradient-to-br from-blue-950 to-indigo-950 bg-opacity-100 min-h-screen"
-            : "bg-gradient-to-br from-blue-950 to-indigo-950 bg-opacity-100 min-h-screen"
+            ? "bg-gradient-to-br from-[#2b4e7e] to-black bg-opacity-100 min-h-screen"
+            : "bg-gradient-to-br from-[#2b4e7e] to-black bg-opacity-100 min-h-screen"
         } rounded-lg`}
       >
         <Outlet />

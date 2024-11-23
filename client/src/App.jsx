@@ -27,7 +27,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { AuthProvider } from "./contexts/auth_context";
 import ProtectedRoute from "./routes/protected_routes"; // Adjust the path if needed;
 import SubscriptionSelect from "@components/SubscriptionSelect";
-import Success from "@components/Success";
+// import Success from "@components/Success";
 import Failure from "@components/Failure";
 import AuthorPostPage from "@pages/AuthorPostPage";
 import CarEnhancements from "@pages/CarEnhancement";
@@ -39,6 +39,13 @@ import UserDashboard from "@pages/UserDashboard";
 import CarPreview from "@components/car_model/CarPreview";
 import ForumPage from "@pages/ForumPage";
 import CarPartsMarketplace from "@components/maketplace_buyer/market-place";
+import Success from "@components/maketplace_buyer/Success";
+import SellerDashboard from "@components/marketplace_seller/SellerDashboard";
+import Analytics from "@components/marketplace_seller/Analytics";
+import UploadProduct from "@components/marketplace_seller/Products/UploadProduct";
+import { Product } from "@components/marketplace_seller/Products/Product";
+import { Sale } from "@components/marketplace_seller/Products/Sale";
+import { Order } from "@components/marketplace_seller/Products/Order";
 // Create a QueryClient instance
 const queryClient = new QueryClient();
 function App() {
@@ -66,7 +73,17 @@ function App() {
               {/* Allow content to grow */}
               <Routes>
                 <Route path="/" element={<Welcome />} />
+
+                <Route path="seller" element={<SellerDashboard />}>
+                  <Route path="dashboard" element={<Analytics />} />
+                  <Route path="products" element={<Product type="products" />} />
+                  <Route path="sales" element={<Sale />} />
+                  <Route path="orders" element={<Order type = "orders"/>} />
+                  <Route path="upload-products" element={<UploadProduct />} />
+                </Route>
+
                 <Route path="/car-enhancements" element={<CarEnhancements />} />
+
                 {/* Protected Route */}
                 <Route
                   path="/user-dashboard"
@@ -240,7 +257,7 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
-                <Route
+                {/* <Route
                   path="/success"
                   element={
                     <ProtectedRoute>
@@ -248,7 +265,7 @@ function App() {
                       <Success />
                     </ProtectedRoute>
                   }
-                />
+                /> */}
                 <Route
                   path="/failure"
                   element={
@@ -286,6 +303,7 @@ function App() {
                   {/* Forum User Routes */}
                   <Route path="forum-page" element={<ForumPage />} />
                   <Route path="buy-parts" element={<CarPartsMarketplace />} />
+                  <Route path="success" element={<Success />} />
                 </Route>
               </Routes>
             </div>

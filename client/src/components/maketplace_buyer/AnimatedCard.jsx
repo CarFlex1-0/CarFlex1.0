@@ -8,7 +8,7 @@ export default function AnimatedCard({ selectedCarPartCard, setSelectedId, addTo
       onClick={() => setSelectedId(null)}
     >
       <motion.div
-        className="p-4 bg-blue-800 rounded-lg w-full max-w-md"
+        className="p-4  backdrop-blur-md bg-white/10 rounded-lg w-full max-w-md text-white"
         onClick={(e) => e.stopPropagation()}
       >
         <figure>
@@ -24,7 +24,7 @@ export default function AnimatedCard({ selectedCarPartCard, setSelectedId, addTo
           {selectedCarPartCard.category} - {selectedCarPartCard.brand}
         </p>
         <p className="text-2xl font-bold">
-          ${selectedCarPartCard.price.toFixed(2)}
+          Rs. {selectedCarPartCard.price.toFixed(2)}
         </p>
         <div className="card-actions justify-end mt-4">
           <button

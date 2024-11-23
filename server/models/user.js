@@ -46,6 +46,7 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isSeller: { type: Boolean, default: false }, // Added field for seller distinction
     subscription:{
       subscriptionPlan: { type: String, default: null }, // To store the name of the plan
       subscriptionStatus: { type: String, default: 'inactive' }, // e.g., 'active' or 'inactive'

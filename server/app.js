@@ -25,6 +25,8 @@ const userRoutes = require('./routes/user')
 const paymentRoutes = require('./routes/payment')
 const subRoutes = require('./routes/subscription')
 const aiRoutes = require('./routes/ai_model')
+const productRoutes = require('./routes/product')
+const transactionRoutes = require('./routes/transaction')
 const app = express();
 
 dotenv.config();
@@ -83,7 +85,9 @@ if (cluster.isMaster) {
   app.use('/api/questions', questionRoutes);
   app.use('/api/answer', answerRoutes);
   app.use('/api/user', userRoutes);
-  app.use('/api/payment', paymentRoutes);
+  app.use('/api/products', productRoutes);
+  app.use('/api/payments', paymentRoutes);
+  app.use('/api/transactions', transactionRoutes);
   app.use('/api/', subRoutes);
   app.use("/api/ai", aiRoutes);
   app.get("/testing", (req, res) => {

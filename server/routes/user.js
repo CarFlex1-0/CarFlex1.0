@@ -1,5 +1,5 @@
 const express = require('express');
-const { check, validationResult } = require('express-validator');
+const { check } = require('express-validator');
 const userController = require('../controllers/user_controller');
 const router = express.Router();
 
@@ -60,4 +60,5 @@ router.put('/profile/:id', userController.updateUserProfile);
 
 // Route to update user's subscription
 router.patch('/:id/subscribe', userController.activateSubscription);
+router.post('/validate-email', userController.emailValidation);
 module.exports = router;

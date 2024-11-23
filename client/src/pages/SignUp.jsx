@@ -18,18 +18,33 @@ const SignUp = () => {
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      const response = await axios.post("user/register", data);
-      console.log("User registered:", response.data);
-      toast.success("Registration successful!", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+      // const emailValidity = await axios.post("user/validate-email", {
+      //   email: data.email
+      // });
+      // if(emailValidity.status === 200){
+         const response = await axios.post("user/register", data);
+         console.log("User registered:", response.data);
+         toast.success("Registration successful!", {
+           position: "top-right",
+           autoClose: 5000,
+           hideProgressBar: false,
+           closeOnClick: true,
+           pauseOnHover: true,
+           draggable: true,
+         });
 
-      navigate("/sign-in"); // Redirect to login page
+         navigate("/sign-in");
+      // }else{
+      //   toast.success("Email is not valid!", {
+      //     position: "top-right",
+      //     autoClose: 5000,
+      //     hideProgressBar: false,
+      //     closeOnClick: true,
+      //     pauseOnHover: true,
+      //     draggable: true,
+      //   });
+      // }
+      // Redirect to login page
     } catch (error) {
       const message =
         error.response?.data?.message ||

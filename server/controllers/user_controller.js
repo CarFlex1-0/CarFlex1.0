@@ -1,5 +1,5 @@
 const User = require("../models/user");
-const bcrypt = require("bcryptjs");
+const axios = require('axios');
 const cloudinary = require("../config/cloudinary_config");
 const transporter = require("../config/nodemailer_config");
 const { validationResult } = require("express-validator");
@@ -9,7 +9,7 @@ const jwt = require("jsonwebtoken");
 const generateToken = require("../utils/generate_token");
 // Register user
 exports.registerUser = async (req, res) => {
-  const { firstName, lastName, email, password } = req.body;
+  const { firstName, lastName, email, password, isSeller } = req.body;
 
   // Check if user already exists
   const userExists = await User.findOne({ email });
@@ -27,6 +27,7 @@ exports.registerUser = async (req, res) => {
     username: userName,
     email,
     password, // Password hashing is handled by mongoose's pre-save hook
+    isSeller
   });
   // If the user is created successfully
   if (user) {
@@ -234,3 +235,25 @@ exports.activateSubscription = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+exports.emailValidation = async (req, res) => {
+  const { email } = req.body;
+  const apiKey = process.env.ZEROBOUNCE_API_KEY;
+
+  try {
+    const response = await axios.get(`https://api.zerobounce.net/v2/validate`, {
+      params: { email, api_key: apiKey }
+    });
+
+    // The response status could be 'valid', 'invalid', or 'unknown'
+    const isValid = response.data.status === "valid";
+
+    if (isValid) {
+      res.status(200).json({ message: 'Email is valid' });
+    } else {
+      res.status(400).json({ message: 'Email does not exist or is invalid' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error verifying email' });
+  }
+}
