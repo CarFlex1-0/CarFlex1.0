@@ -27,7 +27,7 @@ exports.registerUser = async (req, res) => {
     username: userName,
     email,
     password, // Password hashing is handled by mongoose's pre-save hook
-    isSeller
+    isSeller: isSeller || false,
   });
   // If the user is created successfully
   if (user) {
