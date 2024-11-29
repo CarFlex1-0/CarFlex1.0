@@ -2,7 +2,7 @@ import { SideBar } from "@components/user/SideBar";
 import { Outlet, useLocation } from "react-router-dom";
 import { useTheme } from '@contexts/ThemeContext';
 export default function UserDashboard() {
-  const { isDarkMode } = useTheme();
+  // const { isDarkMode } = useTheme();
   const location = useLocation(); // Get the current route
 
   // Check if the current path is /user/buy-parts

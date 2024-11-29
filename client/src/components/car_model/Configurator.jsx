@@ -8,6 +8,16 @@ import {
   Tooltip,
   Bar,
   Legend,
+  LineChart,
+  Line,
+  RadialBarChart,
+  RadialBar,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  Radar,
+  ResponsiveContainer,
 } from "recharts";
 import axios from "@services/axios";
 import { useAuth } from "@contexts/auth_context";
@@ -136,6 +146,20 @@ const Configurator = () => {
     setTrunkColor,
   } = useCustomization();
 
+  const [bodyData, setBodyData] = useState({
+    p: 320, // Power in horsepower
+    kW: 1400, // Kerb weight in kg
+    dC: 0.27, // Drag coefficient
+    w: 1877, // Width in mm
+    h: 1434, // Height in mm
+    t: 400, // Torque in Nm
+    r: 2500, // RPM for HP
+    nOC: 4, // Number of cylinders
+    bD: 86, // Bore diameter in mm
+    pS: 85.9, // Piston stroke in mm
+    brpm: 6500, // RPM at max power
+  });
+
   const [metrics, setMetrics] = useState({
     stockAcceleration: 3.48,
     newAcceleration: 3.48,
@@ -149,40 +173,42 @@ const Configurator = () => {
     newTorque: 350.56,
   });
 
-  // const updateMetrics = async () => {
-  //   try {
-  //     const bodyData = {
-  //       power: 35,
-  //       kerbWeight: 148999990,
-  //       dragCoefficient: 0.32,
-  //     };
+  const updateMetrics = async (bodyData) => {
+    try {
+      console.log("Body data:", bodyData);
+      const responses = await Promise.all([
+        axios.post("metric01", { bodyData }),
+        axios.post("metric02", { bodyData }),
+        axios.post("metric03", { bodyData }),
+        axios.post("metric04", { bodyData }),
+        axios.post("metric05", { bodyData }),
+      ]);
 
-  //     const response = await axios.post(`metric01/66fadc033654382aef23dad6`, {
-  //       bodyData,
-  //     });
+      const [acceleration, maxSpeed, horsepower, cc, torque] = responses.map(
+        (response) => response.data.data
+      );
 
-  //     console.log("Full response:", response);
-  //     console.log(
-  //       "Calculated Acceleration Time Body:",
-  //       response.data.data.calculated_Acceleration_Time_Body
-  //     );
+      setMetrics((prevMetrics) => {
+        const newMetrics = {
+          ...prevMetrics,
+          newAcceleration: parseFloat(acceleration.acceleration).toFixed(2),
+          newMaxSpeed: parseFloat(maxSpeed.max_speed).toFixed(2),
+          newHorsepower: parseFloat(horsepower.hp).toFixed(2),
+          newCC: parseFloat(cc.cc).toFixed(2),
+          newTorque: parseFloat(torque.torque).toFixed(2),
+        };
+        console.log("New metrics:", newMetrics);
 
-  //     setMetrics((prevMetrics) => {
-  //       const newMetrics = {
-  //         ...prevMetrics,
-  //         newAcceleration: response.data.data.calculated_Acceleration_Time_Body,
-  //       };
-  //       console.log("New metrics:", newMetrics);
-  //       return newMetrics;
-  //     });
-  //   } catch (error) {
-  //     console.error("Failed to fetch metrics", error);
-  //   }
-  // };
+        return newMetrics;
+      });
+    } catch (error) {
+      console.error("Failed to fetch metrics", error);
+    }
+  };
 
-  // useEffect(() => {
-  //   console.log("Updated metrics:", metrics); // Check updated metrics
-  // }, [metrics]);
+  useEffect(() => {
+    // console.log("Updated metrics:", metrics);
+  }, [metrics]);
 
   const data = [
     {
@@ -1060,7 +1086,14 @@ const Configurator = () => {
                   className={`item flex flex-col items-center transition-all duration-400 ${
                     spoiler === 0 ? "item--active" : ""
                   }`}
-                  onClick={() => setSpoiler(0)}
+                  onClick={() => {
+                    setSpoiler(0);
+                    updateMetrics({
+                      ...bodyData,
+                      dC: bodyData.dC + 0.02,
+                      kW: bodyData.kW - 5,
+                    });
+                  }}
                 >
                   <div
                     className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
@@ -1074,7 +1107,14 @@ const Configurator = () => {
                   className={`item flex flex-col items-center transition-all duration-400 ${
                     spoiler === 1 ? "item--active" : ""
                   }`}
-                  onClick={() => setSpoiler(1)}
+                  onClick={() => {
+                    setSpoiler(1);
+                    updateMetrics({
+                      ...bodyData,
+                      dC: bodyData.dC - 0.01,
+                      kW: bodyData.kW + 5,
+                    });
+                  }}
                 >
                   <div
                     className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
@@ -1088,7 +1128,14 @@ const Configurator = () => {
                   className={`item flex flex-col items-center transition-all duration-400 ${
                     spoiler === 2 ? "item--active" : ""
                   }`}
-                  onClick={() => setSpoiler(2)}
+                  onClick={() => {
+                    setSpoiler(2);
+                    updateMetrics({
+                      ...bodyData,
+                      dC: bodyData.dC - 0.02,
+                      kW: bodyData.kW + 7,
+                    });
+                  }}
                 >
                   <div
                     className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
@@ -1102,7 +1149,14 @@ const Configurator = () => {
                   className={`item flex flex-col items-center transition-all duration-400 ${
                     spoiler === 3 ? "item--active" : ""
                   }`}
-                  onClick={() => setSpoiler(3)}
+                  onClick={() => {
+                    setSpoiler(3);
+                    updateMetrics({
+                      ...bodyData,
+                      dC: bodyData.dC - 0.03,
+                      kW: bodyData.kW + 10,
+                    });
+                  }}
                 >
                   <div
                     className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
@@ -1192,6 +1246,10 @@ const Configurator = () => {
                   onClick={() => {
                     setEngineClick(false);
                     setBonnet(1);
+                    updateMetrics({
+                      ...bodyData,
+                      kW: bodyData.kW + 5,
+                    });
                   }}
                 >
                   <div
@@ -1209,6 +1267,13 @@ const Configurator = () => {
                   onClick={() => {
                     setEngineClick(false);
                     setBonnet(2);
+                    updateMetrics({
+                      ...bodyData,
+                      kW: bodyData.kW + 3,
+                      dC: bodyData.dC - 0.01,
+                      rpm: bodyData.rpm + 50,
+                      brpm: bodyData.brpm + 50,
+                    });
                   }}
                 >
                   <div
@@ -1273,6 +1338,16 @@ const Configurator = () => {
                   }`}
                   onClick={() => {
                     setEngine(1);
+                    updateMetrics({
+                      ...bodyData,
+                      p: 320,
+                      t: 400,
+                      r: 2500,
+                      nOC: 4,
+                      bD: 86,
+                      pS: 85.9,
+                      brpm: 6500,
+                    });
                   }}
                 >
                   <div
@@ -1289,6 +1364,16 @@ const Configurator = () => {
                   }`}
                   onClick={() => {
                     setEngine(2);
+                    updateMetrics({
+                      ...bodyData,
+                      p: 390,
+                      t: 440,
+                      r: 3300,
+                      nOC: 6,
+                      bD: 90,
+                      pS: 90.9,
+                      brpm: 8000,
+                    });
                   }}
                 >
                   <div
@@ -1305,6 +1390,16 @@ const Configurator = () => {
                   }`}
                   onClick={() => {
                     setEngine(3);
+                    updateMetrics({
+                      ...bodyData,
+                      p: 430,
+                      t: 480,
+                      r: 3700,
+                      nOC: 8,
+                      bD: 92,
+                      pS: 93,
+                      brpm: 8500,
+                    });
                   }}
                 >
                   <div
@@ -1335,6 +1430,11 @@ const Configurator = () => {
                   }`}
                   onClick={() => {
                     setWheels(0);
+                    updateMetrics({
+                      ...bodyData,
+                      kW: bodyData.kW - 10,
+                      dC: bodyData.dC + 0.01,
+                    });
                   }}
                 >
                   <div
@@ -1352,6 +1452,11 @@ const Configurator = () => {
                   }`}
                   onClick={() => {
                     setWheels(1);
+                    updateMetrics({
+                      ...bodyData,
+                      kW: bodyData.kW + 5,
+                      dC: bodyData.dC - 0.005,
+                    });
                   }}
                 >
                   <div
@@ -1369,6 +1474,11 @@ const Configurator = () => {
                   }`}
                   onClick={() => {
                     setWheels(2);
+                    updateMetrics({
+                      ...bodyData,
+                      kW: bodyData.kW + 10,
+                      dC: bodyData.dC - 0.01,
+                    });
                   }}
                 >
                   <div
@@ -1386,6 +1496,11 @@ const Configurator = () => {
                   }`}
                   onClick={() => {
                     setWheels(3);
+                    updateMetrics({
+                      ...bodyData,
+                      kW: bodyData.kW + 15,
+                      dC: bodyData.dC - 0.015,
+                    });
                   }}
                 >
                   <div
@@ -1421,6 +1536,11 @@ const Configurator = () => {
                     } else if (silencer === 4) {
                       setSilencer(3);
                     }
+                    updateMetrics({
+                      ...bodyData,
+                      dC: bodyData.dC + 0.02,
+                      kW: bodyData.kW - 5,
+                    });
                   }}
                 >
                   <div
@@ -1442,6 +1562,11 @@ const Configurator = () => {
                     } else if (silencer === 4) {
                       setSilencer(3);
                     }
+                    updateMetrics({
+                      ...bodyData,
+                      dC: bodyData.dC - 0.01,
+                      kW: bodyData.kW + 3,
+                    });
                   }}
                 >
                   <div
@@ -1463,6 +1588,11 @@ const Configurator = () => {
                     } else if (silencer === 4) {
                       setSilencer(3);
                     }
+                    updateMetrics({
+                      ...bodyData,
+                      dC: bodyData.dC - 0.015,
+                      kW: bodyData.kW + 4,
+                    });
                   }}
                 >
                   <div
@@ -1484,6 +1614,11 @@ const Configurator = () => {
                     } else if (silencer === 3) {
                       setSilencer(4);
                     }
+                    updateMetrics({
+                      ...bodyData,
+                      dC: bodyData.dC - 0.02,
+                      kW: bodyData.kW + 5,
+                    });
                   }}
                 >
                   <div
@@ -1553,6 +1688,11 @@ const Configurator = () => {
                       }`}
                       onClick={() => {
                         setSilencer(1);
+                        updateMetrics({
+                          ...bodyData,
+                          dC: bodyData.dC + 0.01,
+                          kW: bodyData.kW + 2,
+                        });
                       }}
                     >
                       <div
@@ -1570,6 +1710,11 @@ const Configurator = () => {
                       }`}
                       onClick={() => {
                         setSilencer(3);
+                        updateMetrics({
+                          ...bodyData,
+                          dC: bodyData.dC - 0.005,
+                          kW: bodyData.kW + 1,
+                        });
                       }}
                     >
                       <div
@@ -1591,6 +1736,11 @@ const Configurator = () => {
                       }`}
                       onClick={() => {
                         setSilencer(2);
+                        updateMetrics({
+                          ...bodyData,
+                          dC: bodyData.dC + 0.005,
+                          kW: bodyData.kW + 3,
+                        });
                       }}
                     >
                       <div
@@ -1608,6 +1758,11 @@ const Configurator = () => {
                       }`}
                       onClick={() => {
                         setSilencer(4);
+                        updateMetrics({
+                          ...bodyData,
+                          dC: bodyData.dC - 0.01,
+                          kW: bodyData.kW + 2,
+                        });
                       }}
                     >
                       <div
@@ -1638,7 +1793,14 @@ const Configurator = () => {
                   className={`item flex flex-col items-center transition-all duration-400 ${
                     sideKit === 0 ? "item--active" : ""
                   }`}
-                  onClick={() => setSideKit(0)}
+                  onClick={() => {
+                    setSideKit(0);
+                    updateMetrics({
+                      ...bodyData,
+                      dC: bodyData.dC + 0.01,
+                      kW: bodyData.kW - 5,
+                    });
+                  }}
                 >
                   <div
                     className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
@@ -1652,7 +1814,14 @@ const Configurator = () => {
                   className={`item flex flex-col items-center transition-all duration-400 ${
                     sideKit === 1 ? "item--active" : ""
                   }`}
-                  onClick={() => setSideKit(1)}
+                  onClick={() => {
+                    setSideKit(1);
+                    updateMetrics({
+                      ...bodyData,
+                      dC: bodyData.dC - 0.01,
+                      kW: bodyData.kW + 5,
+                    });
+                  }}
                 >
                   <div
                     className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${

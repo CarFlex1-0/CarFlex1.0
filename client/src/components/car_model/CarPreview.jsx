@@ -10,7 +10,9 @@ function CarPreview() {
   return (
     <div
       className={
-        drawerState ? "blur bg-blue-950" : "App w-screen h-screen p-0 m-0"
+        drawerState
+          ? "blur bg-blue-950"
+          : "App w-screen overflow-x-hidden h-screen p-0 m-0"
       }
     >
       <CustomizationProvider>

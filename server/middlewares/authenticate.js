@@ -3,7 +3,7 @@ const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 const asyncHandler = require('express-async-handler');
 
-async function authenticateToken(req, res, next) {
+const authenticateToken = asyncHandler(async (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
     if (!token) {
@@ -33,8 +33,7 @@ async function authenticateToken(req, res, next) {
         console.error('Authentication error:', error);
         res.status(401).json({ error: 'Unauthorized' });
     }
-}
-
+})
 const protect = asyncHandler(async (req, res, next) => {
     let token;
 

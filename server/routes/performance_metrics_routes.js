@@ -14,12 +14,12 @@ router.get("/metric6/:id", performanceMetricsController.getMetric6);
 
 
 
-router.post("/metric01/:id", performanceMetricsController2.getMetric1);
-router.post("/metric02/:id", performanceMetricsController2.getMetric2);
-router.post("/metric03/:id", performanceMetricsController2.getMetric3);
-router.post("/metric04/:id", performanceMetricsController2.getMetric4);
-router.post("/metric05/:id", performanceMetricsController2.getMetric5);
-router.post("/metric06/:id", performanceMetricsController2.getMetric6);
+router.post("/metric01", performanceMetricsController2.getMetric1);
+router.post("/metric02", performanceMetricsController2.getMetric2);
+router.post("/metric03", performanceMetricsController2.getMetric3);
+router.post("/metric04", performanceMetricsController2.getMetric4);
+router.post("/metric05", performanceMetricsController2.getMetric5);
+router.post("/metric06", performanceMetricsController2.getMetric6);
 
 
 module.exports = router;

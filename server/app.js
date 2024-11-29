@@ -35,9 +35,9 @@ if (cluster.isMaster) {
   }
 
   // Periodically log worker loads
-  setInterval(() => {
-    console.log("Current Worker Loads:", workerStats);
-  }, 5000);
+  // setInterval(() => {
+  //   console.log("Current Worker Loads:", workerStats);
+  // }, 5000);
 
   cluster.on("exit", (worker, code, signal) => {
     console.error(`Worker ${worker.process.pid} died. Restarting...`);
