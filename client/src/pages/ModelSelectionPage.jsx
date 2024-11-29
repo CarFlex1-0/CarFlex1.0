@@ -24,19 +24,11 @@ const ModelSelectionPage = () => {
   const fetchConfigurations = async () => {
     try {
       setIsLoading(true);
-      const token = Cookies.get('token');
       
-      if (!token) {
-        toast.error('Please login to view your configurations');
-        navigate('/sign-in');
-        return;
-      }
+      
+    
 
-      const response = await axios.get('/car-configs', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await axios.get('/car-configs');
 
       if (response.data.success) {
         const created = response.data.data.created.filter(

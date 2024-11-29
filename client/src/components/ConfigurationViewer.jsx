@@ -29,9 +29,7 @@ const ConfigurationViewer = () => {
   const fetchConfiguration = async () => {
     try {
       const token = Cookies.get("token");
-      const response = await axios.get(`/car-configs/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(`/car-configs/${id}`);
       setConfig(response.data.data);
     } catch (error) {
       toast.error("Failed to fetch configuration");
@@ -49,10 +47,8 @@ const ConfigurationViewer = () => {
         {
           configId: id,
           userEmail: shareEmail,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
         }
+        
       );
 
       toast.success("Configuration shared successfully");
@@ -80,9 +76,7 @@ const ConfigurationViewer = () => {
   const handleDelete = async () => {
     try {
       const token = Cookies.get("token");
-      await axios.delete(`/car-configs/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.delete(`/car-configs/${id}`);
       toast.success("Configuration deleted successfully");
       navigate("/user/models");
     } catch (error) {
@@ -112,9 +106,7 @@ const ConfigurationViewer = () => {
     try {
       setIsSearching(true);
       const token = Cookies.get("token");
-      const response = await axios.get(`/user/search?email=${searchTerm}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(`/user/search?email=${searchTerm}`);
 
       if (response.data.success) {
         setSearchResults(response.data.data);

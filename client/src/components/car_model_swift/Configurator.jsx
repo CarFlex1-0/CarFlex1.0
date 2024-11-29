@@ -431,24 +431,20 @@ const Configurator = () => {
         },
       };
 
-      const token = Cookies.get("token");
+      // const token = Cookies.get("token");
       let response;
 
       if (existingConfig) {
         // Update existing configuration
         response = await axios.put(
           `/car-configs/${existingConfig._id}`,
-          configData,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
+          configData
+          
         );
         toast.success("Configuration updated successfully!");
       } else {
         // Create new configuration
-        response = await axios.post("/car-configs", configData, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        response = await axios.post("/car-configs", configData);
         toast.success("Configuration saved successfully!");
       }
 

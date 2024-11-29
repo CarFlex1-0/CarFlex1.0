@@ -405,16 +405,11 @@ const Configurator = () => {
       if (existingConfig) {
         response = await axios.put(
           `/car-configs/${existingConfig._id}`,
-          configData,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
+          configData
         );
         toast.success("Configuration updated successfully!");
       } else {
-        response = await axios.post("/car-configs", configData, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        response = await axios.post("/car-configs", configData);
         toast.success("Configuration saved successfully!");
       }
 

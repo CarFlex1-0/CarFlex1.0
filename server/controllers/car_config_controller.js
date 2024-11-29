@@ -4,8 +4,8 @@ const User = require('../models/user');
 exports.saveConfiguration = async (req, res) => {
   try {
     const { name, performanceMetrics, customization } = req.body;
+    // const creator = req.user._id;
     const creator = req.user._id;
-
     // Validate model type
     if (!['civic', 'corolla', 'swift'].includes(customization.modelType)) {
       return res.status(400).json({

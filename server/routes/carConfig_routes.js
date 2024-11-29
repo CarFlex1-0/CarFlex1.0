@@ -11,11 +11,11 @@ const {
   removeShare
 } = require('../controllers/car_config_controller');
 
-// router.use(authenticateToken);
+router.use(authenticateToken);
 
 router.route('/')
-  .post(authenticateToken, saveConfiguration)
-  .get(authenticateToken, getConfigurations);
+  .post( saveConfiguration)
+  .get( getConfigurations);
 
 router.post('/share', shareConfiguration);
 router.delete('/share', removeShare);
