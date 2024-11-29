@@ -1,4 +1,4 @@
-const CarConfig = require('../models/carConfig.model');
+const CarConfig = require('../models/car_config_model');
 const User = require('../models/user');
 
 exports.saveConfiguration = async (req, res) => {

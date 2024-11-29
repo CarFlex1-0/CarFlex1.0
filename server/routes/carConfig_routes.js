@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const authenticate = require('../middlewares/authenticate');
+const { authenticateToken } = require('../middlewares/authenticate');
 const {
   saveConfiguration,
   getConfigurations,
@@ -9,9 +9,9 @@ const {
   updateConfiguration,
   shareConfiguration,
   removeShare
-} = require('../controllers/carConfig.controller');
+} = require('../controllers/car_config_controller');
 
-router.use(authenticate);
+router.use(authenticateToken);
 
 router.route('/')
   .post(saveConfiguration)
