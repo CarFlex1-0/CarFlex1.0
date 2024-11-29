@@ -5,6 +5,43 @@ const transporter = require("../config/nodemailer_config");
 const { validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
 
+exports.searchUsers = async (req, res) => {
+  try {
+    const { email } = req.query;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        error: "Email search term is required",
+      });
+    }
+
+    const users = await User.find({
+      email: { $regex: email, $options: "i" }
+    })
+      .select("firstName lastName email")
+      .limit(5);
+
+    const formattedUsers = users.map(user => ({
+      _id: user._id,
+      name: `${user.firstName} ${user.lastName}`,
+      email: user.email
+    }));
+
+    res.status(200).json({
+      success: true,
+      data: formattedUsers
+    });
+  } catch (error) {
+    console.error("Search users error:", error);
+    res.status(500).json({
+      success: false,
+      error: "Error searching users"
+    });
+  }
+};
+
+
 // JWT Token generation
 const generateToken = require("../utils/generate_token");
 // Register user

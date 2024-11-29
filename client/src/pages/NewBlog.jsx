@@ -1,19 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import axios from "@services/axios";
 import { useForm } from "react-hook-form";
 import { Slide } from "react-toastify";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Cookies from "js-cookie";
 import { useAuth } from "@contexts/auth_context";
-export default function NewBlog() {
-  const { register, handleSubmit, reset } = useForm();
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import { ThemeProvider, useTheme } from "@contexts/ThemeContext";
+
+const NewBlogContent = () => {
+  const { isDarkMode, toggleTheme } = useTheme();
+  const { register, handleSubmit, reset, watch } = useForm();
   const [loading, setLoading] = useState(false);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState("");
   const [plagPercentage, setPlagPercentage] = useState(null);
   const [isSubmitEnabled, setIsSubmitEnabled] = useState(false);
   const { drawerState } = useAuth();
+  const [content, setContent] = useState('');
+  const quillRef = useRef(null);
+
   const defaultImageUrl =
     "https://res.cloudinary.com/dortbtymj/image/upload/v1726523224/default_img_blog_bineg4.webp";
 
@@ -26,38 +34,48 @@ export default function NewBlog() {
     });
   };
 
-  const checkPlagiarism = async (title, content) => {
+  const checkPlagiarism = async () => {
+    const title = watch("title");
+    const textContent = quillRef.current.getEditor().getText();
+
+    if (!title || !textContent) {
+      toast.error("Title and content are required for plagiarism check", {
+        position: "top-left",
+        autoClose: 5000,
+        theme: "dark",
+        transition: Slide,
+      });
+      return;
+    }
+
     try {
-      if (title != "" && content != "") {
-        setLoading(true);
-        const response = await axios.post("/blogs/plagiarism", {
-          title,
-          content,
-        });
-        setLoading(false);
-        const percentage = response.data.plagPercentage;
-        setPlagPercentage(percentage);
-        setIsSubmitEnabled(percentage < 30);
-        if (percentage > 30) {
-          toast.info(
-            `Please note that Plagiarism Percentage: ${percentage}% is over Allowed Value`,
-            {
-              position: "top-left",
-              autoClose: 5000,
-              theme: "dark",
-              transition: Slide,
-            }
-          );
-        } else {
-          toast.info(`Plagiarism Percentage: ${percentage}% within range`, {
+      setLoading(true);
+      console.log("Sending plagiarism check request:", { title, content: textContent });
+
+      const response = await axios.post("/blogs/plagiarism", {
+        title,
+        content: textContent,
+      });
+
+      console.log("Plagiarism check response:", response.data);
+
+      setLoading(false);
+      const percentage = response.data.plagPercentage;
+      setPlagPercentage(percentage);
+      setIsSubmitEnabled(percentage < 30);
+
+      if (percentage > 30) {
+        toast.info(
+          `Please note that Plagiarism Percentage: ${percentage}% is over Allowed Value`,
+          {
             position: "top-left",
             autoClose: 5000,
             theme: "dark",
             transition: Slide,
-          });
-        }
+          }
+        );
       } else {
-        toast.error("A title and Content is required", {
+        toast.info(`Plagiarism Percentage: ${percentage}% within range`, {
           position: "top-left",
           autoClose: 5000,
           theme: "dark",
@@ -66,7 +84,9 @@ export default function NewBlog() {
       }
     } catch (error) {
       console.error("Error checking plagiarism:", error);
-      toast.error("Failed to check plagiarism.", {
+      console.error("Error response:", error.response);
+      setLoading(false);
+      toast.error("Failed to check plagiarism. Please try again.", {
         position: "top-left",
         autoClose: 5000,
         theme: "dark",
@@ -85,7 +105,8 @@ export default function NewBlog() {
       const user = JSON.parse(Cookies.get("user"));
       const response = await axios.post("/blogs", {
         title: data.title,
-        content: data.content,
+        subtitle: data.subtitle,
+        content: content,
         blogImageUrl: imageBase64,
         author: user._id,
         plagPercentage: plagPercentage,
@@ -105,6 +126,7 @@ export default function NewBlog() {
       setImagePreviewUrl("");
       setPlagPercentage(null);
       setIsSubmitEnabled(false);
+      setContent('');
     } catch (error) {
       console.error("Submit failed:", error);
       toast.error("Blog creation unsuccessful!", {
@@ -143,29 +165,31 @@ export default function NewBlog() {
     }
   };
 
-  const handleFileInputClick = () => {
-    document.getElementById("dropzone-file").click();
-  };
-
   return (
-    <div className={drawerState ? "blur bg-blue-950" : ""}>
-      <div className="flex justify-center flex-col m-8">
-        <div>
-          <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-center text-gray-900 dark:text-white">
-            Upload Blog
+    <div className={`flex-1 ${isDarkMode ? 'bg-gradient-to-br from-blue-950 to-indigo-950' : 'bg-gray-100'} rounded-lg p-8`}>
+      <button
+        onClick={toggleTheme}
+        className={`fixed top-4 right-4 p-2 rounded-full ${
+          isDarkMode ? 'bg-yellow-400 text-gray-900' : 'bg-gray-800 text-white'
+        }`}
+      >
+        {isDarkMode ? '☀️' : '🌙'}
+      </button>
+      <div className={`max-w-3xl mx-auto ${isDarkMode ? 'bg-white bg-opacity-10' : 'bg-white'} backdrop-filter backdrop-blur-lg rounded-xl shadow-xl overflow-hidden`}>
+        <div className="p-8">
+          <h2 className={`text-4xl font-bold text-center mb-8 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+            Create New Article
           </h2>
-        </div>
 
-        <div>
           {loading ? (
             <div className="flex justify-center items-center">
               <div className="spinner"></div>
             </div>
           ) : (
-            <form onSubmit={handleSubmit(onSubmit)} className="w-full">
-              <div className="mb-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <div>
                 <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
+                  className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}
                   htmlFor="title"
                 >
                   Title
@@ -175,60 +199,33 @@ export default function NewBlog() {
                   name="title"
                   type="text"
                   {...register("title", { required: "Title is required" })}
-                  className="border border-gray-300 p-2 w-full hover:bg-white hover:text-black text-white"
-                  placeholder="Blog Title"
+                  className={`w-full px-3 py-2 ${isDarkMode ? 'bg-white bg-opacity-20 text-white' : 'bg-gray-50 text-gray-900'} border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500`}
+                  placeholder="Article Title"
                 />
               </div>
-              <div className="mb-4">
+              <div>
                 <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="content"
+                  className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}
+                  htmlFor="subtitle"
                 >
-                  Content
+                  Subtitle (Optional, Max 50 characters)
                 </label>
-                <textarea
-                  id="content"
-                  name="content"
-                  {...register("content", { required: "Content is required" })}
-                  className="border border-gray-300 p-2 w-full hover:bg-white hover:text-black text-white"
-                  placeholder="Blog Content"
-                  onChange={(e) => {
-                    setPlagPercentage(null);
-                    setIsSubmitEnabled(false);
-                  }}
+                <input
+                  id="subtitle"
+                  name="subtitle"
+                  type="text"
+                  {...register("subtitle", { maxLength: 50 })}
+                  className={`w-full px-3 py-2 ${isDarkMode ? 'bg-white bg-opacity-20 text-white' : 'bg-gray-50 text-gray-900'} border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500`}
+                  placeholder="Article Subtitle"
                 />
               </div>
-
               <div
-                onDragOver={handleDragOver}
+                className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer ${
+                  isDarkMode ? 'border-gray-300 hover:border-indigo-500' : 'border-gray-400 hover:border-indigo-600'
+                } transition-colors duration-300`}
                 onDrop={handleDrop}
-                onClick={handleFileInputClick}
-                className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+                onDragOver={handleDragOver}
               >
-                <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                  <svg
-                    aria-hidden="true"
-                    className="w-10 h-10 mb-3 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                    ></path>
-                  </svg>
-                  <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                    <span className="font-semibold">Click to upload</span> or
-                    drag and drop
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    SVG, PNG, JPG or GIF (MAX. 800x400px)
-                  </p>
-                </div>
                 <input
                   onChange={handleFileChange}
                   id="dropzone-file"
@@ -236,38 +233,91 @@ export default function NewBlog() {
                   className="hidden"
                   accept="image/*"
                 />
-              </div>
-              <div className="mt-4">
-                {imagePreviewUrl && !loading && (
-                  <div>
-                    Preview:{" "}
-                    <img
-                      src={imagePreviewUrl}
-                      alt="Preview"
-                      className="max-w-xs mx-auto"
+                <label htmlFor="dropzone-file" className="cursor-pointer">
+                  <svg
+                    className="mx-auto h-12 w-12 text-gray-400"
+                    stroke="currentColor"
+                    fill="none"
+                    viewBox="0 0 48 48"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                      strokeWidth={2}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     />
-                  </div>
-                )}
+                  </svg>
+                  <p className="mt-1 text-sm text-gray-300">
+                    Click to upload or drag and drop
+                  </p>
+                  <p className="mt-1 text-xs text-gray-400">
+                    PNG, JPG, GIF up to 10MB
+                  </p>
+                </label>
+              </div>
+              {imagePreviewUrl && (
+                <div className="mt-4">
+                  <img
+                    src={imagePreviewUrl}
+                    alt="Preview"
+                    className="max-w-full h-auto rounded-lg shadow-md"
+                  />
+                </div>
+              )}
+              <div>
+                <label
+                  className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}
+                  htmlFor="content"
+                >
+                  Content
+                </label>
+                <ReactQuill
+                  ref={quillRef}
+                  value={content}
+                  onChange={setContent}
+                  modules={{
+                    toolbar: [
+                      ['bold', 'italic', 'underline', 'strike'],
+                      ['blockquote', 'code-block'],
+                      [{ 'header': 1 }, { 'header': 2 }],
+                      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                      [{ 'script': 'sub'}, { 'script': 'super' }],
+                      [{ 'indent': '-1'}, { 'indent': '+1' }],
+                      [{ 'direction': 'rtl' }],
+                      [{ 'size': ['small', false, 'large', 'huge'] }],
+                      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                      [{ 'color': [] }, { 'background': [] }],
+                      [{ 'font': [] }],
+                      [{ 'align': [] }],
+                      ['clean']
+                    ],
+                  }}
+                  className={`${isDarkMode ? 'bg-white bg-opacity-20 text-white' : 'bg-white text-gray-900'} rounded-md`}
+                />
               </div>
               <div className="flex justify-between">
                 <button
                   type="submit"
                   disabled={!isSubmitEnabled}
-                  className={`px-4 py-2 mt-4 rounded ${
-                    isSubmitEnabled ? "bg-blue-500" : "bg-gray-300"
+                  className={`px-4 py-2 rounded ${
+                    isSubmitEnabled
+                      ? isDarkMode
+                        ? "bg-indigo-600 hover:bg-indigo-700"
+                        : "bg-blue-600 hover:bg-blue-700"
+                      : "bg-gray-300 cursor-not-allowed"
                   } text-white`}
                 >
                   Submit
                 </button>
                 <button
                   type="button"
-                  onClick={() =>
-                    checkPlagiarism(
-                      document.getElementById("title").value,
-                      document.getElementById("content").value
-                    )
-                  }
-                  className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 mt-4"
+                  onClick={checkPlagiarism}
+                  className={`px-4 py-2 rounded ${
+                    isDarkMode
+                      ? "bg-green-500 hover:bg-green-600"
+                      : "bg-green-600 hover:bg-green-700"
+                  } text-white`}
                 >
                   Check Plagiarism
                 </button>
@@ -275,7 +325,9 @@ export default function NewBlog() {
               {plagPercentage !== null && (
                 <div
                   className={`mt-2 text-xl ${
-                    plagPercentage < 30 ? "text-green-500" : "text-red-500"
+                    plagPercentage < 30 
+                      ? isDarkMode ? "text-green-400" : "text-green-600"
+                      : isDarkMode ? "text-red-400" : "text-red-600"
                   }`}
                 >
                   Plagiarism Percentage: {plagPercentage}%
@@ -286,5 +338,13 @@ export default function NewBlog() {
         </div>
       </div>
     </div>
+  );
+};
+
+export default function NewBlog() {
+  return (
+    <ThemeProvider>
+      <NewBlogContent />
+    </ThemeProvider>
   );
 }

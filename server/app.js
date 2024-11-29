@@ -19,12 +19,13 @@ const carRoutes = require("./routes/car_routes");
 const blogRoutes = require("./routes/blog_routes");
 const feedbackRoutes = require("./routes/feedback_routes");
 
-const questionRoutes = require('./routes/question');
-const answerRoutes = require('./routes/answer');
-const userRoutes = require('./routes/user')
-const paymentRoutes = require('./routes/payment')
-const subRoutes = require('./routes/subscription')
-const aiRoutes = require('./routes/ai_model')
+const questionRoutes = require("./routes/question");
+const answerRoutes = require("./routes/answer");
+const userRoutes = require("./routes/user");
+const paymentRoutes =  require("./routes/payment");
+const subRoutes = require("./routes/subscription");
+const aiRoutes = require("./routes/ai_model");
+const carConfigRoutes = require("./routes/carConfig.routes");
 const productRoutes = require('./routes/product')
 const transactionRoutes = require('./routes/transaction')
 const app = express();
@@ -57,12 +58,13 @@ if (cluster.isMaster) {
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
-  // Mohid Anwar Rotes
-  app.use("/api", scraperRoutes);
-  app.use("/api", performanceMetricsRoutes);
-  app.use("/api", carRoutes);
-  app.use("/api", blogRoutes);
-  app.use("/api", feedbackRoutes);
+// Mohid Anwar Rotes
+app.use("/api", scraperRoutes);
+app.use("/api", performanceMetricsRoutes);
+app.use("/api", carRoutes);
+app.use("/api", blogRoutes);
+app.use("/api", feedbackRoutes);
+app.use("/api/car-configs", carConfigRoutes);
 
   // view engine setup
   app.set("views", path.join(__dirname, "views"));

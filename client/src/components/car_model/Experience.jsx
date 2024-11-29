@@ -1,4 +1,5 @@
 import Civic from "./2";
+import Model from "./Swift"
 import { Canvas } from "@react-three/fiber";
 import {
   Environment,

@@ -1,80 +1,80 @@
 import { createContext, useContext, useState } from "react";
 
-// Define an array of color options for car customization
+// Define an array of realistic car color options for car customization
 
 const colors = [
   {
-    color: "#683434", // brown
-    name: "brown",
+    color: "#4B5154", // Gun Metallic
+    name: "Gun Metallic",
   },
   {
-    color: "#1a5e1a", // green
-    name: "green",
+    color: "#2B2D42", // Cosmic Gray Metallic
+    name: "Cosmic Gray",
   },
   {
-    color: "#659994", // blue
-    name: "blue",
+    color: "#1A1D23", // Lunar Silver Metallic
+    name: "Lunar Silver",
   },
   {
-    color: "#896599", // mauve
-    name: "mauve",
+    color: "#8B0000", // Ruby Flare Pearl
+    name: "Ruby Flare",
   },
   {
-    color: "#ffa500", // orange
-    name: "orange",
+    color: "#FF6347", // Aegean Blue Metallic
+    name: "Aegean Blue",
   },
   {
-    color: "#59555b", // grey
-    name: "grey",
+    color: "#6B7280", // Modern Steel Metallic
+    name: "Modern Steel",
   },
   {
-    color: "#222222", // black
-    name: "black",
+    color: "#3B3F4E", // Obsidian Blue Pearl
+    name: "Obsidian Pearl",
   },
   {
-    color: "#ececec", // white
-    name: "white",
+    color: "#FFFFFF", // Platinum White Pearl
+    name: "Platinum White",
   },
 ];
 
 // Mapping the colors to various car parts
 const spoilerColors = [
   {
-    color: "#683434", // brown
-    name: "brown",
+    color: "#4B5154", // Gun Metallic
+    name: "Gun Metallic",
   },
   {
-    color: "#1a5e1a", // green
-    name: "green",
+    color: "#2B2D42", // Cosmic Gray Metallic
+    name: "Cosmic Gray Metallic",
   },
   {
-    color: "#659994", // blue
-    name: "blue",
+    color: "#1A1D23", // Lunar Silver Metallic
+    name: "Lunar Silver Metallic",
   },
   {
-    color: "#896599", // mauve
-    name: "mauve",
+    color: "#8B0000", // Ruby Flare Pearl
+    name: "Ruby Flare Pearl",
   },
   {
-    color: "#ffa500", // orange
-    name: "orange",
+    color: "#FF6347", // Aegean Blue Metallic
+    name: "Aegean Blue Metallic",
   },
   {
-    color: "#59555b", // grey
-    name: "grey",
+    color: "#6B7280", // Modern Steel Metallic
+    name: "Modern Steel Metallic",
   },
   {
-    color: "#222222", // black
-    name: "black",
+    color: "#3B3F4E", // Obsidian Blue Pearl
+    name: "Obsidian Blue Pearl",
   },
   {
-    color: "#ececec", // white
-    name: "white",
+    color: "#FFFFFF", // Platinum White Pearl
+    name: "Platinum White Pearl",
   },
 ]; // Spoiler color options
 const doorColors = colors.map((x) => x); // Door color options
 const rimColors = colors.map((x) => x); // Rim color options
-const windowColors = colors.map((x) => x); // Window color options
+const windowColors = colors.map((x) => x);
 const bonnetColors = colors.map((x) => x); // Bonnet color options
 const lightColors = colors.map((x) => x); // Light color options
 const sideKitColors = colors.map((x) => x); // Side kit color options
@@ -86,6 +86,7 @@ const fenderColors = colors.map((x) => x); // Fender color options
 const diffuserColors = colors.map((x) => x); // Diffuser color options
 const roofColors = colors.map((x) => x); // Roof color options
 const trunkColors = colors.map((x) => x); // Trunk color options
+const interiorColors = colors.map((x) => x); // Interior color options
 
 // Create a context for customization options
 const CustomizationContext = createContext({});
@@ -100,6 +101,10 @@ export const CustomizationProvider = (props) => {
   const [spoiler, setSpoiler] = useState(1); // State for spoiler selection
   const [spoilerClick, setSpoilerClick] = useState(false); // State for spoiler click status
   const [spoilerColor, setSpoilerColor] = useState(spoilerColors[7]); // State for spoiler color
+  // Interior
+  const [interior, setInterior] = useState(0); // State for spoiler selection
+  const [interiorClick, setInteriorClick] = useState(false); // State for spoiler click status
+  const [interiorColor, setInteriorColor] = useState(interiorColors[7]); // State for spoiler color
 
   // Windows
   const [windowClick, setWindowClick] = useState(false); // State for window click status
@@ -108,6 +113,7 @@ export const CustomizationProvider = (props) => {
   // Rims
   const [rimClick, setRimClick] = useState(false); // State for rim click status
   const [rimColor, setRimColor] = useState(rimColors[7]); // State for rim color
+  const [rim, setRim] = useState(0);
 
   // Wheels (assuming color doesn't change for wheels)
   const [wheels, setWheels] = useState(1); // State for wheel selection
@@ -145,6 +151,7 @@ export const CustomizationProvider = (props) => {
   // Doors
   const [doorClick, setDoorClick] = useState(false); // State for door click status
   const [doorColor, setDoorColor] = useState(doorColors[7]); // State for door color
+  const [door, setDoor] = useState(0); // State for spoiler selection
 
   // Engine
   const [engine, setEngine] = useState(1); // State for engine selection
@@ -175,6 +182,13 @@ export const CustomizationProvider = (props) => {
   return (
     <CustomizationContext.Provider
       value={{
+        interior,
+        interiorClick,
+        setInterior,
+        interiorColor,
+        interiorColors,
+        setInteriorClick,
+        setInteriorColor,
         spoilerColors,
         doorColors,
         rimColors,
@@ -290,6 +304,10 @@ export const CustomizationProvider = (props) => {
         setTrunkClick,
         trunkColor,
         setTrunkColor,
+        door,
+        setDoor,
+        rim,
+        setRim,
       }}
     >
       {props.children}

@@ -16,7 +16,8 @@ const createBlog = async (req, res, next) => {
   try {
     console.log("Request Body:", req.body); // Log the request body
 
-    const { title, content, blogImageUrl, author, plagPercentage } = req.body;
+    const { title, content, blogImageUrl, author, plagPercentage, subtitle } =
+      req.body;
 
     if (!title || !content || !author) {
       return res
@@ -52,6 +53,7 @@ const createBlog = async (req, res, next) => {
 
     const newBlog = await Blog.create({
       title,
+      subtitle,
       content,
       author,
       blogImageUrl: blogImageUrlData,
@@ -167,25 +169,32 @@ const deleteBlogById = async (req, res) => {
 // Update a blog post by ID
 const updateBlogById = async (req, res) => {
   try {
-    const { title, content, blogImageUrl } = req.body;
+    console.log("Received update request for blog ID:", req.params.id);
+    console.log("Update data:", req.body);
+
+    const { title, content, blogImageUrl, subtitle } = req.body;
 
     const currentBlog = await Blog.findById(req.params.id);
+    if (!currentBlog) {
+      return res.status(404).json({ message: "Blog not found" });
+    }
+
     //build the object data
     const data = {
       title: title || currentBlog.title,
+      subtitle: subtitle || currentBlog.subtitle,
       content: content || currentBlog.content,
-      blogImageUrl: blogImageUrl || currentBlog.blogImageUrl,
-      plagPercentage: 0,
+      blogImageUrl: currentBlog.blogImageUrl, // Default to current image
     };
 
     //modify post image conditionally
-    if (req.body.blogImageUrl !== "") {
+    if (blogImageUrl && blogImageUrl !== currentBlog.blogImageUrl.url) {
       const ImgId = currentBlog.blogImageUrl.public_id;
       if (ImgId) {
         await cloudinary.uploader.destroy(ImgId);
       }
 
-      const newImage = await cloudinary.uploader.upload(req.body.blogImageUrl, {
+      const newImage = await cloudinary.uploader.upload(blogImageUrl, {
         folder: "blogs",
         width: 1200,
         crop: "scale",
@@ -197,13 +206,20 @@ const updateBlogById = async (req, res) => {
       };
     }
 
+    console.log("Updating blog with data:", data);
+
     const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, data, {
       new: true,
     });
-    if (!updatedBlog)
+
+    if (!updatedBlog) {
       return res.status(404).json({ message: "Blog not found" });
+    }
+
+    console.log("Blog updated successfully:", updatedBlog);
     res.status(200).json(updatedBlog);
   } catch (error) {
+    console.error("Error updating blog:", error);
     res.status(500).json({ error: error.message });
   }
 };

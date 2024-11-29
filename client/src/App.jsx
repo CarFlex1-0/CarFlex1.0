@@ -36,6 +36,8 @@ import Users from "@components/admin/Users";
 import AdminDashoardAnalytics from "@components/admin/Dashboard";
 import Upload3DModel from "@components/admin/Upload3DModel";
 import UserDashboard from "@pages/UserDashboard";
+import ForumCommunity from "@pages/ForumCommunity";
+import { ThemeProvider } from '@contexts/ThemeContext';
 import CarPreview from "@components/car_model/CarPreview";
 import ForumPage from "@pages/ForumPage";
 import CarPartsMarketplace from "@components/maketplace_buyer/market-place";
@@ -48,7 +50,15 @@ import { Sale } from "@components/marketplace_seller/Products/Sale";
 import { Order } from "@components/marketplace_seller/Products/Order";
 import EditProduct from "@components/marketplace_seller/Products/EditProduct";
 // Create a QueryClient instance
-const queryClient = new QueryClient();
+const queryClient = new QueryClient();import CarPreviewCorolla from "@components/car_model_corolla/CarPreviewCorolla";
+import CarPreviewSwift from "@components/car_model_swift/CarPreviewSwift";
+
+
+import CarPreviewLambo from "@components/lambo-intro-dashboard/CarPreviewLambo";
+
+import ModelSelectionPage from '@pages/ModelSelectionPage';
+import ConfigurationViewer from '@components/ConfigurationViewer';
+
 function App() {
   return (
     <div className="App flex flex-col min-h-screen">
