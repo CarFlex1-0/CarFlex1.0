@@ -1,4 +1,3 @@
-import React, { useEffect } from 'react'
 import { motion } from "framer-motion";
 
 export default function PartsList({
@@ -7,9 +6,6 @@ export default function PartsList({
   addToCart,
   currentItems,
 }) {
-    useEffect(() => {
-     console.log("currentItems", currentItems);
-    }, [currentItems])
     
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -25,7 +21,7 @@ export default function PartsList({
         >
           <figure>
             <motion.img
-              src={part.image}
+              src={part.imageUrl.url}
               alt={part.name}
               className="w-full h-48 object-cover"
               whileHover={{ scale: 1.1, rotate: 5 }}
@@ -37,10 +33,19 @@ export default function PartsList({
             <p>
               {part.category} - {part.brand}
             </p>
+            {part.stock > 0 ? (
+              <p>In Stock: {part.stock}</p>
+            ) : (
+              <p className="text-bold text-orange-600">Out of Stock</p>
+            )}
             <p className="text-2xl font-bold">Rs. {part.price.toFixed(2)}</p>
             <div className="card-actions justify-end">
               <button
-                className="btn bg-green-600 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded"
+                className={
+                  part.stock > 0
+                    ? `btn  bg-green-600 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded`
+                    : `btn btn-disabled  bg-green-600 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded`
+                }
                 onClick={(e) => {
                   addToCart(part);
                   e.stopPropagation();

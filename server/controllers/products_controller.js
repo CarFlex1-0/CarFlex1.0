@@ -1,7 +1,7 @@
 const Product = require('../models/product');
 const User = require('../models/user');
 const asyncHandler = require('express-async-handler');
-
+const cloudinary = require("../config/cloudinary_config");
 // @desc    Create a new product
 // @route   POST /api/products
 // @access  Private/Seller
@@ -17,20 +17,34 @@ const createProduct = asyncHandler(async (req, res) => {
     } = req.body;
 
     // Verify the user is a seller
-    if (!req.user.isSeller) {
-        res.status(403);
-        throw new Error('Only sellers can create products');
+    // if (!req.user.isSeller) {
+    //     res.status(403);
+    //     throw new Error('Only sellers can create products');
+    // }
+    if (!image) {
+        return res.status(400).json({ message: "No image provided" });
     }
-
+    let imageUrlData = null;
+    if (image) {
+        const result = await cloudinary.uploader.upload(image, {
+            folder: "products",
+            width: 1200,
+            crop: "scale",
+        });
+        imageUrlData = {
+            public_id: result.public_id,
+            url: result.secure_url,
+        };
+    }
     const product = await Product.create({
-        seller: req.user._id,
+        seller: "6742c9fe1b0bae6853c170f2",
         name,
         description,
         price,
         category,
         brand,
         stock,
-        image
+        imageUrl: imageUrlData
     });
 
     if (product) {
@@ -80,21 +94,101 @@ const getProducts = asyncHandler(async (req, res) => {
 // @access  Public
 const getProductById = asyncHandler(async (req, res) => {
     const product = await Product.findById(req.params.id)
-        .populate('seller', 'username email');
+        .populate('seller', 'username email')
+        .lean();
 
-    if (product) {
-        res.json(product);
-    } else {
+    if (!product) {
         res.status(404);
         throw new Error('Product not found');
     }
+    // res.json(product);
+    // Pagination and filtering for related products
+    const pageSize = 10; // Number of related products per page
+    const page = Number(req.query.page) || 1;
+
+    // Prepare filter conditions
+    const relatedFilter = {
+        $or: [
+            { category: product.category },
+            { seller: product.seller }
+        ],
+        _id: { $ne: product._id } // Exclude the current product
+    };
+
+    // Optional additional filters
+    const category = req.query.category
+        ? { category: req.query.category }
+        : {};
+    const brand = req.query.brand
+        ? { brand: req.query.brand }
+        : {};
+
+    // Combine all filters
+    const combinedFilter = {
+        ...relatedFilter,
+        ...category,
+        ...brand
+    };
+
+    // Count total related products
+    const count = await Product.countDocuments(combinedFilter);
+
+    // Fetch related products with pagination
+    const relatedProducts = await Product.find(combinedFilter)
+        .select('name price image category brand')
+        .limit(pageSize)
+        .skip(pageSize * (page - 1))
+        .sort('-createdAt')
+        .lean();
+
+    res.json({
+        product,
+        relatedProducts,
+        page,
+        pages: Math.ceil(count / pageSize),
+        total: count
+    });
 });
 
+const getProductByIdFromSeller = asyncHandler(async (req, res) => {
+    const product = await Product.findOne({ _id: req.params.id }).populate('seller').lean()
+    console.log('product', product)
+    if (!product) {
+        res.status(404);
+        throw new Error('Product not found');
+    }
+    res.json(product);
+});
 // @desc    Update product
 // @route   PUT /api/products/:id
 // @access  Private/Seller
 const updateProduct = asyncHandler(async (req, res) => {
-    const product = await Product.findById(req.params.id);
+    const {
+        name,
+        price,
+        category,
+        brand,
+        stock,
+        description,
+        image, // base64 image string
+    } = req.body;
+    const productId = req.params.id;
+    if (!image) {
+        return res.status(400).json({ message: "No image provided" });
+    }
+    let imageUrlData = null;
+    if (image) {
+        const result = await cloudinary.uploader.upload(image, {
+            folder: "products",
+            width: 1200,
+            crop: "scale",
+        });
+        imageUrlData = {
+            public_id: result.public_id,
+            url: result.secure_url,
+        };
+    }
+    const product = await Product.findById({ _id: productId });
 
     if (!product) {
         res.status(404);
@@ -102,30 +196,24 @@ const updateProduct = asyncHandler(async (req, res) => {
     }
 
     // Verify ownership
-    if (product.seller.toString() !== req.user._id.toString() && !req.user.isAdmin) {
-        res.status(403);
-        throw new Error('Not authorized to update this product');
-    }
+    // if (product.seller.toString() !== req.user._id.toString() && !req.user.isAdmin) {
+    //     res.status(403);
+    //     throw new Error('Not authorized to update this product');
+    // }
 
-    const updatedProduct = await Product.findByIdAndUpdate(
-        req.params.id,
-        {
-            name: req.body.name || product.name,
-            description: req.body.description || product.description,
-            price: req.body.price || product.price,
-            category: req.body.category || product.category,
-            brand: req.body.brand || product.brand,
-            stock: req.body.stock || product.stock,
-            image: req.body.image || product.image,
-            status: req.body.status || product.status
-        },
-        {
-            new: true,
-            runValidators: true
-        }
-    );
-
-    res.json(updatedProduct);
+    product.name = name;
+    product.description = description
+    product.price = price
+    product.category = category
+    product.brand = brand
+    product.stock = stock
+    product.image = image
+    product.imageUrl = imageUrlData
+    await product.save();
+    res.json({
+        success: true,
+        message: 'Product updated successfully',
+    });
 });
 
 // @desc    Delete product
@@ -206,5 +294,6 @@ module.exports = {
     updateProduct,
     deleteProduct,
     getSellerProducts,
-    updateStock
+    updateStock,
+    getProductByIdFromSeller
 };

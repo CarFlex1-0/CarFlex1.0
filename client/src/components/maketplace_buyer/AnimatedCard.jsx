@@ -1,4 +1,3 @@
-import React from 'react'
 import { motion } from "framer-motion";
 export default function AnimatedCard({ selectedCarPartCard, setSelectedId, addToCart }) {
   return (
@@ -23,12 +22,17 @@ export default function AnimatedCard({ selectedCarPartCard, setSelectedId, addTo
         <p>
           {selectedCarPartCard.category} - {selectedCarPartCard.brand}
         </p>
+        <p>{selectedCarPartCard.description}</p>
         <p className="text-2xl font-bold">
           Rs. {selectedCarPartCard.price.toFixed(2)}
         </p>
         <div className="card-actions justify-end mt-4">
           <button
-            className="btn btn-success text-white"
+            className={
+              selectedCarPartCard.stock > 0
+                ? `btn  bg-green-600 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded`
+                : `btn btn-disabled  bg-green-600 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded`
+            }
             onClick={() => addToCart(selectedCarPartCard)}
           >
             Add to Cart

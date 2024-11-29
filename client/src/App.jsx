@@ -46,6 +46,7 @@ import UploadProduct from "@components/marketplace_seller/Products/UploadProduct
 import { Product } from "@components/marketplace_seller/Products/Product";
 import { Sale } from "@components/marketplace_seller/Products/Sale";
 import { Order } from "@components/marketplace_seller/Products/Order";
+import EditProduct from "@components/marketplace_seller/Products/EditProduct";
 // Create a QueryClient instance
 const queryClient = new QueryClient();
 function App() {
@@ -76,10 +77,15 @@ function App() {
 
                 <Route path="seller" element={<SellerDashboard />}>
                   <Route path="dashboard" element={<Analytics />} />
-                  <Route path="products" element={<Product type="products" />} />
+                  <Route
+                    path="products"
+                    element={<Product type="products" />}
+                  />
                   <Route path="sales" element={<Sale />} />
-                  <Route path="orders" element={<Order type = "orders"/>} />
+                  <Route path="orders" element={<Order type="orders" />} />
                   <Route path="upload-products" element={<UploadProduct />} />
+                  <Route path="products/edit-product/:id" element={<EditProduct />}
+                  />
                 </Route>
 
                 <Route path="/car-enhancements" element={<CarEnhancements />} />

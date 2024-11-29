@@ -15,6 +15,9 @@ export default function Cart({ cart, updateQuantity, totalPrice }) {
   const {setCart} = useCartStore();
   const handleCheckOut = async () => {
     try {
+     
+      setCart(cart);
+      
       const response = await axiosInstance.post(
         "/transactions/create-payment-intent",
         {
@@ -22,12 +25,9 @@ export default function Cart({ cart, updateQuantity, totalPrice }) {
           user,
         }
       );
-      var prodIds = [];
-      await cart.map((prod) => {
-        prodIds.push(prod._id);
-      });
-      setCart(prodIds);
+      
       setClientSecret(response.data.clientSecret);
+      // setCart([])
     } catch (error) {
       console.log("error", error);
     }
@@ -78,7 +78,7 @@ export default function Cart({ cart, updateQuantity, totalPrice }) {
           </p>
           <div className="mt-6 flex justify-center">
             <button
-              className="btn btn-wide btn-success text-white"
+              className="btn btn-wide bg-green-600 hover:bg-orange-600 text-white font-semibold"
               onClick={handleCheckOut}
             >
               <MdShoppingCartCheckout size={20} />

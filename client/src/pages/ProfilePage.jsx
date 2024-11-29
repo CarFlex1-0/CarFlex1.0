@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import axiosInstance from "@services/axios"; // Assuming axios is set up already
 import { useForm } from "react-hook-form"; // For form validation
-import { Bounce, Slide, Zoom } from "react-toastify";
-import { ToastContainer, toast } from "react-toastify";
+import { Slide,ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "../contexts/auth_context";
 import { CiEdit } from "react-icons/ci";

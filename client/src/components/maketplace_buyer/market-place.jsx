@@ -4,6 +4,7 @@ import AnimatedCard from "./AnimatedCard";
 import PartsList from "./PartsList";
 import Cart from "./Cart";
 import Header from "./Header";
+import axiosInstance from "@services/axios";
 
 export default function CarPartsMarketplace() {
   const [carParts, setCarParts] = useState([]);
@@ -13,24 +14,35 @@ export default function CarPartsMarketplace() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedBrand, setSelectedBrand] = useState("All");
-  const [priceRange, setPriceRange] = useState(100);
-  const [sortBy, setSortBy] = useState("name");
   const [isPriceVisible, setIsPriceVisible] = useState(false);
+  const [priceRange, setPriceRange] = useState(100);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 3;
+  const itemsPerPage = 10; // Matches backend pageSize
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const categories = [
+    "Engine & Drivetrain",
+    "Suspension & Steering",
+    "Brakes",
+    "Electrical & Lighting",
+    "Interior Accessories",
+    "Wheels & Tires",
+  ];
+  const brands = ["Honda", "Toyota", "Hyndai", "Kia", "Suzuki", "Daihatsu"];
 
   useEffect(() => {
     const fetchCarParts = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/products/");
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const data = await response.json();
-        setCarParts(data);
-        console.log(data)
+        setLoading(true);
+        const params = {
+          page: currentPage,
+          keyword: searchTerm || undefined,
+          category: selectedCategory !== "All" ? selectedCategory : undefined,
+          brand: selectedBrand !== "All" ? selectedBrand : undefined,
+        };
+        const { data } = await axiosInstance.get("/products", { params });
+        setCarParts(data.products);
       } catch (error) {
         setError("Failed to fetch car parts: " + error.message);
       } finally {
@@ -39,72 +51,46 @@ export default function CarPartsMarketplace() {
     };
 
     fetchCarParts();
-  }, []);
+  }, [currentPage, searchTerm, selectedCategory, selectedBrand]);
 
- const addToCart = (part) => {
-   const existingItem = cart.find((item) => item._id === part._id);
-   if (existingItem) {
-     setCart(
-       cart.map((item) =>
-         item._id === part._id ? { ...item, quantity: item.quantity + 1 } : item
-       )
-     );
-   } else {
-     setCart([...cart, { ...part, quantity: 1 }]);
-   }
- };
-
+  const addToCart = (part) => {
+    const existingItem = cart.find((item) => item._id === part._id);
+    if (existingItem) {
+      setCart(
+        cart.map((item) =>
+          item._id === part._id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        )
+      );
+    } else {
+      setCart([...cart, { ...part, quantity: 1 }]);
+    }
+  };
 
   const removeFromCart = (partId) => {
     setCart(cart.filter((item) => item._id !== partId));
   };
 
- const updateQuantity = (partId, newQuantity) => {
-   if (newQuantity === 0) {
-     removeFromCart(partId);
-   } else {
-     setCart(
-       cart.map((item) =>
-         item._id === partId ? { ...item, quantity: newQuantity } : item
-       )
-     );
-   }
- };
-
-
-
-  const categories = [...new Set(carParts.map((part) => part.category))];
-  const brands = [...new Set(carParts.map((part) => part.brand))];
-
-  const filteredParts = carParts
-    .filter((part) =>
-      part.name.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .filter((part) =>
-      selectedCategory === "All" ? true : part.category === selectedCategory
-    )
-    .filter((part) =>
-      selectedBrand === "All" ? true : part.brand === selectedBrand
-    )
-    .filter((part) => part.price <= priceRange)
-    .sort((a, b) => {
-      if (sortBy === "name") return a.name.localeCompare(b.name);
-      if (sortBy === "price") return a.price - b.price;
-      if (sortBy === "rating") return b.rating - a.rating;
-      return 0;
-    });
+  const updateQuantity = (partId, newQuantity) => {
+    if (newQuantity === 0) {
+      removeFromCart(partId);
+    } else {
+      setCart(
+        cart.map((item) =>
+          item._id === partId ? { ...item, quantity: newQuantity } : item
+        )
+      );
+    }
+  };
 
   const totalPrice = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
 
-  const totalItems = filteredParts.length;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-  const startIdx = (currentPage - 1) * itemsPerPage;
-  const endIdx = startIdx + itemsPerPage;
-  const currentItems =
-    filteredParts.length > 0 ? filteredParts.slice(startIdx, endIdx) : [];
+  const totalPages = Math.ceil((carParts?.length || 0) / itemsPerPage);
+
   const handleNextPage = () => {
     if (currentPage < totalPages) setCurrentPage(currentPage + 1);
   };
@@ -121,48 +107,54 @@ export default function CarPartsMarketplace() {
         selectedCategory={selectedCategory}
         setSelectedCategory={setSelectedCategory}
         categories={categories}
-        setSelectedBrand={setSelectedBrand}
-        selectedBrand={selectedBrand}
         brands={brands}
-        sortBy={sortBy}
-        setSortBy={setSortBy}
-        isPriceVisible={isPriceVisible}
-        setIsPriceVisible={setIsPriceVisible}
+        selectedBrand={selectedBrand}
+        setSelectedBrand={setSelectedBrand}
         priceRange={priceRange}
         setPriceRange={setPriceRange}
+        isPriceVisible={isPriceVisible}
+        setIsPriceVisible={setIsPriceVisible}
       />
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-white">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-white p-4">
         <div className="md:col-span-2">
           <h2 className="text-2xl font-semibold mb-4">Available Parts</h2>
-          <PartsList
-            setSelectedId={setSelectedId}
-            setSelectedCarPartCard={setSelectedCarPartCard}
-            addToCart={addToCart}
-            currentItems={carParts}
-          />
-          <div className="mt-8 flex justify-between items-center ">
-            <button
-              className={`btn text-white ${
-                currentPage === 1 ? "btn-disabled" : ""
-              }`}
-              onClick={handlePrevPage}
-              disabled={currentPage === 1}
-            >
-              Previous
-            </button>
-            <p className="text-lg">
-              Page {currentPage} of {totalPages}
-            </p>
-            <button
-              className={`btn text-white ${
-                currentPage === totalPages ? "btn-disabled" : ""
-              }`}
-              onClick={handleNextPage}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </button>
-          </div>
+          {loading ? (
+            <p>Loading...</p>
+          ) : error ? (
+            <p>{error}</p>
+          ) : (
+            <>
+              <PartsList
+                setSelectedId={setSelectedId}
+                setSelectedCarPartCard={setSelectedCarPartCard}
+                addToCart={addToCart}
+                currentItems={carParts}
+              />
+              <div className="mt-8 flex justify-between items-center">
+                <button
+                  className={`btn text-white ${
+                    currentPage === 1 ? "btn-disabled" : ""
+                  }`}
+                  onClick={handlePrevPage}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </button>
+                <p className="text-lg">
+                  Page {currentPage} of {totalPages}
+                </p>
+                <button
+                  className={`btn text-white ${
+                    currentPage === totalPages ? "btn-disabled" : ""
+                  }`}
+                  onClick={handleNextPage}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </button>
+              </div>
+            </>
+          )}
         </div>
         <Cart
           cart={cart}
@@ -170,7 +162,6 @@ export default function CarPartsMarketplace() {
           totalPrice={totalPrice}
         />
       </div>
-
       <AnimatePresence>
         {selectedId && (
           <AnimatedCard

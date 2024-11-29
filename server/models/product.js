@@ -10,7 +10,10 @@ const productSchema = mongoose.Schema({
     stock: { type: Number, required: true },
     rating: { type: Number, default:0 },
     status: { type: String, enum: ["available", "sold"], default: "available" },
-    image: { type: String, required: true },
+    imageUrl: {
+        url: String,
+        public_id: String,
+    },
 }, { timestamps: true });
 
 const Product = mongoose.model("Product", productSchema);
