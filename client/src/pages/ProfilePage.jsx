@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import axiosInstance from "@services/axios"; // Assuming axios is set up already
 import { useForm } from "react-hook-form"; // For form validation
-import { Slide,ToastContainer, toast } from "react-toastify";
+import { Slide, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "../contexts/auth_context";
 import { CiEdit } from "react-icons/ci";
+import { useTheme } from "../contexts/ThemeContext";
 
 const ProfilePage = () => {
   const [loading, setLoading] = useState(false);
@@ -23,6 +24,8 @@ const ProfilePage = () => {
       "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" // Default image
   );
   console.log("USer on Mount", user);
+
+  const { isDarkMode, toggleTheme } = useTheme();
 
   useEffect(() => {
     if (user) {
@@ -165,17 +168,40 @@ const ProfilePage = () => {
   };
 
   return (
-    <div>
+    <div
+      className={`${
+        isDarkMode ? "bg-gradient-to-br from-[#2b4e7e] to-black" : "bg-gray-100"
+      }`}
+    >
+      <button
+        onClick={toggleTheme}
+        className={`fixed top-4 right-4 p-2 rounded-full ${
+          isDarkMode
+            ? "bg-yellow-400 text-gray-900 hover:bg-yellow-300"
+            : "bg-gray-800 text-white hover:bg-gray-700"
+        } transition-colors duration-200 z-50`}
+      >
+        {isDarkMode ? "☀️" : "🌙"}
+      </button>
+
       {loading ? (
         <div className="flex justify-center items-center">
           <div className="spinner"></div>
         </div>
       ) : (
-        <div className="min-h-screen w-full bg-gradient-to-b from-blue-500 to-purple-700 flex flex-col items-center p-6">
-          <div className="w-full max-w-4xl bg-white shadow-lg rounded-lg p-6 mb-4">
+        <div className="min-h-screen w-full flex flex-col items-center p-6">
+          <div
+            className={`w-full max-w-4xl ${
+              isDarkMode ? "bg-gray-800 text-white" : "bg-white"
+            } shadow-lg rounded-lg p-6 mb-4`}
+          >
             <div className="flex items-center justify-between">
               <div
-                className="flex-0 space-x-4 border-2 border-gray-300 border-dashed rounded-full cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+                className={`flex-0 space-x-4 border-2 ${
+                  isDarkMode
+                    ? "border-gray-600 bg-gray-700 hover:bg-gray-600"
+                    : "border-gray-300 bg-gray-50 hover:bg-gray-100"
+                } border-dashed rounded-full cursor-pointer`}
                 onDrop={handleDrop}
                 onDragOver={handleDragOver}
               >
@@ -206,12 +232,36 @@ const ProfilePage = () => {
               </div>
 
               <div className="flex-1 px-3">
-                <h1 className="text-2xl font-bold text-blue-700 hover:text-indigo-700">
+                <h1
+                  className={`text-2xl font-bold ${
+                    isDarkMode
+                      ? "text-blue-400 hover:text-blue-300"
+                      : "text-blue-700 hover:text-indigo-700"
+                  }`}
+                >
                   Name: {user?.firstName} {user?.lastName}
                 </h1>
-                <p className="text-gray-500">@{user?.username}</p>
-                <p className="text-gray-500">Email: {user?.email}</p>
-                <p className="text-gray-500">Bio: {user?.bio}</p>
+                <p
+                  className={`${
+                    isDarkMode ? "text-gray-300" : "text-gray-500"
+                  }`}
+                >
+                  @{user?.username}
+                </p>
+                <p
+                  className={`${
+                    isDarkMode ? "text-gray-300" : "text-gray-500"
+                  }`}
+                >
+                  Email: {user?.email}
+                </p>
+                <p
+                  className={`${
+                    isDarkMode ? "text-gray-300" : "text-gray-500"
+                  }`}
+                >
+                  Bio: {user?.bio}
+                </p>
               </div>
 
               <button
@@ -224,15 +274,27 @@ const ProfilePage = () => {
           </div>
 
           {/* Tabs */}
-          <div className="w-full max-w-4xl bg-white shadow-lg rounded-lg p-6">
-            <div className="flex border-b border-gray-200 mb-4">
+          <div
+            className={`w-full max-w-4xl ${
+              isDarkMode ? "bg-gray-800 text-white" : "bg-white"
+            } shadow-lg rounded-lg p-6`}
+          >
+            <div
+              className={`flex border-b border-gray-200 mb-4 ${
+                isDarkMode ? "text-gray-200" : "text-gray-700"
+              }`}
+            >
               {["overview", "personal", "account"].map((tab) => (
                 <button
                   key={tab}
                   className={`py-2 px-4 ${
                     activeTab === tab
-                      ? "border-b-4 border-blue-600 text-blue-600"
-                      : ""
+                      ? isDarkMode
+                        ? "border-b-4 border-blue-400 text-blue-400"
+                        : "border-b-4 border-blue-600 text-blue-600"
+                      : isDarkMode
+                      ? "text-gray-200"
+                      : "text-gray-600"
                   }`}
                   onClick={() => setActiveTab(tab)}
                 >
@@ -248,7 +310,11 @@ const ProfilePage = () => {
                   <h2 className="text-xl font-bold text-blue-600">
                     Profile Overview
                   </h2>
-                  <p className="text-gray-500 mt-2">
+                  <p
+                    className={`${
+                      isDarkMode ? "text-gray-200" : "text-gray-700"
+                    } mt-2`}
+                  >
                     View your recent activities, ratings, and other statistics.
                   </p>
                 </div>
@@ -265,13 +331,21 @@ const ProfilePage = () => {
                   >
                     <div className="grid grid-cols-1 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700">
+                        <label
+                          className={`block text-sm font-medium ${
+                            isDarkMode ? "text-gray-200" : "text-gray-700"
+                          }`}
+                        >
                           Bio
                         </label>
                         <input
                           type="text"
                           {...register("bio", { required: false })}
-                          className="input mt-1 bg-gray-300 text-black block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                          className={`input mt-1 block w-full rounded-md shadow-sm ${
+                            isDarkMode
+                              ? "bg-gray-700 text-white border-gray-600 focus:ring-blue-400 focus:border-blue-400"
+                              : "bg-gray-100 text-black border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                          }`}
                         />
                         {errors.bio && (
                           <p className="text-red-500 text-sm">
@@ -283,13 +357,21 @@ const ProfilePage = () => {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700">
+                        <label
+                          className={`block text-sm font-medium ${
+                            isDarkMode ? "text-gray-200" : "text-gray-700"
+                          }`}
+                        >
                           First Name
                         </label>
                         <input
                           type="text"
                           {...register("firstName", { required: false })}
-                          className="input mt-1 bg-gray-300 text-black block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                          className={`input mt-1 block w-full rounded-md shadow-sm ${
+                            isDarkMode
+                              ? "bg-gray-700 text-white border-gray-600 focus:ring-blue-400 focus:border-blue-400"
+                              : "bg-gray-100 text-black border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                          }`}
                         />
                         {errors.firstName && (
                           <p className="text-red-500 text-sm">
@@ -298,13 +380,21 @@ const ProfilePage = () => {
                         )}
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700">
+                        <label
+                          className={`block text-sm font-medium ${
+                            isDarkMode ? "text-gray-200" : "text-gray-700"
+                          }`}
+                        >
                           Last Name
                         </label>
                         <input
                           type="text"
                           {...register("lastName", { required: false })}
-                          className="input mt-1 bg-gray-300 text-black block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                          className={`input mt-1 block w-full rounded-md shadow-sm ${
+                            isDarkMode
+                              ? "bg-gray-700 text-white border-gray-600 focus:ring-blue-400 focus:border-blue-400"
+                              : "bg-gray-100 text-black border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                          }`}
                         />
                         {errors.lastName && (
                           <p className="text-red-500 text-sm">
@@ -316,7 +406,11 @@ const ProfilePage = () => {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700">
+                        <label
+                          className={`block text-sm font-medium ${
+                            isDarkMode ? "text-gray-200" : "text-gray-700"
+                          }`}
+                        >
                           Phone Number
                         </label>
                         <input
@@ -324,7 +418,11 @@ const ProfilePage = () => {
                           maxLength="11"
                           // pattern=" ^\d{11}"
                           {...register("phoneNum", { required: false })}
-                          className="input mt-1 bg-gray-300 text-black block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                          className={`input mt-1 block w-full rounded-md shadow-sm ${
+                            isDarkMode
+                              ? "bg-gray-700 text-white border-gray-600 focus:ring-blue-400 focus:border-blue-400"
+                              : "bg-gray-100 text-black border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                          }`}
                         />
                         {errors.phoneNum && (
                           <p className="text-red-500 text-sm">
@@ -333,13 +431,21 @@ const ProfilePage = () => {
                         )}
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700">
+                        <label
+                          className={`block text-sm font-medium ${
+                            isDarkMode ? "text-gray-200" : "text-gray-700"
+                          }`}
+                        >
                           Username
                         </label>
                         <input
                           type="text"
                           {...register("username", { required: false })}
-                          className="input mt-1 bg-gray-300 text-black block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                          className={`input mt-1 block w-full rounded-md shadow-sm ${
+                            isDarkMode
+                              ? "bg-gray-700 text-white border-gray-600 focus:ring-blue-400 focus:border-blue-400"
+                              : "bg-gray-100 text-black border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                          }`}
                         />
                         {errors.username && (
                           <p className="text-red-500 text-sm">
@@ -349,7 +455,13 @@ const ProfilePage = () => {
                       </div>
                     </div>
 
-                    <button className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600">
+                    <button
+                      className={`mt-4 py-2 px-4 rounded-lg ${
+                        isDarkMode
+                          ? "bg-blue-600 hover:bg-blue-700"
+                          : "bg-blue-500 hover:bg-blue-600"
+                      } text-white`}
+                    >
                       Save Changes
                     </button>
                   </form>
@@ -363,13 +475,21 @@ const ProfilePage = () => {
                   </h2>
                   <form onSubmit={handleSubmit(saveChanges)} className="mt-4">
                     <div className="mb-4">
-                      <label className="block text-sm font-medium text-gray-700">
+                      <label
+                        className={`block text-sm font-medium ${
+                          isDarkMode ? "text-gray-200" : "text-gray-700"
+                        }`}
+                      >
                         Email
                       </label>
                       <input
                         type="email"
                         {...register("email", { required: false })}
-                        className="input mt-1 bg-gray-300 text-black block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                        className={`input mt-1 block w-full rounded-md shadow-sm ${
+                          isDarkMode
+                            ? "bg-gray-700 text-white border-gray-600 focus:ring-blue-400 focus:border-blue-400"
+                            : "bg-gray-100 text-black border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                        }`}
                       />
                       {errors.email && (
                         <p className="text-red-500 text-sm">
@@ -377,7 +497,13 @@ const ProfilePage = () => {
                         </p>
                       )}
                     </div>
-                    <button className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600">
+                    <button
+                      className={`mt-4 py-2 px-4 rounded-lg ${
+                        isDarkMode
+                          ? "bg-blue-600 hover:bg-blue-700"
+                          : "bg-blue-500 hover:bg-blue-600"
+                      } text-white`}
+                    >
                       Save Changes
                     </button>
                   </form>

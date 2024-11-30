@@ -5,6 +5,7 @@ import { Slide } from "react-toastify";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ThemeProvider, useTheme } from "@contexts/ThemeContext";
+import { useAuth } from "@contexts/auth_context";
 
 const FeedbackFormContent = () => {
   const {
@@ -16,15 +17,25 @@ const FeedbackFormContent = () => {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [rating, setRating] = React.useState(0);
   const { isDarkMode, toggleTheme } = useTheme();
+  const { user } = useAuth();
 
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     try {
-      const authorId = "some-user-id"; // You need to get the current user's ID
+      if (!user?._id) {
+        toast.error("Please login to submit feedback", {
+          position: "top-left",
+          autoClose: 5000,
+          theme: isDarkMode ? "dark" : "light",
+          transition: Slide,
+        });
+        return;
+      }
+
       await axios.post("/feedback", {
-        ...data,
+        content: data.content,
         rating,
-        author: authorId || "",
+        author: user._id,
       });
 
       toast.success("Feedback submitted successfully!", {

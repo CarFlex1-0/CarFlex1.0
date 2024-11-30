@@ -8,8 +8,11 @@ const {
 
 exports.createFeedback = async (req, res) => {
   try {
-    // TODO: USER INTEGRATION
-    req.body.author = { _id: "66e95b2197b3cde8d868b6cb" }; // Mock user ID
+    // Check if author ID exists
+    if (!req.body.author) {
+      return res.status(400).json({ message: "Author information is required" });
+    }
+
     // Create new feedback
     const feedback = new Feedback({
       content: req.body.content,
@@ -24,10 +27,9 @@ exports.createFeedback = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
     const userEmail = user.email;
-
     
     // Send email to admin
-    sendAdminNotification(feedback, userEmail);
+    // sendAdminNotification(feedback, userEmail);
 
     // Send email to user
     sendUserThankYou(userEmail, feedback);

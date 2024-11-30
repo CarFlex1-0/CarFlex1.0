@@ -112,7 +112,7 @@ const sendAdminNotification = async (feedback, userEmail) => {
 
 const sendUserThankYou = async (userEmail, feedback) => {
   const mailOptions = {
-    from: 'your-email@example.com', // Replace with your email
+    from: 'ahmadraza77887087@gmail.com', // Replace with your email
     to: userEmail,
     subject: 'Thank You for Your Feedback!',
     html: `
