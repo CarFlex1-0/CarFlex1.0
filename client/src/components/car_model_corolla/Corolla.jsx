@@ -146,7 +146,7 @@ export default function Corolla(props) {
   );
   const { actions } = useAnimations(animations, group);
   useEffect(() => {
-    console.log(animations);
+    // console.log(animations);
     setWheels(1);
     setRim(1);
     setDiffuser(0);
@@ -155,7 +155,7 @@ export default function Corolla(props) {
   useEffect(() => {
     if (interiorClick) {
       settempDoor(door);
-      console.log(door);
+      // console.log(door);
       setDoor(6);
     } else {
       setDoor(tempDoor);

@@ -278,7 +278,7 @@ const Configurator = () => {
 
       setBodyData(updatedBodyData);
 
-      console.log("Updated body data:", updatedBodyData);
+      // console.log("Updated body data:", updatedBodyData);
 
       const responses = await Promise.all([
         axios.post("metric01", { bodyData: updatedBodyData }),
@@ -301,7 +301,7 @@ const Configurator = () => {
           newCC: parseFloat(cc.cc).toFixed(2),
           newTorque: parseFloat(torque.torque).toFixed(2),
         };
-        console.log("New metrics:", newMetrics);
+        // console.log("New metrics:", newMetrics);
         return newMetrics;
       });
     } catch (error) {
@@ -448,7 +448,7 @@ const Configurator = () => {
         toast.success("Configuration saved successfully!");
       }
 
-      console.log("Configuration saved:", response.data);
+      // console.log("Configuration saved:", response.data);
       return response.data;
     } catch (error) {
       console.error("Failed to save configuration:", error);

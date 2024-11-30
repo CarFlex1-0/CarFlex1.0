@@ -175,7 +175,7 @@ const Configurator = () => {
 
   const updateMetrics = async (bodyData) => {
     try {
-      console.log("Body data:", bodyData);
+      // console.log("Body data:", bodyData);
       const responses = await Promise.all([
         axios.post("metric01", { bodyData }),
         axios.post("metric02", { bodyData }),
@@ -197,7 +197,7 @@ const Configurator = () => {
           newCC: parseFloat(cc.cc).toFixed(2),
           newTorque: parseFloat(torque.torque).toFixed(2),
         };
-        console.log("New metrics:", newMetrics);
+        // console.log("New metrics:", newMetrics);
 
         return newMetrics;
       });

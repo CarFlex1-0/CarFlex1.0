@@ -7,10 +7,11 @@ import FeaturedBlogCard from "@components/FeaturedBlogCard";
 import BlogCard from "@components/BlogCard";
 import { ThemeProvider, useTheme } from "@contexts/ThemeContext";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-
+import { useAuth } from "@contexts/auth_context";
 const AuthorPostPageContent = () => {
-  const authorCookie = Cookies.get("user");
-  const author = authorCookie ? JSON.parse(authorCookie) : null;
+  // const authorCookie = Cookies.get("user");
+  const [author, setAuthor] = useState({});
+  const { user } = useAuth();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -23,17 +24,12 @@ const AuthorPostPageContent = () => {
 
   useEffect(() => {
     const fetchBlogs = async () => {
-      if (!author) {
-        console.error("No author data found in cookies.");
-        setError("No author data found.");
-        setLoading(false);
-        return;
-      }
+     
 
       try {
-        console.log("Fetching blogs for author ID:", author._id);
-        const res = await axios.get(`/blogs/author/${author._id}`);
-        console.log("Response data:", res.data);
+        // console.log("Fetching blogs for author ID:", author._id);
+        const res = await axios.get(`/blogs/author/${user._id}`);
+        // console.log("Response data:", res.data);
         
         setBlogs(res.data);
       } catch (error) {
@@ -41,20 +37,23 @@ const AuthorPostPageContent = () => {
         setError(error.message);
       } finally {
         setLoading(false);
-        console.log("Loading state set to false");
+        // console.log("Loading state set to false");
       }
     };
 
-    fetchBlogs();
-  }, [author]);
+    if (user) {
+      fetchBlogs();
+      setAuthor(user)
+    }
+  }, [user]);
 
   const deleteBlog = async (blogId) => {
     try {
-      console.log("Deleting blog with ID:", blogId);
+      // console.log("Deleting blog with ID:", blogId);
       await axios.delete(`/blogs/${blogId}`);
       setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog._id !== blogId));
       toast.success("Blog deleted successfully!");
-      console.log("Blog deleted:", blogId);
+      // console.log("Blog deleted:", blogId);
     } catch (error) {
       console.error("Error deleting blog:", error);
       toast.error("Error deleting blog: " + error.message);
@@ -63,7 +62,7 @@ const AuthorPostPageContent = () => {
 
   const updateBlog = async (updatedBlog) => {
     try {
-      console.log("Updating blog with ID:", updatedBlog._id);
+      // console.log("Updating blog with ID:", updatedBlog._id);
       const res = await axios.put(`/blogs/${updatedBlog._id}`, updatedBlog);
       setBlogs((prevBlogs) =>
         prevBlogs.map((blog) =>
@@ -71,7 +70,7 @@ const AuthorPostPageContent = () => {
         )
       );
       toast.success("Blog updated successfully!");
-      console.log("Blog updated:", res.data);
+      // console.log("Blog updated:", res.data);
     } catch (error) {
       console.error("Error updating blog:", error);
       toast.error("Error updating blog: " + error.message);
@@ -119,7 +118,7 @@ const AuthorPostPageContent = () => {
   ) : null;
 
   if (loading) {
-    console.log("Loading... Please wait.");
+    // console.log("Loading... Please wait.");
     return (
       <div className="flex justify-center items-center min-h-screen">
         <div className="spinner"></div>
@@ -136,7 +135,7 @@ const AuthorPostPageContent = () => {
     );
   }
 
-  console.log("Blogs loaded:", blogs);
+  // console.log("Blogs loaded:", blogs);
 
   return (
     <main className={`min-h-screen ${isDarkMode ? "bg-gray-900" : "bg-gray-100"} transition-colors duration-300`}>

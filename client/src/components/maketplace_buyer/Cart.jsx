@@ -6,9 +6,9 @@ import axiosInstance from "@services/axios";
 import { useAuth } from "@contexts/auth_context";
 import CheckoutForm from "./CheckoutForm";
 import { useCartStore } from "@store/cartStore";
-const stripePromise = loadStripe(
-  "pk_test_51Q1QpgRvj7mbFOgpvfcFuSGS4IfsHgpsllZldFxBtOcJIdfsXZZt14HdUhlYzPmtwliaCEvDYWFvpoQOK2FalADO00lmngkquk"
-);
+// const stripePromise = loadStripe(
+//   "pk_test_51Q1QpgRvj7mbFOgpvfcFuSGS4IfsHgpsllZldFxBtOcJIdfsXZZt14HdUhlYzPmtwliaCEvDYWFvpoQOK2FalADO00lmngkquk"
+// );
 export default function Cart({ cart, updateQuantity, totalPrice }) {
   const { user } = useAuth();
   const [clientSecret, setClientSecret] = useState("");

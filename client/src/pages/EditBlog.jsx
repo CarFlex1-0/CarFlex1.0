@@ -26,7 +26,7 @@ const EditBlogContent = () => {
     const fetchBlog = async () => {
       try {
         const response = await axios.get(`blogs/${id}`);
-        console.log("Fetched blog data:", response.data);
+        // console.log("Fetched blog data:", response.data);
         setBlogData(response.data);
         reset({
           title: response.data.title,
@@ -72,11 +72,11 @@ const EditBlogContent = () => {
         blogImageUrl: imageBase64,
       };
 
-      console.log("Sending update data:", updateData);
+      // console.log("Sending update data:", updateData);
 
       const response = await axios.put(`blogs/${id}`, updateData);
 
-      console.log("Update response:", response.data);
+      // console.log("Update response:", response.data);
 
       toast.success("Blog post updated successfully!", {
         position: "top-left",

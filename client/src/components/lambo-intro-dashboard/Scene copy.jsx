@@ -307,17 +307,17 @@ export default function Lamborghini(props) {
       const progress = scrollPosition / (fullHeight - windowHeight);
       setScrollProgress(progress);
       
-      console.log('Scroll Position:', scrollPosition);
-      console.log('Window Height:', windowHeight);
-      console.log('Full Height:', fullHeight);
-      console.log('Scroll Progress:', progress);
+      // console.log('Scroll Position:', scrollPosition);
+      // console.log('Window Height:', windowHeight);
+      // console.log('Full Height:', fullHeight);
+      // console.log('Scroll Progress:', progress);
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  console.log('Rendering Lamborghini component');
+  // console.log('Rendering Lamborghini component');
 
   return (
     <>
@@ -330,7 +330,7 @@ export default function Lamborghini(props) {
           </div>
 
           <section className="h-screen w-full flex flex-col justify-center items-start px-10 md:px-20 bg-black bg-opacity-50 sticky top-0">
-            {console.log('Rendering Section 1')}
+            {/* {console.log('Rendering Section 1')} */}
             <h1 className="text-6xl md:text-8xl font-bold text-white mb-4">
               Welcome to <span className="text-red-600 font-extrabold">Car</span><span className="text-blue-500 font-extrabold">Flex</span>
             </h1>
@@ -343,7 +343,7 @@ export default function Lamborghini(props) {
           </section>
 
           <section className="h-screen w-full flex flex-col justify-center items-end px-10 md:px-20 text-right bg-black bg-opacity-50 sticky top-0">
-            {console.log('Rendering Section 2')}
+            {/* {console.log('Rendering Section 2')} */}
             <h1 className="text-6xl md:text-8xl font-bold text-white mb-4">
               Customize Your <span className="text-blue-500 font-extrabold">Ride</span>
             </h1>
@@ -358,7 +358,7 @@ export default function Lamborghini(props) {
           </section>
 
           <section className="h-screen w-full flex flex-col justify-center items-start px-10 md:px-20 bg-black bg-opacity-50 sticky top-0">
-            {console.log('Rendering Section 3')}
+            {/* {console.log('Rendering Section 3')} */}
             <h1 className="text-6xl md:text-8xl font-bold text-white mb-4">
               Experience the <span className="text-red-600 font-extrabold">Power</span>
             </h1>

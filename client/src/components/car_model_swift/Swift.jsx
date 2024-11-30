@@ -154,7 +154,7 @@ export default function Swift(props) {
   useEffect(() => {
     if (interiorClick) {
       settempDoor(door);
-      console.log(door);
+      // console.log(door);
       setDoor(6);
     } else {
       setDoor(tempDoor);

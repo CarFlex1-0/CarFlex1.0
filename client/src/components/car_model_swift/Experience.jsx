@@ -20,7 +20,7 @@ const AnimatedGroup = animated(({ rotation, children }) => (
 ));
 
 const SceneContent = ({ targetRotation }) => {
-  console.log("SceneContent rendering with rotation:", targetRotation);
+  // console.log("SceneContent rendering with rotation:", targetRotation);
 
   const groupRef = useRef();
   const stageRef = useRef();
@@ -238,10 +238,10 @@ const Experience = () => {
     const clickedPart = clickedParts.findIndex((part) => part);
     const partName = partNames[clickedPart];
 
-    console.log("Clicked part:", partName, "Engine value:", engine, "EngineClick:", engineClick);
+    // console.log("Clicked part:", partName, "Engine value:", engine, "EngineClick:", engineClick);
 
     if (engine === 2 && engineClick) {
-      console.log("Engine is 2, setting back view");
+      // console.log("Engine is 2, setting back view");
       setTargetRotation(viewRotations.back);
       return;
     }
@@ -313,12 +313,12 @@ const Experience = () => {
   ]);
 
   useEffect(() => {
-    console.log(engine);
-    console.log(targetRotation);
+    // console.log(engine);
+    // console.log(targetRotation);
   }, [engine])
 
   useEffect(() => {
-    console.log("Target rotation updated to:", targetRotation);
+    // console.log("Target rotation updated to:", targetRotation);
   }, [targetRotation]);
 
   return (

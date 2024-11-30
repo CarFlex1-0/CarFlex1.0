@@ -50,14 +50,14 @@ const NewBlogContent = () => {
 
     try {
       setLoading(true);
-      console.log("Sending plagiarism check request:", { title, content: textContent });
+      // console.log("Sending plagiarism check request:", { title, content: textContent });
 
       const response = await axios.post("/blogs/plagiarism", {
         title,
         content: textContent,
       });
 
-      console.log("Plagiarism check response:", response.data);
+      // console.log("Plagiarism check response:", response.data);
 
       setLoading(false);
       const percentage = response.data.plagPercentage;

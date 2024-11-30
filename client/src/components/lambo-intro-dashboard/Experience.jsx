@@ -18,13 +18,13 @@ const AnimatedCar = () => {
   useEffect(() => {
     if (ref.current) {
       setIsReady(true);
-      console.log("Car model is ready");
+      // console.log("Car model is ready");
     }
   }, []);
 
   useFrame((state, delta) => {
     if (!isReady || !ref.current) {
-      console.log("Car model is not ready yet");
+      // console.log("Car model is not ready yet");
       return;
     }
 
@@ -32,9 +32,9 @@ const AnimatedCar = () => {
     const section = Math.min(Math.floor(offset * 4), 3); // Clamp to 3 (0-3 for 4 sections)
     const sectionOffset = offset * 4 - section;
 
-    console.log(
-      `Current section: ${section}, Section offset: ${sectionOffset}`
-    );
+    // console.log(
+    //   `Current section: ${section}, Section offset: ${sectionOffset}`
+    // );
 
     const positions = [
       { x: 0, y: -1, z: -1, rotationY: 0 },
@@ -94,14 +94,14 @@ const AnimatedCar = () => {
     const scale = baseScale + Math.sin(offset * Math.PI) * 0.1; // Small scale variation
     ref.current.scale.setScalar(scale);
 
-    console.log(
-      `Car position: (${ref.current.position.x.toFixed(
-        2
-      )}, ${ref.current.position.y.toFixed(
-        2
-      )}, ${ref.current.position.z.toFixed(2)})`
-    );
-    console.log(`Car rotation: ${ref.current.rotation.y.toFixed(2)}`);
+    // console.log(
+    //   `Car position: (${ref.current.position.x.toFixed(
+    //     2
+    //   )}, ${ref.current.position.y.toFixed(
+    //     2
+    //   )}, ${ref.current.position.z.toFixed(2)})`
+    // );
+    // console.log(`Car rotation: ${ref.current.rotation.y.toFixed(2)}`);
   });
 
   return <Lamborghini ref={ref} />;

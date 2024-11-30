@@ -26,12 +26,12 @@ const PostPageContent = () => {
     const fetchBlogs = async () => {
       try {
         setLoading(true);
-        console.log("Fetching blogs...");
+        // console.log("Fetching blogs...");
         const res = isDashboard
           ? await axios.get("/blogs")
           : await axios.get(`/blogs/author/${authorId}`);
 
-        console.log("Response data:", res.data);
+        // console.log("Response data:", res.data);
         const data = res.data;
         
         setBlogs(data);
@@ -41,7 +41,7 @@ const PostPageContent = () => {
         setError(error.message);
       } finally {
         setLoading(false);
-        console.log("Loading state set to false");
+        // console.log("Loading state set to false");
       }
     };
 
@@ -72,14 +72,14 @@ const PostPageContent = () => {
 
   const deleteBlog = async (blogId) => {
     try {
-      console.log("Deleting blog with ID:", blogId);
+      // console.log("Deleting blog with ID:", blogId);
       await axios.delete(`/blogs/${blogId}`);
       setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog._id !== blogId));
       setFilteredBlogs((prevBlogs) =>
         prevBlogs.filter((blog) => blog._id !== blogId)
       );
       toast.success("Blog deleted successfully!");
-      console.log("Blog deleted:", blogId);
+      // console.log("Blog deleted:", blogId);
     } catch (error) {
       console.error("Error deleting blog:", error);
       toast.error("Error deleting blog: " + error.message);
@@ -88,7 +88,7 @@ const PostPageContent = () => {
 
   const updateBlog = async (updatedBlog) => {
     try {
-      console.log("Updating blog with ID:", updatedBlog._id);
+      // console.log("Updating blog with ID:", updatedBlog._id);
       const res = await axios.put(`/blogs/${updatedBlog._id}`, updatedBlog);
       setBlogs((prevBlogs) =>
         prevBlogs.map((blog) =>
@@ -101,7 +101,7 @@ const PostPageContent = () => {
         )
       );
       toast.success("Blog updated successfully!");
-      console.log("Blog updated:", res.data);
+      // console.log("Blog updated:", res.data);
     } catch (error) {
       console.error("Error updating blog:", error);
       toast.error("Error updating blog: " + error.message);
@@ -127,7 +127,7 @@ const PostPageContent = () => {
   ) : null;
 
   if (loading) {
-    console.log("Loading... Please wait.");
+    // console.log("Loading... Please wait.");
     return (
       <div className="flex justify-center items-center min-h-screen">
         <div className="spinner"></div>
@@ -144,7 +144,7 @@ const PostPageContent = () => {
     );
   }
 
-  console.log("Blogs loaded:", blogs);
+  // console.log("Blogs loaded:", blogs);
 
   return (
     <main
