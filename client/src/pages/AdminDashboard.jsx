@@ -9,7 +9,7 @@ export default function AdminDashboard() {
       <SideBar />
 
       {/* Outlet will take up the remaining space */}
-      <div className="flex-1 bg-gradient-to-br from-blue-950 to-indigo-950 bg-opacity-100 p-4 rounded-lg">
+      <div className="flex-1 bg-gradient-to-br from-[#2b4e7e] to-black bg-opacity-100 p-4 rounded-lg">
         <Outlet />
       </div>
     </div>
