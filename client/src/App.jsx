@@ -44,6 +44,7 @@ import CarPreviewSwift from "@components/car_model_swift/CarPreviewSwift";
 import CarPreviewLambo from "@components/lambo-intro-dashboard/CarPreviewLambo";
 import ModelSelectionPage from '@pages/ModelSelectionPage';
 import ConfigurationViewer from '@components/ConfigurationViewer';
+import AdminLoginPage from "@pages/AdminLoginPage";
 
 
 
@@ -115,6 +116,7 @@ function App() {
 
                 <Route path="/sign-in" element={<SignIn />} />
                 <Route path="/sign-up" element={<SignUp />} />
+                <Route path="/sign-in-admin" element={<AdminLoginPage />} />
                 <Route
                   path="/forgot-password"
                   element={

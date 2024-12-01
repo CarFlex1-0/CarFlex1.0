@@ -294,3 +294,64 @@ exports.emailValidation = async (req, res) => {
     res.status(500).json({ message: 'Error verifying email' });
   }
 }
+
+exports.adminLogin = async (req, res) => {
+  try {
+    const { email, password, rememberMe } = req.body;
+
+    // Find the user by email
+    const user = await User.findOne({ email });
+
+    // Check if user exists
+    if (!user) {
+      return res.status(401).json({ 
+        success: false,
+        message: "Invalid email or password" 
+      });
+    }
+
+    // Check if user is an admin
+    if (!user.isAdmin) {
+      return res.status(403).json({ 
+        success: false,
+        message: "Access denied. Admin privileges required." 
+      });
+    }
+
+    // Check if password matches
+    const isPasswordMatch = await user.matchPassword(password);
+    if (!isPasswordMatch) {
+      return res.status(401).json({ 
+        success: false,
+        message: "Invalid email or password" 
+      });
+    }
+
+    // If all checks pass, generate token and send response
+    const tokenExpiry = rememberMe ? "30d" : "1d";
+    
+    res.json({
+      success: true,
+      data: {
+        _id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        username: user.username,
+        email: user.email,
+        token: generateToken(user._id, tokenExpiry),
+        imageUrl: user.imageUrl,
+        bio: user.bio || "",
+        phoneNum: user.phoneNum || "",
+        isAdmin: user.isAdmin
+      }
+    });
+
+  } catch (error) {
+    console.error("Admin login error:", error);
+    res.status(500).json({ 
+      success: false,
+      message: "Server error during admin login",
+      error: error.message 
+    });
+  }
+};
