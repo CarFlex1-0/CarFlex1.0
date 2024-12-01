@@ -8,7 +8,6 @@ const productSchema = mongoose.Schema({
     category: { type: String, required: true },
     brand: { type: String, required: true },
     stock: { type: Number, required: true },
-    // rating: { type: Number, default:0 },
     status: { type: String, enum: ["available", "sold"], default: "available" },
     imageUrl: {
         url: String,

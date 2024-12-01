@@ -9,6 +9,15 @@
     transform: translateX(10px);
   }
 }
+@layer utilities {
+  .custom-backdrop {
+    @apply backdrop-blur-md bg-white/10;
+  }
+  .bg-custom{
+    @apply bg-gradient-to-br from-[#2b4e7e] to-black bg-opacity-100;
+  }
+}
+
 
 .animate-car {
   animation: moveCar 2s ease-in-out infinite;

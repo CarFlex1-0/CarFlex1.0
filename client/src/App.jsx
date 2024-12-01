@@ -34,9 +34,8 @@ import CarPartsMarketplace from "@components/maketplace_buyer/market-place";
 import Success from "@components/maketplace_buyer/Success";
 import SellerDashboard from "@components/marketplace_seller/SellerDashboard";
 import Analytics from "@components/marketplace_seller/Analytics";
-import UploadProduct from "@components/marketplace_seller/Products/UploadProduct";
-import { Product } from "@components/marketplace_seller/Products/Product";
-import { Sale } from "@components/marketplace_seller/Products/Sale";
+// import UploadProduct from "@components/marketplace_seller/Products/UploadProduct";
+import {Product}  from "@components/marketplace_seller/Products/Product";
 import Order  from "@components/marketplace_seller/Orders/Order";
 import EditProduct from "@components/marketplace_seller/Products/EditProduct";
 import CarPreviewCorolla from "@components/car_model_corolla/CarPreviewCorolla";
@@ -149,9 +148,8 @@ function App() {
                     path="products"
                     element={<Product type="products" />}
                   />
-                  <Route path="sales" element={<Sale />} />
                   <Route path="orders" element={<Order type="orders" />} />
-                  <Route path="upload-products" element={<UploadProduct />} />
+                  {/* <Route path="upload-products" element={<UploadProduct />} /> */}
                   <Route
                     path="products/edit-product/:id"
                     element={<EditProduct />}

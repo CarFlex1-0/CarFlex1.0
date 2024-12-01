@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import axiosInstance from "@services/axios";
-import  OrderDetailsModal  from "./OrderDetailsModal";
+import OrderTable from "./OrderTable";
+import Pagination from "../Products/Pagination";
 import { toast } from "react-toastify";
+
 const Order = ({ type })=> {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOrderDetailModalOpen, setIsOrderDetailModalOpen] = useState(false);
@@ -101,132 +103,41 @@ const Order = ({ type })=> {
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Orders</h2>
         <div className="form-control">
-          <select
-            name="status"
-            className="select select-bordered w-full max-w-xs"
-            value={filters.status}
-            onChange={handleInputChange}
-          >
-            <option value="">All Status</option>
-            {status.map((stat) => (
-              <option key={stat} value={stat}>
-                {stat.charAt(0).toUpperCase() + stat.slice(1)}
-              </option>
-            ))}
-          </select>
+          {type === "analytics" ? (
+            <></>
+          ) : (
+            <select
+              name="status"
+              className="select select-bordered w-full max-w-xs"
+              value={filters.status}
+              onChange={handleInputChange}
+            >
+              <option value="">All Status</option>
+              {status.map((stat) => (
+                <option key={stat} value={stat}>
+                  {stat.charAt(0).toUpperCase() + stat.slice(1)}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
       </div>
 
       {/* Order Table */}
-      <div className="overflow-x-auto">
-        {loading ? (
-          <p>Loading orders...</p>
-        ) : error ? (
-          <p className="text-error">{error}</p>
-        ) : (
-          <table className="table w-full">
-            <thead>
-              <tr>
-                <th>Order Num</th>
-                <th>Customer</th>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Total</th>
-                {type !== "analytics" && <th>Actions</th>}
-              </tr>
-            </thead>
-            <tbody>
-              {orders.map((order, index) => (
-                <tr key={order._id}>
-                  <td>{index + 1}</td>
-                  <td>{order.buyer.username}</td>
-                  <td>{new Date(order.orderDate).toLocaleDateString()}</td>
-                  <td>
-                    <span
-                      className={`badge ${
-                        order.orderStatus === "delivered"
-                          ? "badge-success"
-                          : order.orderStatus === "shipped"
-                          ? "badge-info"
-                          : "badge-warning"
-                      }`}
-                    >
-                      {order.orderStatus}
-                    </span>
-                  </td>
-                  <td>Rs. {order.totalAmount.toLocaleString()}</td>
-                  {type !== "analytics" && (
-                    <td>
-                      <div className="flex gap-2">
-                        <button
-                          className="btn btn-sm btn-info"
-                          onClick={() =>
-                            openUpdateStatusModal(order._id, order.orderStatus)
-                          }
-                        >
-                          Update Status
-                        </button>
-                        <button
-                          className="btn btn-sm btn-info"
-                          onClick={() => openOrderDetails(order._id)}
-                        >
-                          Details
-                        </button>
-                      </div>
-                    </td>
-                  )}
-                </tr>
-              ))}
-            </tbody>
-            {/* Add the OrderDetailsModal */}
-            <OrderDetailsModal
-              orderId={selectedOrderId}
-              isOpen={isOrderDetailModalOpen}
-              onClose={() => setIsOrderDetailModalOpen(false)}
-            />
-          </table>
-        )}
-      </div>
+      <OrderTable
+        loading={loading}
+        error={error}
+        orders={orders}
+        openUpdateStatusModal={openUpdateStatusModal}
+        openOrderDetails={openOrderDetails}
+        setIsOrderDetailModalOpen={setIsOrderDetailModalOpen}
+        isOrderDetailModalOpen={isOrderDetailModalOpen}
+        type={type}
+        selectedOrderId={selectedOrderId}
+      />
 
       {/* Pagination */}
-      <div className="flex justify-center items-center space-x-4 mt-6">
-        <button
-          className="btn btn-primary btn-sm rounded-md disabled:btn-disabled"
-          disabled={page === 1}
-          onClick={() => setPage((prev) => prev - 1)}
-        >
-          Previous
-        </button>
-
-        <div className="join">
-          {[...Array(Math.min(totalPages, 5))].map((_, index) => {
-            const pageNumber = index + 1;
-            return (
-              <button
-                key={pageNumber}
-                className={`join-item btn btn-sm ${
-                  page === pageNumber ? "btn-primary" : "btn-ghost"
-                }`}
-                onClick={() => setPage(pageNumber)}
-              >
-                {pageNumber}
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="badge badge-primary badge-outline">
-          Page {page} of {totalPages}
-        </div>
-
-        <button
-          className="btn btn-primary btn-sm rounded-md disabled:btn-disabled"
-          disabled={page === totalPages}
-          onClick={() => setPage((prev) => prev + 1)}
-        >
-          Next
-        </button>
-      </div>
+      <Pagination page={page} setPage={setPage} totalPages={totalPages} />
 
       {/* Update Order Status Modal */}
       {isModalOpen && (

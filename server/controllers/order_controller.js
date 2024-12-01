@@ -1,4 +1,3 @@
-const Product = require('../models/product');
 const Order = require('../models/order');
 // const User = require('../models/user');
 const asyncHandler = require('express-async-handler');
@@ -150,76 +149,6 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
 })
 
 
-// @desc    Delete product
-// @route   DELETE /api/products/:id
-// @access  Private/Seller
-const deleteProduct = asyncHandler(async (req, res) => {
-    const product = await Product.findById(req.params.id);
-
-    if (!product) {
-        res.status(404);
-        throw new Error('Product not found');
-    }
-
-    // Verify ownership
-    if (product.seller.toString() !== req.user._id.toString() && !req.user.isAdmin) {
-        res.status(403);
-        throw new Error('Not authorized to delete this product');
-    }
-
-    await product.deleteOne();
-    res.json({ message: 'Product removed' });
-});
-
-// @desc    Get seller's products
-// @route   GET /api/products/seller/:sellerId
-// @access  Public
-const getSellerProducts = asyncHandler(async (req, res) => {
-    const pageSize = 10;
-    const page = Number(req.query.page) || 1;
-
-    const count = await Product.countDocuments({ seller: req.params.sellerId });
-    const products = await Product.find({ seller: req.params.sellerId })
-        .populate('seller', 'username email')
-        .limit(pageSize)
-        .skip(pageSize * (page - 1))
-        .sort('-createdAt');
-
-    res.json({
-        products,
-        page,
-        pages: Math.ceil(count / pageSize),
-        total: count
-    });
-});
-
-// @desc    Update product stock
-// @route   PATCH /api/products/:id/stock
-// @access  Private/Seller
-const updateStock = asyncHandler(async (req, res) => {
-    const product = await Product.findById(req.params.id);
-
-    if (!product) {
-        res.status(404);
-        throw new Error('Product not found');
-    }
-
-    // Verify ownership
-    if (product.seller.toString() !== req.user._id.toString() && !req.user.isAdmin) {
-        res.status(403);
-        throw new Error('Not authorized to update this product');
-    }
-
-    product.stock = req.body.stock;
-    if (product.stock === 0) {
-        product.status = 'sold';
-    } else {
-        product.status = 'available';
-    }
-
-    const updatedProduct = await product.save();
-    res.json(updatedProduct);
-});
 
 module.exports = {
     getOrdersBySeller,

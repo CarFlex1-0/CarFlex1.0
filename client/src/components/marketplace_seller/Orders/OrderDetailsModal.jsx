@@ -18,12 +18,14 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }) =>{
       setError("Failed to fetch order details");
     } finally {
       setLoading(false);
+     
     }
   };
 
   useEffect(() => {
     if (isOpen) {
       fetchOrderDetails();
+      //  console.log("orderDetails", orderDetails);
     }
   }, [isOpen, orderId]);
 
@@ -115,16 +117,24 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }) =>{
               </tr>
             </thead>
             <tbody>
-              {orderDetails.product.map((item) => (
-                <tr key={item._id}>
-                  <td>{item.prod.name}</td>
-                  <td>Rs. {item.prod.price.toLocaleString()}</td>
-                  <td>{item.quantity}</td>
-                  <td>
-                    Rs. {(item.prod.price * item.quantity).toLocaleString()}
+              {orderDetails.prod ? (
+                orderDetails.product.map((item) => (
+                  <tr key={item._id}>
+                    <td>{item.prod.name}</td>
+                    <td>Rs. {item.prod.price.toLocaleString()}</td>
+                    <td>{item.quantity}</td>
+                    <td>
+                      Rs. {(item.prod.price * item.quantity).toLocaleString()}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={4} className="text-center text-gray-500">
+                    Product no longer exists.
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

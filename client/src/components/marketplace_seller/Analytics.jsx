@@ -7,7 +7,7 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
-import { Product } from "./Products/Product";
+import {Product}  from "./Products/Product";
 import Order  from "./Orders/Order";
 
 export default function Analytics() {
