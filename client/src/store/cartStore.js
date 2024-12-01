@@ -14,6 +14,7 @@ export const useCartStore = create(
                 set({
                     cart: normalizedCart.map(item => ({
                         ...item,
+                        // seller:item.seller._id,
                         quantity: item.quantity || 1 // Ensure quantity exists
                     }))
                 });

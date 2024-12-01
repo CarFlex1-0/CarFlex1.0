@@ -2,10 +2,12 @@ const mongoose = require("mongoose");
 
 const transactionSchema = mongoose.Schema({
     buyer: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    seller: {
+        type: mongoose.Schema.Types.ObjectId, ref: "User", required: true
+    },
     product: [{
-        prodId: {
-            type: String
-        }, 
+        prodId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
+       
         quantity: { type: Number }
     }],
     amount: { type: Number, required: true },

@@ -2,6 +2,7 @@
 
 const Transaction = require("../models/transaction");
 const Product = require("../models/product");
+const Order = require("../models/order")
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const mongoose = require("mongoose");
 // Create Transaction (Purchase)
@@ -134,10 +135,14 @@ exports.createTransaction = async (req, res) => {
 // Confirm Payment and Save Transaction
 exports.confirmPayment = async (req, res) => {
     const session = await mongoose.startSession();
+    let transactionCommitted = false; // Flag to track transaction status
     session.startTransaction();
 
     try {
-        const { paymentIntentId, user, cart } = req.body;
+        const { paymentIntentId, buyerId, cart, sellerId } = req.body;
+        // console.log('cart', cart)
+        // console.log('user', buyerId)
+        // console.log('sellerId', sellerId)
 
         // Retrieve the PaymentIntent from Stripe
         const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
@@ -145,11 +150,12 @@ exports.confirmPayment = async (req, res) => {
         if (paymentIntent.status === 'succeeded') {
             // Prepare transaction data
             const transactionData = {
-                buyer: user._id,
+                buyer: buyerId,
                 product: cart.map(item => ({
-                    prodId: item._id,
+                    prodId: item.prodId,
                     quantity: item.quantity
                 })),
+                seller: sellerId,
                 amount: paymentIntent.amount / 100,
                 paymentStatus: 'completed',
                 paymentIntent: paymentIntentId,
@@ -157,40 +163,56 @@ exports.confirmPayment = async (req, res) => {
                 holdUntil: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days hold
             };
 
+            // Prepare order data
+            const orderData = {
+                buyer: buyerId,
+                seller: sellerId, // Assuming all products belong to one seller
+                product: cart.map(item => ({
+                    prod: item.prodId,
+                    quantity: item.quantity
+                })),
+                totalAmount: paymentIntent.amount / 100,
+                orderStatus: 'pending', // Start with a pending status
+                orderDate: Date.now(),
+            };
+
             // Create an array to store update operations
             const updateOperations = cart.map(item => ({
                 updateOne: {
-                    filter: { _id: item._id },
+                    filter: { _id: new mongoose.Types.ObjectId(item.prodId) },
                     update: {
                         $inc: { stock: -item.quantity },
                     }
                 }
             }));
+            // console.log('updateOperations:', JSON.stringify(updateOperations, null, 2));
 
             // Perform multiple operations in a transaction
-            const [transaction] = await Promise.all([
-                Transaction.create([transactionData], { session }),
-                Product.bulkWrite(updateOperations, { session })
-            ]);
+            await Transaction.create([transactionData], { session });
+            await Order.create([orderData], { session });
+            await Product.bulkWrite(updateOperations, { session });
 
             // Commit the transaction
             await session.commitTransaction();
+            transactionCommitted = true; // Set flag to true
 
             res.json({
                 success: true,
                 message: 'Transaction saved successfully.',
-                transaction: transaction[0]
+                transaction: transactionData // Return the transaction data instead of undefined
             });
         } else {
-            await session.abortTransaction();
             res.status(400).json({ success: false, message: 'Payment not completed.' });
         }
     } catch (error) {
-        // Abort the transaction in case of any error
-        await session.abortTransaction();
         console.error('Error saving transaction:', error);
         res.status(500).json({ success: false, message: 'Internal server error.' });
     } finally {
+        if (!transactionCommitted) {
+            // Only abort if the transaction was not committed
+            await session.abortTransaction();
+        }
+
         // End the session
         session.endSession();
     }

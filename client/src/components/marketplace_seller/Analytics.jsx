@@ -8,7 +8,7 @@ import {
   Legend,
 } from "recharts";
 import { Product } from "./Products/Product";
-import { Order } from "./Products/Order";
+import Order  from "./Orders/Order";
 
 export default function Analytics() {
   const salesData = [

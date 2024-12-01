@@ -77,7 +77,7 @@ if (cluster.isMaster) {
   const carConfigRoutes = require("./routes/carConfig_routes");
   const productRoutes = require('./routes/product');
   const transactionRoutes = require('./routes/transaction');
-
+  const orderRoutes = require('./routes/order')
   app.use("/api", scraperRoutes);
   app.use("/api", performanceMetricsRoutes);
   app.use("/api", carRoutes);
@@ -91,6 +91,7 @@ if (cluster.isMaster) {
   app.use("/api/products", productRoutes);
   app.use("/api/payments", paymentRoutes);
   app.use("/api/transactions", transactionRoutes);
+  app.use("/api/orders", orderRoutes)
   app.use("/api/", subRoutes);
   app.use("/api/ai", aiRoutes);
 

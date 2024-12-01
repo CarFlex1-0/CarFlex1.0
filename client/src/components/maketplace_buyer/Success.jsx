@@ -15,13 +15,14 @@ export default function Success() {
  useEffect(() => {
    const confirmPayment = async () => {
      const paymentIntentId = searchParams.get("payment_intent");
-
+      console.log('cart', cart)
      if (paymentIntentId) {
        try {
          // Check if cart exists and has items
          if (user && cart && cart.length > 0) {
           const cartItemsForBackend = cart.map((item) => ({
-            _id: item._id,
+            prodId: item._id,
+            // sellerId:item.seller,
             quantity: item.quantity,
           }));
 
@@ -29,8 +30,9 @@ export default function Success() {
             "/transactions/confirm-payment",
             {
               paymentIntentId,
-              user,
+              buyerId: user._id,
               cart: cartItemsForBackend, // Send array of {_id, quantity}
+              sellerId: cart[0].seller
             }
           );
 

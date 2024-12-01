@@ -37,7 +37,7 @@ import Analytics from "@components/marketplace_seller/Analytics";
 import UploadProduct from "@components/marketplace_seller/Products/UploadProduct";
 import { Product } from "@components/marketplace_seller/Products/Product";
 import { Sale } from "@components/marketplace_seller/Products/Sale";
-import { Order } from "@components/marketplace_seller/Products/Order";
+import Order  from "@components/marketplace_seller/Orders/Order";
 import EditProduct from "@components/marketplace_seller/Products/EditProduct";
 import CarPreviewCorolla from "@components/car_model_corolla/CarPreviewCorolla";
 import CarPreviewSwift from "@components/car_model_swift/CarPreviewSwift";
