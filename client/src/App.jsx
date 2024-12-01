@@ -45,8 +45,8 @@ import CarPreviewLambo from "@components/lambo-intro-dashboard/CarPreviewLambo";
 import ModelSelectionPage from '@pages/ModelSelectionPage';
 import ConfigurationViewer from '@components/ConfigurationViewer';
 import AdminLoginPage from "@pages/AdminLoginPage";
-// import OrderDetailsPage from "@components/maketplace_buyer/OrderDetailsPage"
-import OrderDetailsPage from "@pages/OrderDetailsPage";
+import OrderDetailsPage from "@components/maketplace_buyer/OrderDetailsPage"
+// import OrderDetailsPage from "@pages/OrderDetailsPage";
 
 
 // Extra! Should be Deleted along with files

@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { FiPackage, FiX, FiEye } from "react-icons/fi";
 
 const getValidProducts = (products) => {
-  return products.filter(item => item.prod !== null);
+  return products.filter((item) => item.prod !== null);
 };
 
 const OrderStatusBadge = ({ status }) => {
@@ -31,7 +31,10 @@ const OrderDetailsModal = ({ order, onClose }) => {
   if (!order) return null;
 
   const validProducts = getValidProducts(order.product);
-  const totalItems = validProducts.reduce((acc, item) => acc + item.quantity, 0);
+  const totalItems = validProducts.reduce(
+    (acc, item) => acc + item.quantity,
+    0
+  );
 
   return (
     <div
@@ -429,32 +432,64 @@ const OrderDetailsPage = () => {
                           </td>
                           <td className="py-4 px-4">
                             <div className="flex items-center gap-2">
-                              {order.product && getValidProducts(order.product)[0] && (
-                                <>
-                                  <img
-                                    src={getValidProducts(order.product)[0].prod.imageUrl?.url}
-                                    alt={getValidProducts(order.product)[0].prod.name}
-                                    className="w-10 h-10 rounded object-cover"
-                                    onError={(e) => {
-                                      e.target.src = 'fallback-image-url';
-                                    }}
-                                  />
-                                  <div>
-                                    <p className={isDarkMode ? 'text-white' : 'text-gray-800'}>
-                                      {getValidProducts(order.product)[0].prod.name}
-                                    </p>
-                                    {getValidProducts(order.product).length > 1 && (
-                                      <p className={`text-xs ${
-                                        isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                                      }`}>
-                                        +{getValidProducts(order.product).length - 1} more items
+                              {order.product &&
+                                getValidProducts(order.product)[0] && (
+                                  <>
+                                    <img
+                                      src={
+                                        getValidProducts(order.product)[0].prod
+                                          .imageUrl?.url
+                                      }
+                                      alt={
+                                        getValidProducts(order.product)[0].prod
+                                          .name
+                                      }
+                                      className="w-10 h-10 rounded object-cover"
+                                      onError={(e) => {
+                                        e.target.src = "fallback-image-url";
+                                      }}
+                                    />
+                                    <div>
+                                      <p
+                                        className={
+                                          isDarkMode
+                                            ? "text-white"
+                                            : "text-gray-800"
+                                        }
+                                      >
+                                        {
+                                          getValidProducts(order.product)[0]
+                                            .prod.name
+                                        }
                                       </p>
-                                    )}
-                                  </div>
-                                </>
-                              )}
-                              {(!order.product || getValidProducts(order.product).length === 0) && (
-                                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                      {getValidProducts(order.product).length >
+                                        1 && (
+                                        <p
+                                          className={`text-xs ${
+                                            isDarkMode
+                                              ? "text-gray-400"
+                                              : "text-gray-500"
+                                          }`}
+                                        >
+                                          +
+                                          {getValidProducts(order.product)
+                                            .length - 1}{" "}
+                                          more items
+                                        </p>
+                                      )}
+                                    </div>
+                                  </>
+                                )}
+                              {(!order.product ||
+                                getValidProducts(order.product).length ===
+                                  0) && (
+                                <p
+                                  className={`text-sm ${
+                                    isDarkMode
+                                      ? "text-gray-400"
+                                      : "text-gray-500"
+                                  }`}
+                                >
                                   Product Discontinued
                                 </p>
                               )}
