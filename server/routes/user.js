@@ -65,4 +65,15 @@ router.put('/profile/:id', userController.updateUserProfile);
 // Route to update user's subscription
 router.patch('/:id/subscribe', userController.activateSubscription);
 router.post('/validate-email', userController.emailValidation);
+
+// Add this new route to your existing routes
+router.post(
+  '/admin-login',
+  [
+    check('email', 'Please include a valid email').isEmail(),
+    check('password', 'Password is required').exists(),
+  ],
+  userController.adminLogin
+);
+
 module.exports = router;

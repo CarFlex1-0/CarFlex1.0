@@ -6,12 +6,12 @@ import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "../contexts/auth_context";
 import { CiEdit } from "react-icons/ci";
 import { useTheme } from "../contexts/ThemeContext";
+import { FiMail, FiPhone } from "react-icons/fi";
 
 const ProfilePage = () => {
   const [loading, setLoading] = useState(false);
   const { user, setUser } = useAuth(); // Now includes setUser
 
-  const [activeTab, setActiveTab] = useState("overview");
   const {
     register,
     handleSubmit,
@@ -168,347 +168,220 @@ const ProfilePage = () => {
   };
 
   return (
-    <div
-      className={`${
-        isDarkMode ? "bg-gradient-to-br from-[#2b4e7e] to-black" : "bg-gray-100"
-      }`}
-    >
+    <div className={`min-h-screen ${
+      isDarkMode ? "bg-gradient-to-br from-[#2b4e7e] to-black" : "bg-gray-100"
+    }`}>
+      {/* Theme Toggle */}
       <button
         onClick={toggleTheme}
-        className={`fixed top-4 right-4 p-2 rounded-full ${
+        className={`fixed top-6 right-6 p-3 rounded-full ${
           isDarkMode
-            ? "bg-yellow-400 text-gray-900 hover:bg-yellow-300"
-            : "bg-gray-800 text-white hover:bg-gray-700"
-        } transition-colors duration-200 z-50`}
+            ? "bg-white/10 hover:bg-white/20"
+            : "bg-white/80 hover:bg-white/90"
+        } backdrop-blur-sm shadow-lg transition-all duration-300 z-50`}
       >
         {isDarkMode ? "☀️" : "🌙"}
       </button>
 
       {loading ? (
-        <div className="flex justify-center items-center">
+        <div className="flex justify-center items-center h-screen">
           <div className="spinner"></div>
         </div>
       ) : (
-        <div className="min-h-screen w-full flex flex-col items-center p-6">
-          <div
-            className={`w-full max-w-4xl ${
-              isDarkMode ? "bg-gray-800 text-white" : "bg-white"
-            } shadow-lg rounded-lg p-6 mb-4`}
-          >
-            <div className="flex items-center justify-between">
-              <div
-                className={`flex-0 space-x-4 border-2 ${
-                  isDarkMode
-                    ? "border-gray-600 bg-gray-700 hover:bg-gray-600"
-                    : "border-gray-300 bg-gray-50 hover:bg-gray-100"
-                } border-dashed rounded-full cursor-pointer`}
-                onDrop={handleDrop}
-                onDragOver={handleDragOver}
-              >
-                <label
-                  htmlFor="dropzone-file"
-                  className="flex flex-col items-center justify-center w-full h-full"
-                >
-                  <div className="relative flex flex-col items-center justify-center p-1">
-                    {imagePreviewUrl && !loading && (
-                      <div className="group relative">
-                        <img
-                          src={imagePreviewUrl}
-                          alt="Preview"
-                          className="w-20 h-20 rounded-full border-4 border-blue-500 cursor-pointer"
-                        />
-                        <CiEdit className="absolute top-0 text-white bg-blue-500 opacity-0 group-hover:opacity-80 transition-opacity duration-300 w-20 h-20 rounded-full" />
+        <div className="container mx-auto py-16 px-4">
+          <div className={`max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 ${
+            isDarkMode ? "text-white" : "text-gray-800"
+          }`}>
+            {/* Left Column - Profile Overview */}
+            <div className={`md:col-span-1 ${
+              isDarkMode ? "bg-gray-800/50" : "bg-white"
+            } rounded-2xl shadow-lg p-8 backdrop-blur-sm h-fit sticky top-8`}>
+              {/* Profile Image Section */}
+              <div className="flex flex-col items-center">
+                <div className="relative group mb-6">
+                  <div className={`w-40 h-40 rounded-full overflow-hidden border-4 ${
+                    isDarkMode ? "border-blue-500" : "border-indigo-500"
+                  } shadow-xl`}>
+                    <img
+                      src={imagePreviewUrl}
+                      alt="Profile"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <label 
+                    htmlFor="dropzone-file" 
+                    className={`absolute inset-0 flex items-center justify-center rounded-full cursor-pointer
+                      bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-300`}
+                  >
+                    <CiEdit className="w-12 h-12 text-white" />
+                    <input
+                      onChange={handleFileChange}
+                      id="dropzone-file"
+                      type="file"
+                      className="hidden"
+                      accept="image/*"
+                    />
+                  </label>
+                </div>
+
+                {/* Profile Info */}
+                <div className="space-y-6 w-full">
+                  <div className="text-center">
+                    <h2 className={`text-2xl font-bold mb-2 ${
+                      isDarkMode ? "text-white" : "text-gray-800"
+                    }`}>
+                      {user?.firstName} {user?.lastName}
+                    </h2>
+                    <p className={`${isDarkMode ? "text-gray-300" : "text-gray-600"} text-lg`}>
+                      @{user?.username}
+                    </p>
+                  </div>
+
+                  <div className={`space-y-4 pt-6 border-t ${
+                    isDarkMode ? "border-gray-700" : "border-gray-200"
+                  }`}>
+                    <div className="flex items-center gap-3">
+                      <FiMail className={isDarkMode ? "text-gray-300" : "text-gray-600"} />
+                      <p className="text-sm">{user?.email}</p>
+                    </div>
+                    {user?.phoneNum && (
+                      <div className="flex items-center gap-3">
+                        <FiPhone className={isDarkMode ? "text-gray-300" : "text-gray-600"} />
+                        <p className="text-sm">{user.phoneNum}</p>
                       </div>
                     )}
                   </div>
-                  <input
-                    onChange={handleFileChange}
-                    id="dropzone-file"
-                    type="file"
-                    className="hidden"
-                    accept="image/*"
-                  />
-                </label>
+
+                  {user?.bio && (
+                    <div className={`p-4 rounded-xl ${
+                      isDarkMode ? "bg-gray-700/50" : "bg-gray-50"
+                    }`}>
+                      <h3 className={`text-sm font-medium mb-2 ${
+                        isDarkMode ? "text-gray-300" : "text-gray-600"
+                      }`}>
+                        About
+                      </h3>
+                      <p className="text-sm leading-relaxed">{user.bio}</p>
+                    </div>
+                  )}
+                </div>
               </div>
-
-              <div className="flex-1 px-3">
-                <h1
-                  className={`text-2xl font-bold ${
-                    isDarkMode
-                      ? "text-blue-400 hover:text-blue-300"
-                      : "text-blue-700 hover:text-indigo-700"
-                  }`}
-                >
-                  Name: {user?.firstName} {user?.lastName}
-                </h1>
-                <p
-                  className={`${
-                    isDarkMode ? "text-gray-300" : "text-gray-500"
-                  }`}
-                >
-                  @{user?.username}
-                </p>
-                <p
-                  className={`${
-                    isDarkMode ? "text-gray-300" : "text-gray-500"
-                  }`}
-                >
-                  Email: {user?.email}
-                </p>
-                <p
-                  className={`${
-                    isDarkMode ? "text-gray-300" : "text-gray-500"
-                  }`}
-                >
-                  Bio: {user?.bio}
-                </p>
-              </div>
-
-              <button
-                onClick={handleSubmit(saveChanges)}
-                className="bg-purple-500 text-white py-2 px-4 rounded-lg hover:bg-purple-600"
-              >
-                Save Changes
-              </button>
-            </div>
-          </div>
-
-          {/* Tabs */}
-          <div
-            className={`w-full max-w-4xl ${
-              isDarkMode ? "bg-gray-800 text-white" : "bg-white"
-            } shadow-lg rounded-lg p-6`}
-          >
-            <div
-              className={`flex border-b border-gray-200 mb-4 ${
-                isDarkMode ? "text-gray-200" : "text-gray-700"
-              }`}
-            >
-              {["overview", "personal", "account"].map((tab) => (
-                <button
-                  key={tab}
-                  className={`py-2 px-4 ${
-                    activeTab === tab
-                      ? isDarkMode
-                        ? "border-b-4 border-blue-400 text-blue-400"
-                        : "border-b-4 border-blue-600 text-blue-600"
-                      : isDarkMode
-                      ? "text-gray-200"
-                      : "text-gray-600"
-                  }`}
-                  onClick={() => setActiveTab(tab)}
-                >
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                </button>
-              ))}
             </div>
 
-            {/* Tab Content */}
-            <div className="mt-6">
-              {activeTab === "overview" && (
-                <div>
-                  <h2 className="text-xl font-bold text-blue-600">
-                    Profile Overview
-                  </h2>
-                  <p
-                    className={`${
-                      isDarkMode ? "text-gray-200" : "text-gray-700"
-                    } mt-2`}
-                  >
-                    View your recent activities, ratings, and other statistics.
-                  </p>
-                </div>
-              )}
-
-              {activeTab === "personal" && (
-                <div>
-                  <h2 className="text-xl font-bold text-blue-600">
-                    Personal Information
-                  </h2>
-                  <form
-                    onSubmit={handleSubmit(saveChanges)}
-                    className="mt-4 space-y-4"
-                  >
-                    <div className="grid grid-cols-1 gap-4">
-                      <div>
-                        <label
-                          className={`block text-sm font-medium ${
-                            isDarkMode ? "text-gray-200" : "text-gray-700"
-                          }`}
-                        >
-                          Bio
-                        </label>
-                        <input
-                          type="text"
-                          {...register("bio", { required: false })}
-                          className={`input mt-1 block w-full rounded-md shadow-sm ${
-                            isDarkMode
-                              ? "bg-gray-700 text-white border-gray-600 focus:ring-blue-400 focus:border-blue-400"
-                              : "bg-gray-100 text-black border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                          }`}
-                        />
-                        {errors.bio && (
-                          <p className="text-red-500 text-sm">
-                            Bio is required.
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label
-                          className={`block text-sm font-medium ${
-                            isDarkMode ? "text-gray-200" : "text-gray-700"
-                          }`}
-                        >
-                          First Name
-                        </label>
-                        <input
-                          type="text"
-                          {...register("firstName", { required: false })}
-                          className={`input mt-1 block w-full rounded-md shadow-sm ${
-                            isDarkMode
-                              ? "bg-gray-700 text-white border-gray-600 focus:ring-blue-400 focus:border-blue-400"
-                              : "bg-gray-100 text-black border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                          }`}
-                        />
-                        {errors.firstName && (
-                          <p className="text-red-500 text-sm">
-                            First name is required.
-                          </p>
-                        )}
-                      </div>
-                      <div>
-                        <label
-                          className={`block text-sm font-medium ${
-                            isDarkMode ? "text-gray-200" : "text-gray-700"
-                          }`}
-                        >
-                          Last Name
-                        </label>
-                        <input
-                          type="text"
-                          {...register("lastName", { required: false })}
-                          className={`input mt-1 block w-full rounded-md shadow-sm ${
-                            isDarkMode
-                              ? "bg-gray-700 text-white border-gray-600 focus:ring-blue-400 focus:border-blue-400"
-                              : "bg-gray-100 text-black border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                          }`}
-                        />
-                        {errors.lastName && (
-                          <p className="text-red-500 text-sm">
-                            Last name is required.
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label
-                          className={`block text-sm font-medium ${
-                            isDarkMode ? "text-gray-200" : "text-gray-700"
-                          }`}
-                        >
-                          Phone Number
-                        </label>
-                        <input
-                          type="text"
-                          maxLength="11"
-                          // pattern=" ^\d{11}"
-                          {...register("phoneNum", { required: false })}
-                          className={`input mt-1 block w-full rounded-md shadow-sm ${
-                            isDarkMode
-                              ? "bg-gray-700 text-white border-gray-600 focus:ring-blue-400 focus:border-blue-400"
-                              : "bg-gray-100 text-black border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                          }`}
-                        />
-                        {errors.phoneNum && (
-                          <p className="text-red-500 text-sm">
-                            11 digit Phone # is required.
-                          </p>
-                        )}
-                      </div>
-                      <div>
-                        <label
-                          className={`block text-sm font-medium ${
-                            isDarkMode ? "text-gray-200" : "text-gray-700"
-                          }`}
-                        >
-                          Username
-                        </label>
-                        <input
-                          type="text"
-                          {...register("username", { required: false })}
-                          className={`input mt-1 block w-full rounded-md shadow-sm ${
-                            isDarkMode
-                              ? "bg-gray-700 text-white border-gray-600 focus:ring-blue-400 focus:border-blue-400"
-                              : "bg-gray-100 text-black border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                          }`}
-                        />
-                        {errors.username && (
-                          <p className="text-red-500 text-sm">
-                            Username is required.
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    <button
-                      className={`mt-4 py-2 px-4 rounded-lg ${
-                        isDarkMode
-                          ? "bg-blue-600 hover:bg-blue-700"
-                          : "bg-blue-500 hover:bg-blue-600"
-                      } text-white`}
-                    >
-                      Save Changes
-                    </button>
-                  </form>
-                </div>
-              )}
-
-              {activeTab === "account" && (
-                <div>
-                  <h2 className="text-xl font-bold text-blue-600">
-                    Account Settings
-                  </h2>
-                  <form onSubmit={handleSubmit(saveChanges)} className="mt-4">
-                    <div className="mb-4">
-                      <label
-                        className={`block text-sm font-medium ${
-                          isDarkMode ? "text-gray-200" : "text-gray-700"
-                        }`}
-                      >
-                        Email
+            {/* Right Column - Edit Form */}
+            <div className={`md:col-span-2 ${
+              isDarkMode ? "bg-gray-800/50" : "bg-white"
+            } rounded-2xl shadow-lg backdrop-blur-sm`}>
+              <div className="p-8">
+                <h2 className={`text-2xl font-bold mb-8 ${
+                  isDarkMode ? "text-white" : "text-gray-800"
+                }`}>
+                  Personal Information
+                </h2>
+                
+                <form onSubmit={handleSubmit(saveChanges)} className="space-y-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className={`text-sm font-medium ${
+                        isDarkMode ? "text-gray-200" : "text-gray-700"
+                      }`}>
+                        First Name
                       </label>
                       <input
-                        type="email"
-                        {...register("email", { required: false })}
-                        className={`input mt-1 block w-full rounded-md shadow-sm ${
-                          isDarkMode
-                            ? "bg-gray-700 text-white border-gray-600 focus:ring-blue-400 focus:border-blue-400"
-                            : "bg-gray-100 text-black border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                        }`}
+                        type="text"
+                        {...register("firstName")}
+                        className={`w-full px-4 py-3 rounded-lg ${
+                          isDarkMode 
+                            ? "bg-gray-700/50 border-gray-600 text-white focus:border-blue-500" 
+                            : "bg-gray-50 border-gray-300 text-gray-900 focus:border-blue-500"
+                        } border focus:ring-2 focus:ring-blue-500/20 transition-colors`}
                       />
-                      {errors.email && (
-                        <p className="text-red-500 text-sm">
-                          Email is required.
-                        </p>
-                      )}
                     </div>
+                    <div className="space-y-2">
+                      <label className={`text-sm font-medium ${
+                        isDarkMode ? "text-gray-200" : "text-gray-700"
+                      }`}>
+                        Last Name
+                      </label>
+                      <input
+                        type="text"
+                        {...register("lastName")}
+                        className={`w-full px-4 py-3 rounded-lg ${
+                          isDarkMode 
+                            ? "bg-gray-700/50 border-gray-600 text-white focus:border-blue-500" 
+                            : "bg-gray-50 border-gray-300 text-gray-900 focus:border-blue-500"
+                        } border focus:ring-2 focus:ring-blue-500/20 transition-colors`}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className={`text-sm font-medium ${
+                      isDarkMode ? "text-gray-200" : "text-gray-700"
+                    }`}>
+                      Bio
+                    </label>
+                    <textarea
+                      {...register("bio")}
+                      rows="4"
+                      className={`w-full px-4 py-3 rounded-lg ${
+                        isDarkMode 
+                          ? "bg-gray-700/50 border-gray-600 text-white focus:border-blue-500" 
+                          : "bg-gray-50 border-gray-300 text-gray-900 focus:border-blue-500"
+                      } border focus:ring-2 focus:ring-blue-500/20 transition-colors`}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className={`text-sm font-medium ${
+                        isDarkMode ? "text-gray-200" : "text-gray-700"
+                      }`}>
+                        Username
+                      </label>
+                      <input
+                        type="text"
+                        {...register("username")}
+                        className={`w-full px-4 py-3 rounded-lg ${
+                          isDarkMode 
+                            ? "bg-gray-700/50 border-gray-600 text-white focus:border-blue-500" 
+                            : "bg-gray-50 border-gray-300 text-gray-900 focus:border-blue-500"
+                        } border focus:ring-2 focus:ring-blue-500/20 transition-colors`}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className={`text-sm font-medium ${
+                        isDarkMode ? "text-gray-200" : "text-gray-700"
+                      }`}>
+                        Phone Number
+                      </label>
+                      <input
+                        type="text"
+                        maxLength="11"
+                        {...register("phoneNum")}
+                        className={`w-full px-4 py-3 rounded-lg ${
+                          isDarkMode 
+                            ? "bg-gray-700/50 border-gray-600 text-white focus:border-blue-500" 
+                            : "bg-gray-50 border-gray-300 text-gray-900 focus:border-blue-500"
+                        } border focus:ring-2 focus:ring-blue-500/20 transition-colors`}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="pt-6">
                     <button
-                      className={`mt-4 py-2 px-4 rounded-lg ${
+                      type="submit"
+                      className={`w-full py-4 rounded-lg ${
                         isDarkMode
                           ? "bg-blue-600 hover:bg-blue-700"
                           : "bg-blue-500 hover:bg-blue-600"
-                      } text-white`}
+                      } text-white font-medium transition-colors text-lg`}
                     >
                       Save Changes
                     </button>
-                  </form>
-                </div>
-              )}
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         </div>
