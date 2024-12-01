@@ -2,13 +2,15 @@ const express = require('express');
 const router = express.Router();
 const { protect, seller } = require('../middlewares/authenticate');
 const {
-    getOrders,
+    getOrdersBySeller,
     getOrderById,
     updateOrderStatus,
+    getOrdersByBuyers,
 } = require('../controllers/order_controller');
 
 // Public routes
-router.get('/', getOrders);
+router.get('/seller-orders', getOrdersBySeller);
+router.get('/buyer-orders', getOrdersByBuyers);
 router.get('/:id', getOrderById);
 // // router.get('/seller/:sellerId', getSellerProducts);
 

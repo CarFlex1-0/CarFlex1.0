@@ -10,7 +10,7 @@ const orderSchema = mongoose.Schema({
         quantity: { type: Number }
     }],
     totalAmount: { type: Number, required: true },
-    orderStatus: { type: String, enum: ["pending", "shipped", "delivered"], default: "pending" },
+    orderStatus: { type: String, enum: ["pending", "shipped", "delivered", "cancelled"], default: "pending" },
     orderDate:{type:Date, default: Date.now}
 }, { timestamps: true });
 

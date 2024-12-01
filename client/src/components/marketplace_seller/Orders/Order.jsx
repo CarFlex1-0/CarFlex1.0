@@ -16,12 +16,12 @@ const Order = ({ type })=> {
     status: "",
   });
 
-  const status = ["pending", "shipped", "delivered"];
+  const status = ["pending", "shipped", "delivered", "cancelled"];
 
   const fetchOrders = async () => {
     setLoading(true);
     try {
-      const { data } = await axiosInstance.get("/orders", {
+      const { data } = await axiosInstance.get("/orders/seller-orders", {
         params: {
           page,
           status: filters.status,

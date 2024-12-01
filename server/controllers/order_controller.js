@@ -5,7 +5,7 @@ const asyncHandler = require('express-async-handler');
 // @desc    Get all products
 // @route   GET /api/products
 // @access  Public
-const getOrders = asyncHandler(async (req, res) => {
+const getOrdersBySeller = asyncHandler(async (req, res) => {
     // const {sellerId} = req.body;
     const sellerId = "6742c9fe1b0bae6853c170f2"
     const pageSize = 10;
@@ -36,6 +36,37 @@ const getOrders = asyncHandler(async (req, res) => {
     });
 });
 
+const getOrdersByBuyers = asyncHandler(async (req, res) => {
+    // const {buyerId} = req.body;
+    const buyerId = "66ec5fb01bca199ffe10c6c2"
+    const pageSize = 10;
+    const page = Number(req.query.page) || 1;
+
+    const filter = {
+        buyer: { $in: buyerId }
+    };
+
+    // Add status filter if provided
+    if (req.query.status) {
+        filter.orderStatus = req.query.status;
+    }
+
+    const count = await Order.countDocuments(filter);
+    const orders = await Order.find(filter)
+        .populate('seller', 'username')
+        .populate("product.prod", "name imageUrl.url") // Populate product name and image
+        .limit(pageSize)
+        .skip(pageSize * (page - 1))
+        .sort('-createdAt');
+
+
+    res.json({
+        orders,
+        page,
+        pages: Math.ceil(count / pageSize),
+        total: count
+    });
+});
 // @desc    Get single order by ID
 // @route   GET /api/orders/:id
 // @access  Public
@@ -81,7 +112,7 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
         const { newStatus } = req.body;
 
         // Validate the new status
-        const validStatuses = ['pending', 'shipped', 'delivered'];
+        const validStatuses = ['pending', 'shipped', 'delivered', "cancelled"];
         if (!validStatuses.includes(newStatus)) {
             return res.status(400).json({
                 message: 'Invalid order status',
@@ -118,71 +149,6 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
     }
 })
 
-const getProductByIdFromSeller = asyncHandler(async (req, res) => {
-    const product = await Product.findOne({ _id: req.params.id }).populate('seller').lean()
-    console.log('product', product)
-    if (!product) {
-        res.status(404);
-        throw new Error('Product not found');
-    }
-    res.json(product);
-});
-// @desc    Update product
-// @route   PUT /api/products/:id
-// @access  Private/Seller
-const updateProduct = asyncHandler(async (req, res) => {
-    const {
-        name,
-        price,
-        category,
-        brand,
-        stock,
-        description,
-        image, // base64 image string
-    } = req.body;
-    const productId = req.params.id;
-    if (!image) {
-        return res.status(400).json({ message: "No image provided" });
-    }
-    let imageUrlData = null;
-    if (image) {
-        const result = await cloudinary.uploader.upload(image, {
-            folder: "products",
-            width: 1200,
-            crop: "scale",
-        });
-        imageUrlData = {
-            public_id: result.public_id,
-            url: result.secure_url,
-        };
-    }
-    const product = await Product.findById({ _id: productId });
-
-    if (!product) {
-        res.status(404);
-        throw new Error('Product not found');
-    }
-
-    // Verify ownership
-    // if (product.seller.toString() !== req.user._id.toString() && !req.user.isAdmin) {
-    //     res.status(403);
-    //     throw new Error('Not authorized to update this product');
-    // }
-
-    product.name = name;
-    product.description = description
-    product.price = price
-    product.category = category
-    product.brand = brand
-    product.stock = stock
-    product.image = image
-    product.imageUrl = imageUrlData
-    await product.save();
-    res.json({
-        success: true,
-        message: 'Product updated successfully',
-    });
-});
 
 // @desc    Delete product
 // @route   DELETE /api/products/:id
@@ -256,7 +222,8 @@ const updateStock = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
-    getOrders,
+    getOrdersBySeller,
+    getOrdersByBuyers,
     getOrderById,
     updateOrderStatus,
 };
