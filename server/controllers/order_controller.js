@@ -82,6 +82,7 @@ const getOrderById = asyncHandler(async (req, res) => {
         // Find the order and populate related fields
         const order = await Order.findById(id)
             .populate('buyer', 'username email')
+            .populate('seller', 'username')
             .populate({
                 path: 'product.prod',
                 select: 'name price image' // Populate product details

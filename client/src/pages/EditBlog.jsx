@@ -131,7 +131,7 @@ const EditBlogContent = () => {
   if (!blogData) return <div>Loading...</div>;
 
   return (
-    <div className={`flex-1 ${isDarkMode ? 'bg-gradient-to-br from-blue-950 to-indigo-950' : 'bg-gray-100'} rounded-lg p-8`}>
+    <div className={`flex-1 ${isDarkMode ? 'bg-gradient-to-br from-[#2b4e7e] to-black' : 'bg-gray-100'} rounded-lg p-8`}>
       <button
         onClick={toggleTheme}
         className={`fixed top-4 right-4 p-2 rounded-full ${

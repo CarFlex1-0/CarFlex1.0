@@ -31,7 +31,7 @@ const SingleBlogPage = () => {
       <div
         className={`flex justify-center items-center min-h-screen ${
           isDarkMode
-            ? "bg-gradient-to-br from-blue-950 to-indigo-950"
+            ? "bg-gradient-to-br from-[#2b4e7e] to-black"
             : "bg-white"
         }`}
       >
@@ -50,7 +50,7 @@ const SingleBlogPage = () => {
       <div
         className={`flex justify-center items-center min-h-screen ${
           isDarkMode
-            ? "bg-gradient-to-br from-blue-950 to-indigo-950"
+            ? "bg-gradient-to-br from-[#2b4e7e] to-black"
             : "bg-white"
         }`}
       >
@@ -65,7 +65,7 @@ const SingleBlogPage = () => {
       <div
         className={`flex justify-center items-center min-h-screen ${
           isDarkMode
-            ? "bg-gradient-to-br from-blue-950 to-indigo-950"
+            ? "bg-gradient-to-br from-[#2b4e7e] to-black"
             : "bg-white"
         }`}
       >
@@ -84,7 +84,7 @@ const SingleBlogPage = () => {
     <main
       className={`min-h-screen ${
         isDarkMode
-          ? "bg-gradient-to-br from-blue-950 to-indigo-950"
+          ? "bg-gradient-to-br from-[#2b4e7e] to-black"
           : "bg-white"
       }`}
     >

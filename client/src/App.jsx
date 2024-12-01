@@ -45,7 +45,8 @@ import CarPreviewLambo from "@components/lambo-intro-dashboard/CarPreviewLambo";
 import ModelSelectionPage from '@pages/ModelSelectionPage';
 import ConfigurationViewer from '@components/ConfigurationViewer';
 import AdminLoginPage from "@pages/AdminLoginPage";
-
+// import OrderDetailsPage from "@components/maketplace_buyer/OrderDetailsPage"
+import OrderDetailsPage from "@pages/OrderDetailsPage";
 
 
 // Extra! Should be Deleted along with files
@@ -159,6 +160,10 @@ function App() {
                 </Route>
 
                 <Route path="user" element={<UserDashboard />}>
+                <Route
+                    path="order-details"
+                    element={<OrderDetailsPage />}
+                  />
                   {/* Profiling */}
                   <Route path="profile-page" element={<ProfilePage />} />
                   {/* Intro Dashboard to User */}
