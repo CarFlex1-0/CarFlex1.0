@@ -34,6 +34,7 @@ import CarPartsMarketplace from "@components/maketplace_buyer/market-place";
 import Success from "@components/maketplace_buyer/Success";
 import SellerDashboard from "@components/marketplace_seller/SellerDashboard";
 import Analytics from "@components/marketplace_seller/Analytics";
+import SellerProfilePage from "@components/marketplace_seller/SellerProfilePage";
 // import UploadProduct from "@components/marketplace_seller/Products/UploadProduct";
 import {Product}  from "@components/marketplace_seller/Products/Product";
 import Order  from "@components/marketplace_seller/Orders/Order";
@@ -145,6 +146,7 @@ function App() {
 
                 <Route path="seller" element={<SellerDashboard />}>
                   <Route path="dashboard" element={<Analytics />} />
+                  <Route path="profile" element={<SellerProfilePage />} />
                   <Route
                     path="products"
                     element={<Product type="products" />}

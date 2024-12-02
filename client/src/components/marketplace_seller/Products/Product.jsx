@@ -3,12 +3,18 @@ import {
   FiPlus,
   FiSearch,
   FiX,
+  FiPackage,
+  FiShoppingBag,
 } from "react-icons/fi";
 import axiosInstance from "@services/axios";
 import Pagination from "./Pagination";
 import AddProduct from "./AddProduct";
 import ProductTable from "./ProductTable";
+import { useTheme } from "@contexts/ThemeContext";
+import { motion } from "framer-motion";
+
 export function Product({ type }) {
+  const { isDarkMode } = useTheme();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -152,9 +158,12 @@ export function Product({ type }) {
     const newStock = prompt("Enter new stock quantity:", currentStock);
     if (newStock !== null && !isNaN(newStock)) {
       try {
-        const response = await axiosInstance.patch(`/products/${productId}/stock`, {
-          stock: parseInt(newStock),
-        });
+        const response = await axiosInstance.patch(
+          `/products/${productId}/stock`,
+          {
+            stock: parseInt(newStock),
+          }
+        );
         if (response.status === 200) {
           fetchProducts();
           alert("Stock updated successfully!");
@@ -169,24 +178,40 @@ export function Product({ type }) {
   };
 
   return (
-    <div className="p-6">
+    <div className={`p-6 ${isDarkMode ? "text-white" : "text-gray-800"}`}>
       <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-3xl font-bold text-gray-800">Products</h2>
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex justify-between items-center mb-6 gap-y-1"
+        >
           {type !== "analytics" && (
-            <button
-              className="btn btn-primary flex items-center gap-2"
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
+                isDarkMode
+                  ? "bg-blue-600 hover:bg-blue-700"
+                  : "bg-blue-500 hover:bg-blue-600"
+              } text-white transition-colors`}
               onClick={() => setIsModalOpen(true)}
             >
-              <FiPlus /> Add New Product
-            </button>
+              <FiPlus className="w-5 h-5" />
+              Add New Product
+            </motion.button>
           )}
-        </div>
+        </motion.div>
 
         {type === "analytics" ? (
           <></>
         ) : (
-          <div className=" rounded-lg shadow-lg mb-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={`mb-6 ${
+              isDarkMode ? "bg-gray-800/50" : "bg-white"
+            } rounded-xl shadow-lg backdrop-blur-sm p-4`}
+          >
             <div className="relative">
               <input
                 type="text"
@@ -194,7 +219,11 @@ export function Product({ type }) {
                 value={filters.keyword}
                 onChange={handleInputChange}
                 placeholder="Search products..."
-                className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 border-gray-600 outline-none bg-slate-700"
+                className={`w-full pl-10 pr-4 py-3 rounded-lg transition-colors ${
+                  isDarkMode
+                    ? "bg-gray-700/50 text-white placeholder-gray-400 border-gray-600"
+                    : "bg-gray-50 text-gray-900 placeholder-gray-500 border-gray-200"
+                } border focus:outline-none focus:ring-2 focus:ring-blue-500`}
               />
               <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               {filters.keyword && (
@@ -206,19 +235,66 @@ export function Product({ type }) {
                 </button>
               )}
             </div>
-          </div>
+          </motion.div>
         )}
-        
-        {/* Product Table */}
-        <ProductTable 
-          loading ={loading}
-          products ={products}
-          handleUpdateStock ={handleUpdateStock}
-          handleDeleteProduct ={handleDeleteProduct}
-          type ={type}
-        />
 
-        <Pagination page={page} setPage={setPage} totalPages={totalPages} />
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center gap-3 mb-6"
+        >
+          <div
+            className={`p-2 rounded-lg ${
+              isDarkMode ? "bg-white/10" : "bg-green-50"
+            }`}
+          >
+            <FiShoppingBag
+              className={`w-6 h-6 ${
+                isDarkMode ? "text-green-400" : "text-green-500"
+              }`}
+            />
+          </div>
+          <h2
+            className={`text-2xl font-bold ${
+              isDarkMode ? "text-white" : "text-gray-900"
+            }`}
+          >
+            Products
+          </h2>
+        </motion.div>
+
+        {/* Product Table */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className={`rounded-xl shadow-lg overflow-hidden ${
+            isDarkMode ? "bg-gray-800/50" : "bg-white"
+          } backdrop-blur-sm`}
+        >
+          <ProductTable
+            loading={loading}
+            products={products}
+            handleUpdateStock={handleUpdateStock}
+            handleDeleteProduct={handleDeleteProduct}
+            type={type}
+            isDarkMode={isDarkMode}
+          />
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="mt-6"
+        >
+          <Pagination
+            page={page}
+            setPage={setPage}
+            totalPages={totalPages}
+            isDarkMode={isDarkMode}
+          />
+        </motion.div>
       </div>
 
       {/* Add Product Modal */}
@@ -231,17 +307,24 @@ export function Product({ type }) {
           brands={brands}
           handleImageChange={handleImageChange}
           setIsModalOpen={setIsModalOpen}
+          isDarkMode={isDarkMode}
         />
       )}
 
+      {/* Error Toast */}
       {error && (
-        <div
-          className="fixed bottom-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded"
+        <motion.div
+          initial={{ opacity: 0, x: 100 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: 100 }}
+          className={`fixed bottom-4 right-4 px-4 py-3 rounded-lg shadow-lg ${
+            isDarkMode ? "bg-red-900/80 text-white" : "bg-red-100 text-red-700"
+          } backdrop-blur-sm`}
           role="alert"
         >
           <strong className="font-bold">Error!</strong>
           <span className="block sm:inline"> {error}</span>
-        </div>
+        </motion.div>
       )}
     </div>
   );

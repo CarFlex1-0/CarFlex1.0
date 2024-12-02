@@ -1,14 +1,29 @@
 import React, { useState, useRef, useEffect } from "react";
-import { FiBell, FiSearch, FiUser, FiLogOut } from "react-icons/fi";
+import {
+  FiBell,
+  FiUser,
+  FiLogOut,
+  FiSettings,
+  FiSun,
+  FiMoon,
+  FiHelpCircle,
+} from "react-icons/fi";
+import { useTheme } from "@contexts/ThemeContext";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Header() {
+  const { isDarkMode, toggleTheme } = useTheme();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [notifications] = useState([
+    { id: 1, text: "New order received", time: "5 mins ago" },
+    { id: 2, text: "Product stock low", time: "1 hour ago" },
+  ]);
+  const [showNotifications, setShowNotifications] = useState(false);
   const dropdownRef = useRef(null);
+  const notificationRef = useRef(null);
   const buttonRef = useRef(null);
 
   useEffect(() => {
-    // Handler to call on mouse click
     function handleClickOutside(event) {
       if (
         dropdownRef.current &&
@@ -18,96 +33,231 @@ export default function Header() {
       ) {
         setIsProfileOpen(false);
       }
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(event.target)
+      ) {
+        setShowNotifications(false);
+      }
     }
 
-    // Bind the event listener
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      // Unbind the event listener on clean up
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [dropdownRef, buttonRef]);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [dropdownRef, buttonRef, notificationRef]);
 
   return (
-    <header className="bg-gradient-to-br from-[#2b4e7e] to-black bg-opacity-100 shadow-lg">
-      <div className="ms-4 me-4 px-4 sm:px-6">
-        <div className="flex items-center justify-between h-20">
-          {/* Logo and Welcome Section */}
-          <div className="flex items-center space-x-4">
-            <div className="bg-white/20 p-3 rounded-full">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+    <header
+      className={`${
+        isDarkMode
+          ? "bg-gray-900/80 backdrop-blur-sm"
+          : "bg-white/80 backdrop-blur-sm"
+      } shadow-sm border-b ${
+        isDarkMode ? "border-gray-800" : "border-gray-200"
+      } relative z-40`}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Left side - Brand */}
+          <div className="flex items-center gap-4">
+            <div
+              className={`p-2 rounded-lg ${
+                isDarkMode
+                  ? "bg-white/10 ring-1 ring-white/20"
+                  : "bg-white ring-1 ring-gray-200"
+              }`}
+            >
+              <div className="w-10 h-10 flex items-center justify-center">
+                <img
+                  src="/assets/images/tempLogo.png"
+                  alt="CarFlex"
+                  className="h-8 w-8 object-contain"
+                  style={{
+                    filter: isDarkMode ? "invert(1)" : "none",
+                    transform: "scale(1.8)",
+                  }}
                 />
-              </svg>
+              </div>
             </div>
-            <h1 className="text-3xl text-white tracking-tight">
+            <h1
+              className={`text-xl font-semibold ${
+                isDarkMode ? "text-white" : "text-gray-900"
+              }`}
+            >
               Seller Dashboard
             </h1>
           </div>
 
-          {/* Right Side Actions */}
-          <div className="flex items-center space-x-4 m-0 p-0">
-            {/* Notification Button */}
-            <button className="relative p-2 rounded-full text-white hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white transition duration-300">
-              <span className="absolute top-0 right-0 block h-2 w-2 rounded-full ring-2 ring-white bg-red-400"></span>
-              <FiBell className="h-6 w-6" />
-            </button>
+          {/* Right side - Actions */}
+          <div className="flex items-center gap-4">
+            {/* Theme Toggle */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={toggleTheme}
+              className={`p-2 rounded-lg transition-colors ${
+                isDarkMode
+                  ? "bg-gray-800 text-yellow-400 hover:bg-gray-700"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              }`}
+              aria-label="Toggle theme"
+            >
+              {isDarkMode ? (
+                <FiSun className="w-5 h-5" />
+              ) : (
+                <FiMoon className="w-5 h-5" />
+              )}
+            </motion.button>
+
+            {/* Notifications */}
+            <div className="relative" ref={notificationRef}>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setShowNotifications(!showNotifications)}
+                className={`p-2 rounded-lg relative ${
+                  isDarkMode
+                    ? "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+              >
+                <FiBell className="w-5 h-5" />
+                <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full" />
+              </motion.button>
+
+              <AnimatePresence>
+                {showNotifications && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className={`absolute right-0 mt-2 w-80 rounded-lg shadow-lg ${
+                      isDarkMode ? "bg-gray-800" : "bg-white"
+                    } border ${
+                      isDarkMode ? "border-gray-700" : "border-gray-200"
+                    } z-50`}
+                  >
+                    <div className="p-4">
+                      <h3
+                        className={`text-sm font-medium ${
+                          isDarkMode ? "text-gray-300" : "text-gray-900"
+                        }`}
+                      >
+                        Notifications
+                      </h3>
+                      <div className="mt-2 space-y-2">
+                        {notifications.map((notification) => (
+                          <div
+                            key={notification.id}
+                            className={`p-2 rounded-lg ${
+                              isDarkMode
+                                ? "hover:bg-gray-700"
+                                : "hover:bg-gray-50"
+                            }`}
+                          >
+                            <p
+                              className={`text-sm ${
+                                isDarkMode ? "text-gray-300" : "text-gray-700"
+                              }`}
+                            >
+                              {notification.text}
+                            </p>
+                            <p
+                              className={`text-xs ${
+                                isDarkMode ? "text-gray-500" : "text-gray-400"
+                              }`}
+                            >
+                              {notification.time}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
 
             {/* Profile Dropdown */}
-            <div className="relative">
+            <div className="relative" ref={dropdownRef}>
               <button
                 ref={buttonRef}
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
-                className="flex items-center focus:outline-none"
+                className="flex items-center gap-2 focus:outline-none"
               >
                 <img
-                  className="h-10 w-10 rounded-full ring-2 ring-white object-cover"
+                  className={`h-9 w-9 rounded-lg object-cover ${
+                    isDarkMode ? "ring-2 ring-gray-700" : "ring-2 ring-gray-200"
+                  }`}
                   src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
                   alt="Profile"
                 />
+                <div className={isDarkMode ? "text-gray-300" : "text-gray-700"}>
+                  <FiUser className="w-5 h-5" />
+                </div>
               </button>
 
-              {isProfileOpen && (
-                <div
-                  ref={dropdownRef}
-                  className="custom-backdrop origin-top-right absolute right-0 mt-2 w-56 rounded-lg shadow-xl ring-1 ring-black ring-opacity-5 overflow-hidden animate-slide-down"
-                >
-                  <div className="px-4 py-3 custom-backdrop border-b border-gray-200">
-                    <p className="text-sm font-medium text-gray-900">
-                      John Seller
-                    </p>
-                    <p className="text-xs text-gray-900 truncate">
-                      john.seller@example.com
-                    </p>
-                  </div>
-                  <div className="py-1">
-                    <a
-                      href="#"
-                      className="block px-4 py-2 text-sm text-gray-100 hover:glass transition duration-200 ease-in-out"
-                    >
-                      <FiUser className="inline-block mr-3 -mt-1" />
-                      Your Profile
-                    </a>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 text-sm text-gray-100 hover:glass transition duration-200 ease-in-out"
-                    >
-                      <FiLogOut className="inline-block mr-3 -mt-1" />
-                      Sign out
-                    </a>
-                  </div>
-                </div>
-              )}
+              <AnimatePresence>
+                {isProfileOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className={`absolute right-0 mt-2 w-48 rounded-lg shadow-lg ${
+                      isDarkMode ? "bg-gray-800" : "bg-white"
+                    } border ${
+                      isDarkMode ? "border-gray-700" : "border-gray-200"
+                    } z-50`}
+                  >
+                    <div className="p-2 space-y-1">
+                      <button
+                        className={`w-full flex items-center gap-2 px-4 py-2 text-sm rounded-lg ${
+                          isDarkMode
+                            ? "text-gray-300 hover:bg-gray-700"
+                            : "text-gray-700 hover:bg-gray-100"
+                        }`}
+                      >
+                        <FiUser className="w-4 h-4" />
+                        Profile
+                      </button>
+                      <button
+                        className={`w-full flex items-center gap-2 px-4 py-2 text-sm rounded-lg ${
+                          isDarkMode
+                            ? "text-gray-300 hover:bg-gray-700"
+                            : "text-gray-700 hover:bg-gray-100"
+                        }`}
+                      >
+                        <FiSettings className="w-4 h-4" />
+                        Settings
+                      </button>
+                      <button
+                        className={`w-full flex items-center gap-2 px-4 py-2 text-sm rounded-lg ${
+                          isDarkMode
+                            ? "text-gray-300 hover:bg-gray-700"
+                            : "text-gray-700 hover:bg-gray-100"
+                        }`}
+                      >
+                        <FiHelpCircle className="w-4 h-4" />
+                        Help
+                      </button>
+                      <div
+                        className={`my-1 border-t ${
+                          isDarkMode ? "border-gray-700" : "border-gray-200"
+                        }`}
+                      />
+                      <button
+                        className={`w-full flex items-center gap-2 px-4 py-2 text-sm rounded-lg ${
+                          isDarkMode
+                            ? "text-red-400 hover:bg-gray-700"
+                            : "text-red-600 hover:bg-gray-100"
+                        }`}
+                      >
+                        <FiLogOut className="w-4 h-4" />
+                        Sign out
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </div>
