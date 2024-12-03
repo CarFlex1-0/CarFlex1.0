@@ -6,6 +6,12 @@ import { toast } from "react-toastify";
 import axios from "@services/axios";
 import Cookies from "js-cookie";
 import BackgroundIcons from "@components/BackgroundIcons";
+import { BiCar } from "react-icons/bi";
+import { FaShareAlt, FaCogs, FaTachometerAlt } from "react-icons/fa";
+import { CiEdit } from "react-icons/ci";
+import { MdDeleteForever } from "react-icons/md";
+import { GiSpeedometer } from "react-icons/gi";
+import { motion } from "framer-motion";
 
 const ConfigurationViewer = () => {
   const { id } = useParams();
@@ -141,207 +147,198 @@ const ConfigurationViewer = () => {
   }
 
   return (
-    <div
-      className={`min-h-screen relative ${
-        isDarkMode ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
-      }`}
-    >
+    <div className={`min-h-screen relative ${
+      isDarkMode 
+        ? 'bg-gradient-to-br from-[#2b4e7e] to-black' 
+        : 'bg-gray-100'
+    } ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
       <BackgroundIcons />
 
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold">{config.name}</h1>
-            <p
-              className={`text-lg ${
-                isDarkMode ? "text-gray-400" : "text-gray-600"
-              }`}
-            >
-              {getModelName(config.customization.modelType)}
-            </p>
+          <div className="flex items-center gap-3">
+            <div className={`p-3 rounded-full ${
+              config.customization.modelType === 'civic' 
+                ? 'bg-blue-500/10' 
+                : config.customization.modelType === 'corolla'
+                ? 'bg-emerald-500/10'
+                : 'bg-purple-500/10'
+            }`}>
+              <BiCar className={`w-8 h-8 ${
+                config.customization.modelType === 'civic' 
+                  ? 'text-blue-500' 
+                  : config.customization.modelType === 'corolla'
+                  ? 'text-emerald-500'
+                  : 'text-purple-500'
+              }`} />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold">{config.name}</h1>
+              <p className={`text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                {getModelName(config.customization.modelType)}
+              </p>
+            </div>
           </div>
+
           <div className="flex gap-4">
-            <button
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => setShowShareModal(true)}
-              className="btn btn-primary gap-2"
+              className={`flex items-center gap-2 px-6 py-2.5 rounded-xl ${
+                isDarkMode 
+                  ? 'bg-gray-800/50 hover:bg-blue-900/20 backdrop-blur-sm border border-blue-500/20 shadow-lg shadow-blue-500/10' 
+                  : 'bg-blue-500/10 hover:bg-blue-500/20 shadow-sm hover:shadow-blue-500/25'
+              } transition-all duration-300`}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
-              </svg>
-              Share
-            </button>
-            <button onClick={handleEdit} className="btn btn-secondary gap-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-              </svg>
-              Edit
-            </button>
+              <FaShareAlt className={`w-4 h-4 ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`} />
+              <span className={`font-medium ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>Share</span>
+            </motion.button>
+
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleEdit}
+              className={`flex items-center gap-2 px-6 py-2.5 rounded-xl ${
+                isDarkMode 
+                  ? 'bg-gray-800/50 hover:bg-emerald-900/20 backdrop-blur-sm border border-emerald-500/20 shadow-lg shadow-emerald-500/10' 
+                  : 'bg-emerald-500/10 hover:bg-emerald-500/20 shadow-sm hover:shadow-emerald-500/25'
+              } transition-all duration-300`}
+            >
+              <CiEdit className={`w-4 h-4 ${isDarkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
+              <span className={`font-medium ${isDarkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>Edit</span>
+            </motion.button>
+
             {config.creator._id === user._id && (
-              <button
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => setShowDeleteModal(true)}
-                className="btn btn-error gap-2"
+                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl ${
+                  isDarkMode 
+                    ? 'bg-gray-800/50 hover:bg-red-900/20 backdrop-blur-sm border border-red-500/20 shadow-lg shadow-red-500/10' 
+                    : 'bg-red-500/10 hover:bg-red-500/20 shadow-sm hover:shadow-red-500/25'
+                } transition-all duration-300`}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                Delete
-              </button>
+                <MdDeleteForever className={`w-4 h-4 ${isDarkMode ? 'text-red-400' : 'text-red-600'}`} />
+                <span className={`font-medium ${isDarkMode ? 'text-red-400' : 'text-red-600'}`}>Delete</span>
+              </motion.button>
             )}
           </div>
         </div>
 
-        {/* Performance Metrics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {/* Acceleration Card */}
-          <div
+          <motion.div
+            whileHover={{ scale: 1.02 }}
             className={`card ${
-              isDarkMode ? "bg-gray-800" : "bg-white"
+              isDarkMode 
+                ? 'bg-gray-800/50  border border-blue-500/20' 
+                : 'bg-white'
             } shadow-xl`}
           >
             <div className="card-body">
               <div className="flex items-center gap-3">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8 text-primary"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+                <div className="p-3 rounded-full bg-blue-500/10">
+                  <FaTachometerAlt className="w-6 h-6 text-blue-500" />
+                </div>
                 <div>
                   <h3 className="card-title">Acceleration</h3>
                   <p className="text-3xl font-bold">
                     {config.performanceMetrics.metrics.acceleration}s
                   </p>
-                  <p className="text-sm opacity-70">0-60 mph</p>
+                  <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    0-60 mph
+                  </p>
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
 
-          {/* Max Speed Card */}
-          <div
+          <motion.div
+            whileHover={{ scale: 1.02 }}
             className={`card ${
-              isDarkMode ? "bg-gray-800" : "bg-white"
+              isDarkMode 
+                ? 'bg-gray-800/50  border border-emerald-500/20' 
+                : 'bg-white'
             } shadow-xl`}
           >
             <div className="card-body">
               <div className="flex items-center gap-3">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8 text-secondary"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+                <div className="p-3 rounded-full bg-emerald-500/10">
+                  <GiSpeedometer className="w-6 h-6 text-emerald-500" />
+                </div>
                 <div>
                   <h3 className="card-title">Max Speed</h3>
                   <p className="text-3xl font-bold">
                     {config.performanceMetrics.metrics.maxSpeed}
                   </p>
-                  <p className="text-sm opacity-70">km/h</p>
+                  <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    km/h
+                  </p>
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
 
-          {/* Horsepower Card */}
-          <div
+          <motion.div
+            whileHover={{ scale: 1.02 }}
             className={`card ${
-              isDarkMode ? "bg-gray-800" : "bg-white"
+              isDarkMode 
+                ? 'bg-gray-800/50  border border-purple-500/20' 
+                : 'bg-white'
             } shadow-xl`}
           >
             <div className="card-body">
               <div className="flex items-center gap-3">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8 text-accent"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+                <div className="p-3 rounded-full bg-purple-500/10">
+                  <FaTachometerAlt className="w-6 h-6 text-purple-500" />
+                </div>
                 <div>
                   <h3 className="card-title">Horsepower</h3>
                   <p className="text-3xl font-bold">
                     {config.performanceMetrics.metrics.horsepower}
                   </p>
-                  <p className="text-sm opacity-70">hp</p>
+                  <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    hp
+                  </p>
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
 
-          {/* Torque Card */}
-          <div
+          <motion.div
+            whileHover={{ scale: 1.02 }}
             className={`card ${
-              isDarkMode ? "bg-gray-800" : "bg-white"
+              isDarkMode 
+                ? 'bg-gray-800/50  border border-purple-500/20' 
+                : 'bg-white'
             } shadow-xl`}
           >
             <div className="card-body">
               <div className="flex items-center gap-3">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-8 w-8 text-accent"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M12 12L16 8" />
-                  <path d="M12 8v4" />
-                </svg>
+                <div className="p-3 rounded-full bg-purple-500/10">
+                  <FaTachometerAlt className="w-6 h-6 text-purple-500" />
+                </div>
                 <div>
                   <h3 className="card-title">Torque</h3>
                   <p className="text-3xl font-bold">
                     {config.performanceMetrics.metrics.torque}
                   </p>
-                  <p className="text-sm opacity-70">Nm</p>
+                  <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    Nm
+                  </p>
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
 
-        {/* Engine Specifications */}
-        <div
+        <motion.div
+          whileHover={{ scale: 1.01 }}
           className={`card ${
-            isDarkMode ? "bg-gray-800" : "bg-white"
+            isDarkMode 
+              ? 'bg-gray-800/50  border border-purple-500/20' 
+              : 'bg-white'
           } shadow-xl mb-8`}
         >
           <div className="card-body">
@@ -374,14 +371,18 @@ const ConfigurationViewer = () => {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Enhanced Share Modal */}
         {showShareModal && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
-            <div
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
               className={`w-full max-w-md transform transition-all ${
-                isDarkMode ? "bg-gray-800" : "bg-white"
+                isDarkMode 
+                  ? 'bg-gray-800/90 backdrop-blur-sm border border-blue-500/20' 
+                  : 'bg-white'
               } rounded-lg p-6 shadow-xl`}
             >
               <h3 className="text-xl font-bold mb-2">Share Configuration</h3>
@@ -485,39 +486,47 @@ const ConfigurationViewer = () => {
               )}
 
               <div className="flex justify-end gap-3 mt-6">
-                <button
-                  className={`px-4 py-2 rounded-lg ${
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`px-6 py-2.5 rounded-xl ${
                     isDarkMode
-                      ? "bg-gray-700 hover:bg-gray-600"
-                      : "bg-gray-200 hover:bg-gray-300"
-                  } transition-colors duration-150`}
-                  onClick={() => {
-                    setShowShareModal(false);
-                    setShareEmail("");
-                    setSelectedUser(null);
-                    setSearchResults([]);
-                  }}
+                      ? 'bg-gray-800/50 hover:bg-gray-700/50 backdrop-blur-sm border border-gray-500/20 shadow-lg shadow-gray-500/10' 
+                      : 'bg-gray-200 hover:bg-gray-300 shadow-sm hover:shadow-gray-500/25'
+                  } transition-all duration-300`}
+                  onClick={() => setShowShareModal(false)}
                 >
-                  Cancel
-                </button>
-                <button
-                  className={`px-4 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed`}
+                  <span className={`font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Cancel</span>
+                </motion.button>
+                
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`px-6 py-2.5 rounded-xl ${
+                    isDarkMode 
+                      ? 'bg-gray-800/50 hover:bg-blue-900/20 backdrop-blur-sm border border-blue-500/20 shadow-lg shadow-blue-500/10' 
+                      : 'bg-blue-500/10 hover:bg-blue-500/20 shadow-sm hover:shadow-blue-500/25'
+                  } transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed`}
                   onClick={handleShare}
                   disabled={!shareEmail.trim()}
                 >
-                  Share
-                </button>
+                  <span className={`font-medium ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>Share</span>
+                </motion.button>
               </div>
-            </div>
+            </motion.div>
           </div>
         )}
 
-        {/* Delete Modal */}
         {showDeleteModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
               className={`modal-box ${
-                isDarkMode ? "bg-gray-800" : "bg-white"
+                isDarkMode 
+                  ? 'bg-gray-800/90 backdrop-blur-sm border border-red-500/20' 
+                  : 'bg-white'
               } p-6 rounded-lg max-w-md mx-auto`}
             >
               <h3 className="font-bold text-lg mb-4">Delete Configuration</h3>
@@ -526,23 +535,35 @@ const ConfigurationViewer = () => {
                 cannot be undone.
               </p>
               <div className="modal-action flex justify-end gap-4">
-                <button
-                  className="btn btn-ghost"
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`px-6 py-2.5 rounded-xl ${
+                    isDarkMode
+                      ? 'bg-gray-800/50 hover:bg-gray-700/60 backdrop-blur-sm border border-gray-500/20' 
+                      : 'bg-gray-200 hover:bg-gray-300'
+                  } transition-all duration-300`}
                   onClick={() => setShowDeleteModal(false)}
                 >
-                  Cancel
-                </button>
-                <button
-                  className="btn btn-error"
+                  <span className={`font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Cancel</span>
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`px-6 py-2.5 rounded-xl ${
+                    isDarkMode 
+                      ? 'bg-gray-800/50 hover:bg-gray-700/60 backdrop-blur-sm border border-red-500/20' 
+                      : 'bg-red-500/10 hover:bg-red-500/20'
+                  } transition-all duration-300`}
                   onClick={() => {
                     handleDelete();
                     setShowDeleteModal(false);
                   }}
                 >
-                  Delete
-                </button>
+                  <span className={`font-medium ${isDarkMode ? 'text-red-400' : 'text-red-600'}`}>Delete</span>
+                </motion.button>
               </div>
-            </div>
+            </motion.div>
           </div>
         )}
       </div>

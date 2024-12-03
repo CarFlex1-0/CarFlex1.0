@@ -23,8 +23,10 @@ const FeaturedBlogCard = ({ item, onDelete, onUpdate }) => {
 
   return (
     <div className={`
-      bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-xl shadow-xl overflow-hidden
-      ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}
+      backdrop-filter backdrop-blur-lg rounded-xl shadow-xl overflow-hidden
+      ${isDarkMode 
+        ? 'bg-gray-800/50 text-white hover:bg-gray-700/60' 
+        : 'bg-white text-gray-900'}
       transition-all duration-300 hover:shadow-2xl transform hover:-translate-y-1
     `}>
       <div className="md:flex">
@@ -37,9 +39,14 @@ const FeaturedBlogCard = ({ item, onDelete, onUpdate }) => {
           <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
             <Link
               to={`/user/blog/${item._id}`}
-              className="text-white text-lg font-semibold bg-indigo-600 px-4 py-2 rounded-full hover:bg-indigo-700 transition-colors duration-300"
+              className={`flex items-center ${
+                isDarkMode 
+                  ? 'bg-gray-700 text-white hover:bg-gray-600' 
+                  : 'text-indigo-600 hover:text-indigo-800'
+              } transition-colors duration-300 px-4 py-2 rounded-lg`}
             >
-              Read More
+              <MdReadMore className="mr-2" size={20} />
+              <span>Read Full Article</span>
             </Link>
           </div>
         </div>
@@ -57,8 +64,10 @@ const FeaturedBlogCard = ({ item, onDelete, onUpdate }) => {
             <Link
               to={`/user/blog/${item._id}`}
               className={`flex items-center ${
-                isDarkMode ? 'text-indigo-400 hover:text-indigo-300' : 'text-indigo-600 hover:text-indigo-800'
-              } transition-colors duration-300`}
+                isDarkMode 
+                  ? 'bg-gray-700 text-white hover:bg-gray-600' 
+                  : 'text-indigo-600 hover:text-indigo-800'
+              } transition-colors duration-300 px-4 py-2 rounded-lg`}
             >
               <MdReadMore className="mr-2" size={20} />
               <span>Read Full Article</span>
@@ -68,14 +77,18 @@ const FeaturedBlogCard = ({ item, onDelete, onUpdate }) => {
                 <Link
                   to={`/user/blog/${item._id}/edit`}
                   className={`p-2 rounded-full ${
-                    isDarkMode ? 'bg-blue-900 text-blue-200 hover:bg-blue-800' : 'bg-blue-100 text-blue-600 hover:bg-blue-200'
+                    isDarkMode 
+                      ? 'bg-gray-700 text-white hover:bg-gray-600' 
+                      : 'bg-blue-100 text-blue-600 hover:bg-blue-200'
                   } transition-colors duration-300`}
                 >
                   <CiEdit size={20} />
                 </Link>
                 <button
                   className={`p-2 rounded-full ${
-                    isDarkMode ? 'bg-red-900 text-red-200 hover:bg-red-800' : 'bg-red-100 text-red-600 hover:bg-red-200'
+                    isDarkMode 
+                      ? 'bg-gray-700 text-white hover:bg-gray-600' 
+                      : 'bg-red-100 text-red-600 hover:bg-red-200'
                   } transition-colors duration-300`}
                   onClick={handleDelete}
                 >

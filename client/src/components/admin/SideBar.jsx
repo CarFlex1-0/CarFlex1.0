@@ -41,9 +41,9 @@ export function SideBar() {
         // className={open ? "bg-indigo-900 text-white z-10" : ""}
         overlay={false}
       >
-        <div className="mb-2 flex items-center justify-between p-4">
+        <div className="mb-2 flex items-center justify-between p-4 border-b border-indigo-300/20">
           <Typography variant="h5" color="blue-gray">
-            CarFlex Dashboard
+            <span className="text-white">Car<span className="text-red-500 animate-pulse">F</span>lex</span>
           </Typography>
           <IconButton variant="text" color="blue-gray" onClick={closeDrawer}>
             <svg

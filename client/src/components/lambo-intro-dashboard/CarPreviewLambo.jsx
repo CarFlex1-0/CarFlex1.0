@@ -30,8 +30,8 @@ function CarPreviewLambo() {
         }
       >
         <Experience />
-        <Stats />
-        <Leva collapsed />
+        <Stats className='hidden container hover:visible' />
+        <Leva hidden={true} collapsed />
       </Suspense>
     </div>
   );

@@ -138,17 +138,26 @@ const AuthorPostPageContent = () => {
   // console.log("Blogs loaded:", blogs);
 
   return (
-    <main className={`min-h-screen ${isDarkMode ? "bg-gray-900" : "bg-gray-100"} transition-colors duration-300`}>
+    <main className={`min-h-screen ${
+      isDarkMode 
+        ? "bg-gradient-to-br from-[#2b4e7e] to-black" 
+        : "bg-gray-100"
+    } transition-colors duration-300`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <button
           onClick={toggleTheme}
           className={`fixed top-4 right-4 p-2 rounded-full ${
-            isDarkMode ? "bg-yellow-400 text-gray-900" : "bg-gray-800 text-white"
+            isDarkMode 
+              ? "bg-yellow-400 text-gray-900" 
+              : "bg-gray-800 text-white"
           }`}
         >
           {isDarkMode ? "☀️" : "🌙"}
         </button>
-        <h1 className={`text-3xl font-bold mb-8 ${isDarkMode ? "text-white" : "text-gray-900"}`}>My Blogs</h1>
+
+        <h1 className={`text-3xl font-bold mb-8 ${isDarkMode ? "text-white" : "text-gray-900"}`}>
+          My Blogs
+        </h1>
 
         <section className="mb-8 flex justify-between items-center">
           <div className="relative w-64">
@@ -159,7 +168,7 @@ const AuthorPostPageContent = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
               className={`w-full pl-10 pr-4 py-2 rounded-full ${
                 isDarkMode
-                  ? "bg-gray-800 text-white placeholder-gray-400"
+                  ? "bg-gray-800/50 text-white placeholder-gray-400 border border-gray-700"
                   : "bg-white text-gray-900 placeholder-gray-500"
               } focus:ring-2 focus:ring-indigo-500 focus:outline-none`}
             />
@@ -169,11 +178,11 @@ const AuthorPostPageContent = () => {
           <select
             value={sortOption}
             onChange={(e) => setSortOption(e.target.value)}
-            className={`ml-4 p-2 rounded-md ${
+            className={`ml-4 p-2 rounded-lg ${
               isDarkMode
-                ? "bg-gray-800 text-white"
+                ? "bg-gray-800/50 text-white border border-gray-700"
                 : "bg-white text-gray-900"
-            } border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none`}
+            } focus:ring-2 focus:ring-indigo-500 focus:outline-none`}
           >
             <option value="dateDesc">Newest</option>
             <option value="dateAsc">Oldest</option>
@@ -184,7 +193,9 @@ const AuthorPostPageContent = () => {
 
         {featuredBlog && (
           <section className="mb-12">
-            <h2 className={`text-2xl font-semibold mb-6 ${isDarkMode ? "text-white" : "text-gray-900"}`}>Featured Blog</h2>
+            <h2 className={`text-3xl font-bold mb-6 ${isDarkMode ? "text-white" : "text-gray-900"}`}>
+              Featured Blog
+            </h2>
             <FeaturedBlogCard
               item={featuredBlog}
               onDelete={deleteBlog}
@@ -194,7 +205,9 @@ const AuthorPostPageContent = () => {
         )}
 
         <section className="mb-12">
-          <h2 className={`text-2xl font-semibold mb-6 ${isDarkMode ? "text-white" : "text-gray-900"}`}>{getSectionTitle()}</h2>
+          <h2 className={`text-3xl font-bold mb-6 ${isDarkMode ? "text-white" : "text-gray-900"}`}>
+            {getSectionTitle()}
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredBlogs.filter(blog => blog._id !== featuredBlog?._id).map((blog) => (
               <BlogCard
@@ -208,7 +221,9 @@ const AuthorPostPageContent = () => {
         </section>
 
         {filteredBlogs.length === 0 && (
-          <p className={`text-center ${isDarkMode ? "text-gray-400" : "text-gray-600"} mt-10`}>No blogs found.</p>
+          <p className={`text-center ${isDarkMode ? "text-gray-400" : "text-gray-600"} mt-10`}>
+            No blogs found.
+          </p>
         )}
       </div>
     </main>

@@ -40,9 +40,7 @@ const SignIn = () => {
         theme: "dark",
         transition: Slide,
       });
-      navigate("/user/customize-3d-model", { replace: true });
-
-
+      navigate("/user/dashboard", { replace: true });
     } catch (error) {
       const errorMessage =
         "Sign In failed. Please check your credentials and try again.";
@@ -60,16 +58,18 @@ const SignIn = () => {
   };
 
   return (
-    <div className={`min-h-screen flex ${
-      isDarkMode 
-        ? 'bg-gradient-to-br from-[#2b4e7e] to-black' 
-        : 'bg-gradient-to-br from-blue-100 to-white'
-    }`}>
+    <div
+      className={`min-h-screen flex ${
+        isDarkMode
+          ? "bg-gradient-to-br from-[#2b4e7e] to-black"
+          : "bg-gradient-to-br from-blue-100 to-white"
+      }`}
+    >
       {/* Theme Toggle Button */}
       <motion.button
         onClick={toggleTheme}
         className={`fixed top-4 right-4 p-2 rounded-full z-50 ${
-          isDarkMode ? 'bg-gray-800' : 'bg-white'
+          isDarkMode ? "bg-gray-800" : "bg-white"
         } shadow-lg`}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
@@ -115,19 +115,25 @@ const SignIn = () => {
 
       {/* Left Section - Login Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
           className={`w-full max-w-md p-8 rounded-2xl ${
-            isDarkMode ? 'bg-white/10 backdrop-blur-md' : 'bg-white/80 backdrop-blur-md'
+            isDarkMode
+              ? "bg-white/10 backdrop-blur-md"
+              : "bg-white/80 backdrop-blur-md"
           } shadow-xl`}
         >
           <div className="text-center mb-8">
-            <h1 className={`text-3xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+            <h1
+              className={`text-3xl font-bold mb-2 ${
+                isDarkMode ? "text-white" : "text-gray-800"
+              }`}
+            >
               Welcome Back
             </h1>
-            <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+            <p className={`${isDarkMode ? "text-gray-300" : "text-gray-600"}`}>
               Sign in to continue your journey
             </p>
           </div>
@@ -135,7 +141,11 @@ const SignIn = () => {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* Account Type Selection */}
             <div className="mb-5">
-              <label className={`block mb-2 ${isDarkMode ? 'text-white' : 'text-gray-700'}`}>
+              <label
+                className={`block mb-2 ${
+                  isDarkMode ? "text-white" : "text-gray-700"
+                }`}
+              >
                 Account Type
               </label>
               <div className="flex gap-4 justify-center">
@@ -147,7 +157,11 @@ const SignIn = () => {
                     className="radio radio-secondary"
                     defaultChecked
                   />
-                  <span className={`label-text ml-2 ${isDarkMode ? 'text-white' : 'text-gray-700'}`}>
+                  <span
+                    className={`label-text ml-2 ${
+                      isDarkMode ? "text-white" : "text-gray-700"
+                    }`}
+                  >
                     Enthusiast
                   </span>
                 </label>
@@ -158,23 +172,37 @@ const SignIn = () => {
                     value="seller"
                     className="radio radio-secondary"
                   />
-                  <span className={`label-text ml-2 ${isDarkMode ? 'text-white' : 'text-gray-700'}`}>
+                  <span
+                    className={`label-text ml-2 ${
+                      isDarkMode ? "text-white" : "text-gray-700"
+                    }`}
+                  >
                     Seller
                   </span>
                 </label>
               </div>
               {errors.role && (
-                <p className="text-red-500 mt-1 text-center">{errors.role.message}</p>
+                <p className="text-red-500 mt-1 text-center">
+                  {errors.role.message}
+                </p>
               )}
             </div>
 
             <div>
-              <label className={`block mb-2 ${isDarkMode ? 'text-white' : 'text-gray-700'}`}>
+              <label
+                className={`block mb-2 ${
+                  isDarkMode ? "text-white" : "text-gray-700"
+                }`}
+              >
                 Email Address
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FiMail className={`h-5 w-5 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                  <FiMail
+                    className={`h-5 w-5 ${
+                      isDarkMode ? "text-gray-400" : "text-gray-500"
+                    }`}
+                  />
                 </div>
                 <input
                   {...register("email", {
@@ -185,39 +213,53 @@ const SignIn = () => {
                     },
                   })}
                   className={`w-full pl-10 pr-4 py-2 rounded-lg border ${
-                    isDarkMode 
-                      ? 'bg-white/10 border-white/20 text-white' 
-                      : 'bg-white border-gray-300 text-gray-900'
+                    isDarkMode
+                      ? "bg-white/10 border-white/20 text-white"
+                      : "bg-white border-gray-300 text-gray-900"
                   } focus:ring-2 focus:ring-blue-500 transition-colors`}
                   placeholder="example@domain.com"
                 />
               </div>
               {errors.email && (
-                <p className="mt-1 text-red-500 text-sm">{errors.email.message}</p>
+                <p className="mt-1 text-red-500 text-sm">
+                  {errors.email.message}
+                </p>
               )}
             </div>
 
             <div>
-              <label className={`block mb-2 ${isDarkMode ? 'text-white' : 'text-gray-700'}`}>
+              <label
+                className={`block mb-2 ${
+                  isDarkMode ? "text-white" : "text-gray-700"
+                }`}
+              >
                 Password
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FiLock className={`h-5 w-5 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                  <FiLock
+                    className={`h-5 w-5 ${
+                      isDarkMode ? "text-gray-400" : "text-gray-500"
+                    }`}
+                  />
                 </div>
                 <input
-                  {...register("password", { required: "Password is required" })}
+                  {...register("password", {
+                    required: "Password is required",
+                  })}
                   type="password"
                   className={`w-full pl-10 pr-4 py-2 rounded-lg border ${
-                    isDarkMode 
-                      ? 'bg-white/10 border-white/20 text-white' 
-                      : 'bg-white border-gray-300 text-gray-900'
+                    isDarkMode
+                      ? "bg-white/10 border-white/20 text-white"
+                      : "bg-white border-gray-300 text-gray-900"
                   } focus:ring-2 focus:ring-blue-500 transition-colors`}
                   placeholder="••••••••"
                 />
               </div>
               {errors.password && (
-                <p className="mt-1 text-red-500 text-sm">{errors.password.message}</p>
+                <p className="mt-1 text-red-500 text-sm">
+                  {errors.password.message}
+                </p>
               )}
             </div>
 
@@ -226,16 +268,24 @@ const SignIn = () => {
                 <input
                   type="checkbox"
                   {...register("rememberMe")}
-                  className={`mr-2 rounded ${isDarkMode ? 'text-blue-500' : 'text-blue-600'}`}
+                  className={`mr-2 rounded ${
+                    isDarkMode ? "text-blue-500" : "text-blue-600"
+                  }`}
                 />
-                <span className={`text-sm ${isDarkMode ? 'text-white' : 'text-gray-700'}`}>
+                <span
+                  className={`text-sm ${
+                    isDarkMode ? "text-white" : "text-gray-700"
+                  }`}
+                >
                   Remember me
                 </span>
               </label>
               <Link
                 to="/forgot-password"
                 className={`text-sm font-medium ${
-                  isDarkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-500'
+                  isDarkMode
+                    ? "text-blue-400 hover:text-blue-300"
+                    : "text-blue-600 hover:text-blue-500"
                 }`}
               >
                 Forgot Password?
@@ -255,7 +305,11 @@ const SignIn = () => {
             </button>
           </form>
 
-          <p className={`mt-8 text-center text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+          <p
+            className={`mt-8 text-center text-sm ${
+              isDarkMode ? "text-gray-300" : "text-gray-600"
+            }`}
+          >
             Don't have an account?{" "}
             <Link
               to="/sign-up"
@@ -275,10 +329,14 @@ const SignIn = () => {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="text-center z-10 p-8"
         >
-          <div className={`text-5xl font-bold mb-12 ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
+          <div
+            className={`text-5xl font-bold mb-12 ${
+              isDarkMode ? "text-white" : "text-gray-800"
+            }`}
+          >
             Car<span className="text-red-500 animate-pulse">F</span>lex
           </div>
-          
+
           <div className="w-[500px] h-[300px] relative">
             <motion.img
               src="https://images.unsplash.com/photo-1494905998402-395d579af36f"
@@ -289,7 +347,11 @@ const SignIn = () => {
             />
           </div>
 
-          <p className={`mt-8 text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+          <p
+            className={`mt-8 text-xl ${
+              isDarkMode ? "text-gray-300" : "text-gray-700"
+            }`}
+          >
             Your journey to automotive excellence starts here
           </p>
         </motion.div>

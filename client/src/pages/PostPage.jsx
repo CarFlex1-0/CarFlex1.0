@@ -33,7 +33,7 @@ const PostPageContent = () => {
 
         // console.log("Response data:", res.data);
         const data = res.data;
-        
+
         setBlogs(data);
         setFilteredBlogs(data);
       } catch (error) {
@@ -49,24 +49,35 @@ const PostPageContent = () => {
   }, [isDashboard, authorId]);
 
   useEffect(() => {
-    const sortedAndFilteredBlogs = sortBlogs(blogs.filter(blog => 
-      blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      blog.content.toLowerCase().includes(searchTerm.toLowerCase())
-    ));
+    const sortedAndFilteredBlogs = sortBlogs(
+      blogs.filter(
+        (blog) =>
+          blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          blog.content.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    );
     setFilteredBlogs(sortedAndFilteredBlogs);
   }, [sortOption, blogs, searchTerm]);
 
   const sortBlogs = (blogsToSort) => {
     switch (sortOption) {
       case "likesDesc":
-        return [...blogsToSort].sort((a, b) => b.likes.likesCount - a.likes.likesCount);
+        return [...blogsToSort].sort(
+          (a, b) => b.likes.likesCount - a.likes.likesCount
+        );
       case "likesAsc":
-        return [...blogsToSort].sort((a, b) => a.likes.likesCount - b.likes.likesCount);
+        return [...blogsToSort].sort(
+          (a, b) => a.likes.likesCount - b.likes.likesCount
+        );
       case "dateAsc":
-        return [...blogsToSort].sort((a, b) => new Date(a.updatedAt) - new Date(b.updatedAt));
+        return [...blogsToSort].sort(
+          (a, b) => new Date(a.updatedAt) - new Date(b.updatedAt)
+        );
       case "dateDesc":
       default:
-        return [...blogsToSort].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+        return [...blogsToSort].sort(
+          (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+        );
     }
   };
 
@@ -122,9 +133,12 @@ const PostPageContent = () => {
     }
   };
 
-  const featuredBlog = blogs.length > 0 ? blogs.reduce((prev, current) => 
-    (prev.likes.likesCount > current.likes.likesCount) ? prev : current
-  ) : null;
+  const featuredBlog =
+    blogs.length > 0
+      ? blogs.reduce((prev, current) =>
+          prev.likes.likesCount > current.likes.likesCount ? prev : current
+        )
+      : null;
 
   if (loading) {
     // console.log("Loading... Please wait.");
@@ -149,14 +163,16 @@ const PostPageContent = () => {
   return (
     <main
       className={`min-h-screen ${
-        isDarkMode ? "bg-gray-900" : "bg-gray-100"
+        isDarkMode ? "bg-gradient-to-br from-[#2b4e7e] to-black" : "bg-gray-100"
       } transition-colors duration-300`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <button
           onClick={toggleTheme}
           className={`fixed top-4 right-4 p-2 rounded-full ${
-            isDarkMode ? "bg-yellow-400 text-gray-900" : "bg-gray-800 text-white"
+            isDarkMode
+              ? "bg-yellow-400 text-gray-900"
+              : "bg-gray-800 text-white"
           }`}
         >
           {isDarkMode ? "☀️" : "🌙"}
@@ -177,14 +193,12 @@ const PostPageContent = () => {
             />
             <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-indigo-500" />
           </div>
-          
+
           <select
             value={sortOption}
             onChange={(e) => setSortOption(e.target.value)}
             className={`ml-4 p-2 rounded-md ${
-              isDarkMode
-                ? "bg-gray-800 text-white"
-                : "bg-white text-gray-900"
+              isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
             } border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none`}
           >
             <option value="dateDesc">Newest</option>
@@ -196,7 +210,13 @@ const PostPageContent = () => {
 
         {featuredBlog && (
           <section className="mb-12">
-            <h2 className={`text-3xl font-bold mb-6 ${isDarkMode ? "text-white" : "text-gray-900"}`}>Featured Post</h2>
+            <h2
+              className={`text-3xl font-bold mb-6 ${
+                isDarkMode ? "text-white" : "text-gray-900"
+              }`}
+            >
+              Featured Post
+            </h2>
             <FeaturedBlogCard
               item={featuredBlog}
               onDelete={deleteBlog}
@@ -206,16 +226,24 @@ const PostPageContent = () => {
         )}
 
         <section className="mb-12">
-          <h2 className={`text-3xl font-bold mb-6 ${isDarkMode ? "text-white" : "text-gray-900"}`}>{getSectionTitle()}</h2>
+          <h2
+            className={`text-3xl font-bold mb-6 ${
+              isDarkMode ? "text-white" : "text-gray-900"
+            }`}
+          >
+            {getSectionTitle()}
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredBlogs.filter(blog => blog._id !== featuredBlog?._id).map((blog) => (
-              <BlogCard
-                key={blog._id}
-                item={blog}
-                onDelete={deleteBlog}
-                onUpdate={updateBlog}
-              />
-            ))}
+            {filteredBlogs
+              .filter((blog) => blog._id !== featuredBlog?._id)
+              .map((blog) => (
+                <BlogCard
+                  key={blog._id}
+                  item={blog}
+                  onDelete={deleteBlog}
+                  onUpdate={updateBlog}
+                />
+              ))}
           </div>
         </section>
       </div>
