@@ -6,112 +6,102 @@ import {
 } from "@material-tailwind/react";
 import Chart from "react-apexcharts";
 
-const chartConfig = {
-  type: "line",
-  height: 260,
-  series: [
-    {
-      name: "Basic Subscribers",
-      data: [50, 60, 70, 80, 90, 100, 120, 130, 150],
-    },
-    {
-      name: "Standard Subscribers",
-      data: [30, 50, 80, 100, 120, 140, 160, 180, 200],
-    },
-    {
-      name: "Premium Subscribers",
-      data: [10, 20, 40, 60, 90, 110, 130, 150, 170],
-    },
-  ],
-  options: {
-    chart: {
-      toolbar: {
-        show: false,
+export default function LineChart({ data }) {
+  const chartConfig = {
+    type: "line",
+    height: 260,
+    series: [
+      {
+        name: "Basic Plan",
+        data: data.filter(d => d._id.plan === 'basic').map(d => d.count),
       },
-    },
-    title: {
-      show: "",
-    },
-    dataLabels: {
-      enabled: false,
-    },
-    colors: ["#00d4ff", "#34D399", "#FBBF24"], // Colors for Basic, Standard, and Premium lines
-    stroke: {
-      lineCap: "round",
-      curve: "smooth",
-    },
-    markers: {
-      size: 4,
-    },
-    xaxis: {
-      axisTicks: {
-        show: false,
+      {
+        name: "Standard Plan",
+        data: data.filter(d => d._id.plan === 'standard').map(d => d.count),
       },
-      axisBorder: {
-        show: false,
+      {
+        name: "Premium Plan",
+        data: data.filter(d => d._id.plan === 'premium').map(d => d.count),
       },
-      labels: {
-        style: {
-          colors: "#ffffff",
-          fontSize: "12px",
-          fontFamily: "inherit",
-          fontWeight: 400,
+    ],
+    options: {
+      chart: {
+        toolbar: {
+          show: false,
         },
       },
-      categories: [
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ],
-    },
-    yaxis: {
-      labels: {
-        style: {
-          colors: "#ffffff",
-          fontSize: "12px",
-          fontFamily: "inherit",
-          fontWeight: 400,
-        },
+      title: {
+        show: "",
       },
-    },
-    grid: {
-      show: true,
-      borderColor: "#dddddd",
-      strokeDashArray: 5,
+      dataLabels: {
+        enabled: false,
+      },
+      colors: ["#00d4ff", "#34D399", "#FBBF24"], // Colors for Basic, Standard, and Premium lines
+      stroke: {
+        lineCap: "round",
+        curve: "smooth",
+      },
+      markers: {
+        size: 4,
+      },
       xaxis: {
-        lines: {
-          show: true,
+        axisTicks: {
+          show: false,
+        },
+        axisBorder: {
+          show: false,
+        },
+        labels: {
+          style: {
+            colors: "#ffffff",
+            fontSize: "12px",
+            fontFamily: "inherit",
+            fontWeight: 400,
+          },
+        },
+        categories: [...new Set(data.map(d => `${d._id.month}/${d._id.year}`))],
+      },
+      yaxis: {
+        labels: {
+          style: {
+            colors: "#ffffff",
+            fontSize: "12px",
+            fontFamily: "inherit",
+            fontWeight: 400,
+          },
         },
       },
-      padding: {
-        top: 5,
-        right: 20,
+      grid: {
+        show: true,
+        borderColor: "#dddddd",
+        strokeDashArray: 5,
+        xaxis: {
+          lines: {
+            show: true,
+          },
+        },
+        padding: {
+          top: 5,
+          right: 20,
+        },
+      },
+      fill: {
+        opacity: 0.8,
+      },
+      tooltip: {
+        theme: "light",
+      },
+      legend: {
+        position: "top",
+        horizontalAlign: "right",
+        floating: true,
+        labels: {
+          colors: ["#FFFFFF", "#FFFFFF", "#FFFFFF"],
+        },
       },
     },
-    fill: {
-      opacity: 0.8,
-    },
-    tooltip: {
-      theme: "light",
-    },
-    legend: {
-      position: "top",
-      horizontalAlign: "right",
-      floating: true,
-      labels: {
-        colors: ["#FFFFFF", "#FFFFFF", "#FFFFFF"],
-      },
-    },
-  },
-};
+  };
 
-export default function LineChart() {
   return (
     <Card className="backdrop-blur-md bg-white/10 rounded-lg shadow-lg p-4 transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl">
       <CardHeader

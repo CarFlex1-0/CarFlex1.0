@@ -15,20 +15,14 @@ const generateRandomResponses = () => {
   return [aiGenerated, failed, expected];
 };
 
-export default function PieChart() {
-  // State to hold the series values
-  const [chartData, setChartData] = useState(generateRandomResponses());
-
-  useEffect(() => {
-    // You can add more logic here if needed (e.g., refreshing data at intervals)
-  }, []);
-
+export default function PieChart({ data }) {
   const chartConfig = {
     type: "pie",
     width: 280,
     height: 280,
-    series: chartData, // Dynamic series based on state
+    series: [data.regular || 0, data.sellers || 0, data.admins || 0],
     options: {
+      labels: ["Regular Users", "Sellers", "Admins"],
       chart: {
         toolbar: {
           show: false,
@@ -41,7 +35,6 @@ export default function PieChart() {
         enabled: false,
       },
       colors: ["#1d4ed8", "#ff8f00", "#00897b"],
-      labels: ["AI Generated", "Failed", "Expected"], // Labels for pie chart
       legend: {
         show: true,
         position: "bottom",
@@ -83,13 +76,13 @@ export default function PieChart() {
       </CardBody>
       <div className="mt-4 flex  justify-between">
         <Typography variant="h6" color="white" className="font-normal">
-          AI Generated: {chartData[0]}
+          AI Generated: {data.regular || 0}
         </Typography>
         <Typography variant="h6" color="white" className="font-normal">
-          Failed: {chartData[1]}
+          Failed: {data.sellers || 0}
         </Typography>
         <Typography variant="h6" color="white" className="font-normal">
-          Expected: {chartData[2]}
+          Expected: {data.admins || 0}
         </Typography>
       </div>
     </Card>
