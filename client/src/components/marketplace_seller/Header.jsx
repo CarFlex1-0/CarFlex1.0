@@ -6,13 +6,19 @@ import {
   FiSettings,
   FiSun,
   FiMoon,
-  FiHelpCircle,
+  FiShoppingCart,
+  FiShoppingBag,
 } from "react-icons/fi";
 import { useTheme } from "@contexts/ThemeContext";
+import { useAuth } from "@contexts/auth_context";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast, Slide } from "react-toastify";
 
 export default function Header() {
   const { isDarkMode, toggleTheme } = useTheme();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [notifications] = useState([
     { id: 1, text: "New order received", time: "5 mins ago" },
@@ -24,6 +30,7 @@ export default function Header() {
   const buttonRef = useRef(null);
 
   useEffect(() => {
+    console.log(user);
     function handleClickOutside(event) {
       if (
         dropdownRef.current &&
@@ -44,6 +51,31 @@ export default function Header() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [dropdownRef, buttonRef, notificationRef]);
+
+  const handleLogout = () => {
+    logout();
+    toast.success("Logged out successfully!", {
+      position: "top-left",
+      autoClose: 5000,
+      theme: "dark",
+      transition: Slide,
+    });
+    navigate("/", { replace: true });
+  };
+
+  const getProfileImageUrl = (user) => {
+    if (!user?.imageUrl) {
+      return "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp";
+    }
+
+    // If imageUrl is an object with url property
+    if (user?.imageUrl?.url) {
+      return user.imageUrl.url;
+    }
+
+    // If imageUrl is an empty object or any other case, use the same fallback as ProfilePage
+    return "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp";
+  };
 
   return (
     <header
@@ -188,8 +220,13 @@ export default function Header() {
                   className={`h-9 w-9 rounded-lg object-cover ${
                     isDarkMode ? "ring-2 ring-gray-700" : "ring-2 ring-gray-200"
                   }`}
-                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                  alt="Profile"
+                  src={getProfileImageUrl(user)}
+                  alt={user?.username || "Profile"}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src =
+                      "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp";
+                  }}
                 />
                 <div className={isDarkMode ? "text-gray-300" : "text-gray-700"}>
                   <FiUser className="w-5 h-5" />
@@ -210,16 +247,7 @@ export default function Header() {
                   >
                     <div className="p-2 space-y-1">
                       <button
-                        className={`w-full flex items-center gap-2 px-4 py-2 text-sm rounded-lg ${
-                          isDarkMode
-                            ? "text-gray-300 hover:bg-gray-700"
-                            : "text-gray-700 hover:bg-gray-100"
-                        }`}
-                      >
-                        <FiUser className="w-4 h-4" />
-                        Profile
-                      </button>
-                      <button
+                        onClick={() => navigate("/seller/profile")}
                         className={`w-full flex items-center gap-2 px-4 py-2 text-sm rounded-lg ${
                           isDarkMode
                             ? "text-gray-300 hover:bg-gray-700"
@@ -230,14 +258,26 @@ export default function Header() {
                         Settings
                       </button>
                       <button
+                        onClick={() => navigate("/seller/products")}
                         className={`w-full flex items-center gap-2 px-4 py-2 text-sm rounded-lg ${
                           isDarkMode
                             ? "text-gray-300 hover:bg-gray-700"
                             : "text-gray-700 hover:bg-gray-100"
                         }`}
                       >
-                        <FiHelpCircle className="w-4 h-4" />
-                        Help
+                        <FiShoppingBag className="w-4 h-4" />
+                        Products
+                      </button>
+                      <button
+                        onClick={() => navigate("/seller/orders")}
+                        className={`w-full flex items-center gap-2 px-4 py-2 text-sm rounded-lg ${
+                          isDarkMode
+                            ? "text-gray-300 hover:bg-gray-700"
+                            : "text-gray-700 hover:bg-gray-100"
+                        }`}
+                      >
+                        <FiShoppingCart className="w-4 h-4" />
+                        Orders
                       </button>
                       <div
                         className={`my-1 border-t ${
@@ -245,6 +285,7 @@ export default function Header() {
                         }`}
                       />
                       <button
+                        onClick={handleLogout}
                         className={`w-full flex items-center gap-2 px-4 py-2 text-sm rounded-lg ${
                           isDarkMode
                             ? "text-red-400 hover:bg-gray-700"

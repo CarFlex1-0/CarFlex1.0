@@ -26,24 +26,50 @@ const SignIn = () => {
     setLoading(true);
     setErrorMessage(null);
     try {
-      const response = await axios.post("user/login", data);
-      console.log("User (Cookie) signed in:", response.data);
+      const endpoint = data.role === 'seller' ? 'user/login-seller' : 'user/login';
+      
+      const response = await axios.post(endpoint, {
+        email: data.email,
+        password: data.password,
+        rememberMe: data.rememberMe
+      });
+      
+      // Check if a seller is trying to login as enthusiast
+      if (response.data?.data?.isSeller && data.role === 'enthusiast') {
+        toast.warning("You have a seller account. Please login as a seller.", {
+          position: "top-left",
+          autoClose: 5000,
+          theme: "dark",
+          transition: Slide,
+        });
+        setLoading(false);
+        return;
+      }
 
-      Cookies.set("token", response.data.token, { expires: 30 }); // Adjust expiration as needed
-      Cookies.set("user", JSON.stringify(response.data), { expires: 30 });
-      // TODO: AHMAD SE CHECKK KRWANA
-      await setUser(response.data);
-      console.log("User (Auth) signed in:", user); // Giving Null
+      // Extract the actual user data from response
+      const userData = response.data.data;
+      
+      console.log("User (Cookie) signed in:", userData);
+
+      Cookies.set("token", userData.token, { expires: 30 });
+      Cookies.set("user", JSON.stringify(userData), { expires: 30 });
+      
+      await setUser(userData);
+      
       toast.success("Signed in successfully!", {
         position: "top-left",
         autoClose: 5000,
         theme: "dark",
         transition: Slide,
       });
-      navigate("/user/dashboard", { replace: true });
+
+      const dashboardPath = data.role === 'seller' ? '/seller/dashboard' : '/user/dashboard';
+      navigate(dashboardPath, { replace: true });
+      
     } catch (error) {
-      const errorMessage =
+      const errorMessage = error.response?.data?.message || 
         "Sign In failed. Please check your credentials and try again.";
+      
       setErrorMessage(errorMessage);
       toast.error(errorMessage, {
         position: "top-left",

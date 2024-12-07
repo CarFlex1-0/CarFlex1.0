@@ -1,13 +1,27 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { VscTriangleRight } from "react-icons/vsc";
-import { MdOutline3dRotation } from "react-icons/md";
+import {
+  MdOutlineDashboard,
+  MdOutlineDirectionsCar,
+  MdOutlinePayments,
+  MdOutlineFeedback,
+  MdOutlineAccountCircle,
+  MdBuildCircle,
+} from "react-icons/md";
 import { BiTrip } from "react-icons/bi";
-import { RiQuestionnaireFill } from "react-icons/ri";
-import { FaChevronDown } from "react-icons/fa";
-import { FaAngleRight } from "react-icons/fa6";
-import { GrArticle } from "react-icons/gr";
-import { MdOutlinePayments } from "react-icons/md";
-import { VscFeedback } from "react-icons/vsc";
+import {
+  FaChevronDown,
+  FaSignOutAlt,
+  FaAngleRight,
+  FaRegNewspaper,
+  FaRegComments,
+} from "react-icons/fa";
+import { HiOutlineWrenchScrewdriver } from "react-icons/hi2";
+
+import { BsWrenchAdjustable } from "react-icons/bs";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@contexts/auth_context";
+import { toast, Slide } from "react-toastify";
 import {
   Drawer,
   Button,
@@ -18,19 +32,34 @@ import {
   ListItemPrefix,
   Accordion,
   AccordionHeader,
-  AccordionBody
+  AccordionBody,
 } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
-import { useAuth } from "@contexts/auth_context";
+
 export function SideBar() {
   const [open, setOpen] = React.useState(false);
   const openDrawer = () => setOpen(true);
   const closeDrawer = () => setOpen(false);
-  const { drawerState, setDrawerState } = useAuth();
+  const { drawerState, setDrawerState, logout } = useAuth();
+  const navigate = useNavigate();
   const [accordionOpen, setAccordionOpen] = useState(0);
+
   const handleAccordionOpen = (value) => {
-     setAccordionOpen(accordionOpen === value ? 0 : value);
-   };
+    setAccordionOpen(accordionOpen === value ? 0 : value);
+  };
+
+  const handleLogout = () => {
+    logout();
+    toast.success("Logged out successfully!", {
+      position: "top-left",
+      autoClose: 5000,
+      theme: "dark",
+      transition: Slide,
+    });
+    navigate("/", { replace: true });
+    closeDrawer();
+    setDrawerState(false);
+  };
 
   return (
     <React.Fragment>
@@ -50,11 +79,10 @@ export function SideBar() {
           closeDrawer();
           setDrawerState(false);
         }}
-        className="bg-gradient-to-r from-blue-900  to-indigo-950 text-white z-10"
-        // className={open ? "bg-indigo-900 text-white z-10" : ""}
+        className="bg-gradient-to-r from-blue-900 to-indigo-950 text-white z-10 flex flex-col h-full"
         overlay={false}
       >
-        <div className="mb-2 flex items-center justify-between p-4">
+        <div className="flex items-center justify-between p-4 pb-1">
           <Typography color="white" variant="h5">
             <div className="flex items-center space-x-2">
               <span className="text-2xl text-indigo-200">
@@ -81,226 +109,228 @@ export function SideBar() {
           </IconButton>
         </div>
 
-        <List>
-          <Link
-            to="dashboard"
-            onClick={() => {
-              closeDrawer();
-              setDrawerState(false);
-            }}
-          >
-            <ListItem className="text-lg">
-              <ListItemPrefix className="me-3">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="h-5 w-5"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M2.25 2.25a.75.75 0 000 1.5H3v10.5a3 3 0 003 3h1.21l-1.172 3.513a.75.75 0 001.424.474l.329-.987h8.418l.33.987a.75.75 0 001.422-.474l-1.17-3.513H18a3 3 0 003-3V3.75h.75a.75.75 0 000-1.5H2.25zm6.04 16.5l.5-1.5h6.42l.5 1.5H8.29zm7.46-12a.75.75 0 00-1.5 0v6a.75.75 0 001.5 0v-6zm-3 2.25a.75.75 0 00-1.5 0v3.75a.75.75 0 001.5 0V9zm-3 2.25a.75.75 0 00-1.5 0v1.5a.75.75 0 001.5 0v-1.5z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </ListItemPrefix>
-              Dashboard
-            </ListItem>
-          </Link>
-
-          <Link
-            to="models"
-            onClick={() => {
-              closeDrawer();
-              setDrawerState(false);
-            }}
-          >
-            <ListItem className="text-lg">
-              <ListItemPrefix className="me-3">
-                <MdOutline3dRotation />
-              </ListItemPrefix>
-              Customize Your Car
-            </ListItem>
-          </Link>
-
-          <Link
-            to="car-enhancements"
-            onClick={() => {
-              closeDrawer();
-              setDrawerState(false);
-            }}
-          >
-            <ListItem className="text-lg">
-              <ListItemPrefix className="me-3">
-                <BiTrip />
-              </ListItemPrefix>
-              Plan Your Journey
-            </ListItem>
-          </Link>
-          {/* Blogs Dropdown */}
-          <Accordion
-            open={accordionOpen === 1} // Separate state for Accordion
-            icon={
-              <FaChevronDown
-                strokeWidth={2.5}
-                className={`mx-auto h-4 w-4 transition-transform ${
-                  accordionOpen === 1 ? "rotate-180" : ""
-                }`}
-              />
-            }
-          >
-            <ListItem className="p-0" selected={accordionOpen === 1}>
-              <AccordionHeader
-                onClick={() => handleAccordionOpen(1)}
-                className="border-b-0 p-3"
-              >
-                <ListItemPrefix>
-                  <GrArticle className="h-5 w-5 me-3" />
+        <div className="flex flex-col h-full">
+          <List className="flex-grow">
+            <Link
+              to="dashboard"
+              onClick={() => {
+                closeDrawer();
+                setDrawerState(false);
+              }}
+            >
+              <ListItem className="text-lg">
+                <ListItemPrefix className="me-3">
+                  <MdOutlineDashboard className="h-5 w-5" />
                 </ListItemPrefix>
-                <Typography color="blue-gray" className="mr-auto font-normal">
-                  Blogs
-                </Typography>
-              </AccordionHeader>
-            </ListItem>
-            <AccordionBody className="py-1">
-              <List className="p-0 text-white">
-                <Link
-                  to="blog-dashboard"
-                  onClick={() => {
-                    closeDrawer();
-                    setDrawerState(false);
-                  }}
+                Dashboard
+              </ListItem>
+            </Link>
+
+            <Link
+              to="profile-page"
+              onClick={() => {
+                closeDrawer();
+                setDrawerState(false);
+              }}
+            >
+              <ListItem className="text-lg">
+                <ListItemPrefix className="me-3">
+                  <MdOutlineAccountCircle className="h-5 w-5" />
+                </ListItemPrefix>
+                My Profile
+              </ListItem>
+            </Link>
+
+            <Link
+              to="models"
+              onClick={() => {
+                closeDrawer();
+                setDrawerState(false);
+              }}
+            >
+              <ListItem className="text-lg">
+                <ListItemPrefix className="me-3">
+                  <MdOutlineDirectionsCar className="h-5 w-5" />
+                </ListItemPrefix>
+                Customize Your Car
+              </ListItem>
+            </Link>
+
+            <Link
+              to="car-enhancements"
+              onClick={() => {
+                closeDrawer();
+                setDrawerState(false);
+              }}
+            >
+              <ListItem className="text-lg">
+                <ListItemPrefix className="me-3">
+                  <BiTrip className="h-5 w-5" />
+                </ListItemPrefix>
+                Plan Your Journey
+              </ListItem>
+            </Link>
+            {/* Blogs Dropdown */}
+            <Accordion
+              open={accordionOpen === 1} // Separate state for Accordion
+              icon={
+                <FaChevronDown
+                  strokeWidth={2.5}
+                  className={`mx-auto h-4 w-4 transition-transform ${
+                    accordionOpen === 1 ? "rotate-180" : ""
+                  }`}
+                />
+              }
+            >
+              <ListItem className="p-0" selected={accordionOpen === 1}>
+                <AccordionHeader
+                  onClick={() => handleAccordionOpen(1)}
+                  className="border-b-0 p-3"
                 >
-                  <ListItem>
-                    <ListItemPrefix>
-                      <FaAngleRight strokeWidth={3} className="h-3 w-5" />
-                    </ListItemPrefix>
-                    View All Blogs
-                  </ListItem>
-                </Link>
+                  <ListItemPrefix>
+                    <FaRegNewspaper className="h-5 w-5 me-3" />
+                  </ListItemPrefix>
+                  <Typography color="blue-gray" className="mr-auto font-normal">
+                    Blogs
+                  </Typography>
+                </AccordionHeader>
+              </ListItem>
+              <AccordionBody className="py-1">
+                <List className="p-0 text-white">
+                  <Link
+                    to="blog-dashboard"
+                    onClick={() => {
+                      closeDrawer();
+                      setDrawerState(false);
+                    }}
+                  >
+                    <ListItem>
+                      <ListItemPrefix>
+                        <FaAngleRight strokeWidth={3} className="h-3 w-5" />
+                      </ListItemPrefix>
+                      View All Blogs
+                    </ListItem>
+                  </Link>
 
-                <Link
-                  to="blog-create"
-                  onClick={() => {
-                    closeDrawer();
-                    setDrawerState(false);
-                  }}
-                >
-                  <ListItem>
-                    <ListItemPrefix>
-                      <FaAngleRight strokeWidth={3} className="h-3 w-5" />
-                    </ListItemPrefix>
-                    Create Blogs
-                  </ListItem>
-                </Link>
-                <Link
-                  to="blog-actions-dashboard"
-                  onClick={() => {
-                    closeDrawer();
-                    setDrawerState(false);
-                  }}
-                >
-                  <ListItem>
-                    <ListItemPrefix>
-                      <FaAngleRight strokeWidth={3} className="h-3 w-5" />
-                    </ListItemPrefix>
-                    My Blogs
-                  </ListItem>
-                </Link>
-              </List>
-            </AccordionBody>
-          </Accordion>
+                  <Link
+                    to="blog-create"
+                    onClick={() => {
+                      closeDrawer();
+                      setDrawerState(false);
+                    }}
+                  >
+                    <ListItem>
+                      <ListItemPrefix>
+                        <FaAngleRight strokeWidth={3} className="h-3 w-5" />
+                      </ListItemPrefix>
+                      Create Blogs
+                    </ListItem>
+                  </Link>
+                  <Link
+                    to="blog-actions-dashboard"
+                    onClick={() => {
+                      closeDrawer();
+                      setDrawerState(false);
+                    }}
+                  >
+                    <ListItem>
+                      <ListItemPrefix>
+                        <FaAngleRight strokeWidth={3} className="h-3 w-5" />
+                      </ListItemPrefix>
+                      My Blogs
+                    </ListItem>
+                  </Link>
+                </List>
+              </AccordionBody>
+            </Accordion>
 
-          <Link
-            to="forum-page"
-            onClick={() => {
-              closeDrawer();
-              setDrawerState(false);
-            }}
-          >
-            <ListItem className="text-lg">
-              <ListItemPrefix className="me-3">
-                <RiQuestionnaireFill />
-              </ListItemPrefix>
-              Forums
-            </ListItem>
-          </Link>
+            <Link
+              to="forum-page"
+              onClick={() => {
+                closeDrawer();
+                setDrawerState(false);
+              }}
+            >
+              <ListItem className="text-lg">
+                <ListItemPrefix className="me-3">
+                  <FaRegComments className="h-5 w-5" />
+                </ListItemPrefix>
+                Forums
+              </ListItem>
+            </Link>
 
-          <Link
-            to="buy-parts"
-            onClick={() => {
-              closeDrawer();
-              setDrawerState(false);
-            }}
-          >
-            <ListItem className="text-lg">
-              <ListItemPrefix className="me-3">
-                <RiQuestionnaireFill />
-              </ListItemPrefix>
-              Buy Parts
-            </ListItem>
-          </Link>
+            <Link
+              to="buy-parts"
+              onClick={() => {
+                closeDrawer();
+                setDrawerState(false);
+              }}
+            >
+              <ListItem className="text-lg">
+                <ListItemPrefix className="me-3">
+                  <HiOutlineWrenchScrewdriver className="h-5 w-5" />
+                </ListItemPrefix>
+                Buy Parts
+              </ListItem>
+            </Link>
 
-          <Link
-            to="subscription"
-            onClick={() => {
-              closeDrawer();
-              setDrawerState(false);
-            }}
-          >
-            <ListItem className="text-lg">
-              <ListItemPrefix className="me-3">
-                <MdOutlinePayments />
-              </ListItemPrefix>
-              Payments
-            </ListItem>
-          </Link>
+            <Link
+              to="subscription"
+              onClick={() => {
+                closeDrawer();
+                setDrawerState(false);
+              }}
+            >
+              <ListItem className="text-lg">
+                <ListItemPrefix className="me-3">
+                  <MdOutlinePayments className="h-5 w-5" />
+                </ListItemPrefix>
+                Payments
+              </ListItem>
+            </Link>
 
-          <Link
-            to="profile-page"
-            onClick={() => {
-              closeDrawer();
-              setDrawerState(false);
-            }}
-          >
-            <ListItem className="text-lg">
-              <ListItemPrefix className="me-3">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  className="h-5 w-5"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </ListItemPrefix>
-              User Administartion
-            </ListItem>
-          </Link>
+            <Link
+              to="feedback"
+              onClick={() => {
+                closeDrawer();
+                setDrawerState(false);
+              }}
+            >
+              <ListItem className="text-lg">
+                <ListItemPrefix className="me-3">
+                  <MdOutlineFeedback className="h-5 w-5" />
+                </ListItemPrefix>
+                Leave A Feedback
+              </ListItem>
+            </Link>
+          </List>
 
-          <Link
-            to="feedback"
-            onClick={() => {
-              closeDrawer();
-              setDrawerState(false);
-            }}
-          >
-            <ListItem className="text-lg">
-              <ListItemPrefix className="me-3">
-                <VscFeedback />
-              </ListItemPrefix>
-              Leave A Feedback
-            </ListItem>
-          </Link>
-        </List>
-
-        <Button className="mt-3 ml-5 bg-slate-400" size="sm">
-          Logout
-        </Button>
+          <div className="mt-auto">
+            <div className="px-2">
+              <div className="h-px bg-gradient-to-r from-transparent via-gray-700 to-transparent opacity-50 mb-4" />
+              
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-lg 
+                  bg-gradient-to-r from-gray-800/50 to-indigo-900/50
+                  hover:from-red-500/20 hover:to-red-600/20
+                  text-gray-300 hover:text-red-400 transition-all duration-200
+                  shadow-sm hover:shadow-md transform hover:-translate-y-0.5
+                  mb-2"
+              >
+                <div className="p-2 rounded-lg bg-gray-800/50 group-hover:bg-red-500/20">
+                  <FaSignOutAlt className="w-5 h-5" />
+                </div>
+                <div className="flex flex-col items-start">
+                  <span className="font-medium">Logout</span>
+                  <span className="text-xs text-gray-400/80 group-hover:text-red-400/80">
+                    Sign out of your account
+                  </span>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
       </Drawer>
     </React.Fragment>
   );

@@ -81,27 +81,66 @@ exports.registerUser = async (req, res) => {
 };
 
 exports.loginUser = async (req, res) => {
-  const { email, password, rememberMe } = req.body;
+  try {
+    const { email, password, rememberMe } = req.body;
 
-  // Find the user by email
-  const user = await User.findOne({ email });
+    // Find the user by email
+    const user = await User.findOne({ email });
 
-  // Check if user exists and password matches
-  if (user && (await user.matchPassword(password))) {
-    const tokenExpiry = rememberMe ? "30d" : "1d"; // Adjust expiry based on "Remember Me"
+    // Check if user exists
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password"
+      });
+    }
+
+    // Check if user is NOT a seller or admin
+    if (user.isSeller || user.isAdmin) {
+      return res.status(403).json({
+        success: false,
+        message: user.isSeller 
+          ? "Please use seller login for seller accounts." 
+          : "Please use admin login for admin accounts."
+      });
+    }
+
+    // Check if password matches
+    const isPasswordMatch = await user.matchPassword(password);
+    if (!isPasswordMatch) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password"
+      });
+    }
+
+    // If all checks pass, generate token and send response
+    const tokenExpiry = rememberMe ? "30d" : "1d";
+
     res.json({
-      _id: user._id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      username: user.username,
-      email: user.email,
-      token: generateToken(user._id, tokenExpiry), // Generate JWT with expiry,
-      imageUrl: user.imageUrl,
-      bio: user.bio || "",
-      phoneNum: user.phoneNum || "",
+      success: true,
+      data: {
+        _id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        username: user.username,
+        email: user.email,
+        token: generateToken(user._id, tokenExpiry),
+        imageUrl: user.imageUrl,
+        bio: user.bio || "",
+        phoneNum: user.phoneNum || "",
+        isSeller: false,
+        isAdmin: false
+      }
     });
-  } else {
-    res.status(401).json({ message: "Invalid email or password" });
+
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error during login",
+      error: error.message
+    });
   }
 };
 
@@ -351,6 +390,67 @@ exports.adminLogin = async (req, res) => {
     res.status(500).json({ 
       success: false,
       message: "Server error during admin login",
+      error: error.message 
+    });
+  }
+};
+
+exports.loginSeller = async (req, res) => {
+  try {
+    const { email, password, rememberMe } = req.body;
+
+    // Find the user by email
+    const user = await User.findOne({ email });
+
+    // Check if user exists
+    if (!user) {
+      return res.status(401).json({ 
+        success: false,
+        message: "Invalid email or password" 
+      });
+    }
+
+    // Check if user is a seller
+    if (!user.isSeller) {
+      return res.status(403).json({ 
+        success: false,
+        message: "Access denied. Seller privileges required." 
+      });
+    }
+
+    // Check if password matches
+    const isPasswordMatch = await user.matchPassword(password);
+    if (!isPasswordMatch) {
+      return res.status(401).json({ 
+        success: false,
+        message: "Invalid email or password" 
+      });
+    }
+
+    // If all checks pass, generate token and send response
+    const tokenExpiry = rememberMe ? "30d" : "1d";
+    
+    res.json({
+      success: true,
+      data: {
+        _id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        username: user.username,
+        email: user.email,
+        token: generateToken(user._id, tokenExpiry),
+        imageUrl: user.imageUrl,
+        bio: user.bio || "",
+        phoneNum: user.phoneNum || "",
+        isSeller: user.isSeller
+      }
+    });
+
+  } catch (error) {
+    console.error("Seller login error:", error);
+    res.status(500).json({ 
+      success: false,
+      message: "Server error during seller login",
       error: error.message 
     });
   }

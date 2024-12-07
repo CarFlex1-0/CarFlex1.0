@@ -9,10 +9,13 @@ import {
   FiSettings,
 } from "react-icons/fi";
 import { useTheme } from "@contexts/ThemeContext";
+import { useAuth } from "@contexts/auth_context";
 import { motion } from "framer-motion";
+import { toast, Slide } from "react-toastify";
 
 export default function Sidebar() {
   const { isDarkMode } = useTheme();
+  const { logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -26,8 +29,14 @@ export default function Sidebar() {
   const isActive = (path) => location.pathname.includes(path);
 
   const handleLogout = () => {
-    // Add your logout logic here
-    console.log("Logging out...");
+    logout();
+    toast.success("Logged out successfully!", {
+      position: "top-left",
+      autoClose: 5000,
+      theme: "dark",
+      transition: Slide,
+    });
+    navigate("/", { replace: true });
   };
 
   return (
