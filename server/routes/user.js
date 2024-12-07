@@ -2,7 +2,6 @@ const express = require('express');
 const { check } = require('express-validator');
 const userController = require('../controllers/user_controller');
 const router = express.Router();
-const User = require("../models/user");
 
 // Search users route
 router.get('/search', userController.searchUsers);

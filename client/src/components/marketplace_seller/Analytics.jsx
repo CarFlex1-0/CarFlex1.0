@@ -1,5 +1,6 @@
 import { useTheme } from "@contexts/ThemeContext";
 import { motion } from "framer-motion";
+import React, {useState, useEffect} from "react";
 import {
   BarChart,
   Bar,
@@ -22,77 +23,166 @@ import {
 import { Product } from "./Products/Product";
 import Order from "./Orders/Order";
 import { FiTrendingUp, FiPackage, FiShoppingBag, FiStar } from "react-icons/fi";
-
+import axiosInstance from "@services/axios";
 export default function Analytics() {
   const { isDarkMode } = useTheme();
-
-  // Sample data for charts
-  const salesData = [
-    { name: "Week 1", value: 18500 },
-    { name: "Week 2", value: 19800 },
-    { name: "Week 3", value: 21000 },
-    { name: "Week 4", value: 22500 },
-  ];
-
-  const ordersData = [
-    { name: "Mon", orders: 120 },
-    { name: "Tue", orders: 150 },
-    { name: "Wed", orders: 180 },
-    { name: "Thu", orders: 140 },
-    { name: "Fri", orders: 160 },
-    { name: "Sat", orders: 190 },
-    { name: "Sun", orders: 170 },
-  ];
-
-  const productData = [
-    { name: "Electronics", value: 15 },
-    { name: "Clothing", value: 12 },
-    { name: "Books", value: 8 },
-    { name: "Home", value: 10 },
-  ];
-
-  const reviewsData = [
-    { name: "5 Stars", value: 60 },
-    { name: "4 Stars", value: 25 },
-    { name: "3 Stars", value: 10 },
-    { name: "2 Stars", value: 3 },
-    { name: "1 Star", value: 2 },
-  ];
+  const [stats, setStats] = useState([]);
+  const [salesData, setSalesData] = useState([]);
+  const [ordersData, setOrdersData] = useState([]);
+  const [productCategories, setProductCategories] = useState([]);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const COLORS = ["#10B981", "#3B82F6", "#8B5CF6", "#F59E0B"];
 
-  // Sample data - replace with real data
-  const stats = [
-    {
-      title: "Total Sales",
-      value: "$22,500",
-      change: "+12.5%",
-      icon: FiTrendingUp,
-      color: "text-emerald-500",
-    },
-    {
-      title: "Total Orders",
-      value: "1,413",
-      change: "+8.2%",
-      icon: FiPackage,
-      color: "text-blue-500",
-    },
-    {
-      title: "Active Products",
-      value: "45",
-      change: "+3.1%",
-      icon: FiShoppingBag,
-      color: "text-purple-500",
-    },
-    {
-      title: "Customer Reviews",
-      value: "4.8/5",
-      change: "+0.3",
-      icon: FiStar,
-      color: "text-yellow-500",
-    },
-  ];
+  const fetchStats = async () => {
+    setIsLoading(true);
+    setError(null);
 
+    try {
+      const { data } = await axiosInstance.get("seller/dashboard-stats");
+      // console.log('data', data)
+      // Validate data structure
+      if (!data || typeof data !== "object") {
+        throw new Error("Invalid data structure received");
+      }
+
+      // Process stats
+      const processedStats = data.stats
+        ? data.stats.map((stat, index) => ({
+            ...stat,
+            icon:
+              index === 0
+                ? FiTrendingUp
+                : index === 1
+                ? FiPackage
+                : index === 2
+                ? FiShoppingBag
+                : FiStar,
+            color:
+              index === 0
+                ? "text-emerald-500"
+                : index === 1
+                ? "text-blue-500"
+                : index === 2
+                ? "text-purple-500"
+                : "text-yellow-500",
+          }))
+        : [];
+
+      setStats(processedStats);
+
+      // Handle sales data
+      const safeSalesData =
+        data.salesData && data.salesData.length > 0
+          ? data.salesData
+          : [
+              { name: "Week 1", value: 0 },
+              { name: "Week 2", value: 0 },
+              { name: "Week 3", value: 0 },
+              { name: "Week 4", value: 0 },
+            ];
+      setSalesData(safeSalesData);
+
+      // Handle orders data
+      const safeOrdersData =
+        data.ordersData && data.ordersData.length > 0
+          ? data.ordersData
+          : [
+              { name: "Mon", orders: 0 },
+              { name: "Tue", orders: 0 },
+              { name: "Wed", orders: 0 },
+              { name: "Thu", orders: 0 },
+              { name: "Fri", orders: 0 },
+              { name: "Sat", orders: 0 },
+              { name: "Sun", orders: 0 },
+            ];
+      setOrdersData(safeOrdersData);
+
+      // Handle product categories
+      const safeProductCategories =
+        data.productCategories && data.productCategories.length > 0
+          ? data.productCategories
+          : [{ name: "No Categories", value: 1 }];
+      setProductCategories(safeProductCategories);
+
+      setIsLoading(false);
+    } catch (fetchError) {
+      console.error("Failed to fetch dashboard stats:", fetchError);
+      setError(fetchError);
+
+      // Set default states
+      setStats([]);
+      setSalesData([
+        { name: "Week 1", value: 0 },
+        { name: "Week 2", value: 0 },
+        { name: "Week 3", value: 0 },
+        { name: "Week 4", value: 0 },
+      ]);
+      setOrdersData([
+        { name: "Mon", orders: 0 },
+        { name: "Tue", orders: 0 },
+        { name: "Wed", orders: 0 },
+        { name: "Thu", orders: 0 },
+        { name: "Fri", orders: 0 },
+        { name: "Sat", orders: 0 },
+        { name: "Sun", orders: 0 },
+      ]);
+      setProductCategories([{ name: "No Categories", value: 1 }]);
+
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  // Error Rendering
+  if (error) {
+    return (
+      <div
+        className={`p-6 flex items-center justify-center ${
+          isDarkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"
+        }`}
+      >
+        <div className="text-center">
+          <FiAlertTriangle className="mx-auto text-6xl text-red-500 mb-4" />
+          <h2 className="text-2xl font-bold mb-2">Dashboard Loading Error</h2>
+          <p className="text-gray-500 mb-4">
+            Unable to load dashboard statistics
+          </p>
+          <button
+            onClick={fetchStats}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Loading State
+  if (isLoading) {
+    return (
+      <div
+        className={`p-6 flex items-center justify-center ${
+          isDarkMode ? "bg-gray-900 text-white" : "bg-white text-gray-800"
+        }`}
+      >
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-300 w-64 mb-4 rounded"></div>
+          <div className="grid grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map((_, index) => (
+              <div key={index} className="h-32 bg-gray-300 rounded"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
   return (
     <div
       className={`p-6 space-y-6 ${isDarkMode ? "text-white" : "text-gray-800"}`}
@@ -117,7 +207,7 @@ export default function Analytics() {
           </div>
           <div>
             <h2
-              className={`text-2xl font-bold ${
+              className={`text-2xl ${
                 isDarkMode ? "text-white" : "text-gray-900"
               }`}
             >
@@ -156,7 +246,7 @@ export default function Analytics() {
               </div>
               <span
                 className={`text-sm px-2 py-1 rounded-full ${
-                  stat.change.includes("+")
+                  stat.isPositive
                     ? "bg-green-100 text-green-600"
                     : "bg-red-100 text-red-600"
                 }`}
@@ -189,7 +279,7 @@ export default function Analytics() {
             />
           </div>
           <h2
-            className={`text-2xl font-bold ${
+            className={`text-2xl ${
               isDarkMode ? "text-white" : "text-gray-900"
             }`}
           >
@@ -213,7 +303,18 @@ export default function Analytics() {
         >
           <h3 className="text-xl font-bold mb-6">Sales Trend</h3>
           <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={salesData}>
+            <AreaChart
+              data={
+                salesData.length === 0
+                  ? [
+                      { name: "Week 1", value: 0 },
+                      { name: "Week 2", value: 0 },
+                      { name: "Week 3", value: 0 },
+                      { name: "Week 4", value: 0 },
+                    ]
+                  : salesData
+              }
+            >
               <defs>
                 <linearGradient id="salesColor" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#10B981" stopOpacity={0.8} />
@@ -228,7 +329,10 @@ export default function Analytics() {
                 dataKey="name"
                 stroke={isDarkMode ? "#9CA3AF" : "#6B7280"}
               />
-              <YAxis stroke={isDarkMode ? "#9CA3AF" : "#6B7280"} />
+              <YAxis
+                stroke={isDarkMode ? "#9CA3AF" : "#6B7280"}
+                domain={[0, "dataMax + 10"]}
+              />
               <Tooltip
                 contentStyle={{
                   backgroundColor: isDarkMode ? "#1F2937" : "#FFFFFF",
@@ -236,15 +340,29 @@ export default function Analytics() {
                   color: isDarkMode ? "#FFFFFF" : "#000000",
                 }}
               />
-              <Area
-                type="monotone"
-                dataKey="value"
-                stroke="#10B981"
-                fillOpacity={1}
-                fill="url(#salesColor)"
-              />
+              {salesData.length === 0 ? (
+                <Bar
+                  dataKey="value"
+                  fill="#10B981"
+                  fillOpacity={0.2}
+                  radius={[4, 4, 0, 0]}
+                />
+              ) : (
+                <Area
+                  type="monotone"
+                  dataKey="value"
+                  stroke="#10B981"
+                  fillOpacity={1}
+                  fill="url(#salesColor)"
+                />
+              )}
             </AreaChart>
           </ResponsiveContainer>
+          {salesData.length === 0 && (
+            <div className="text-center mt-4 text-gray-500">
+              No sales data available for the selected period
+            </div>
+          )}
         </motion.div>
 
         {/* Orders Chart */}
@@ -293,7 +411,7 @@ export default function Analytics() {
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
-                data={productData}
+                data={productCategories}
                 cx="50%"
                 cy="50%"
                 innerRadius={60}
@@ -303,7 +421,7 @@ export default function Analytics() {
                 dataKey="value"
                 label={({ name, value }) => `${name}: ${value}`}
               >
-                {productData.map((entry, index) => (
+                {productCategories.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}
                     fill={COLORS[index % COLORS.length]}
