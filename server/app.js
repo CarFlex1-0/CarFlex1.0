@@ -78,6 +78,7 @@ if (cluster.isMaster) {
   const productRoutes = require('./routes/product');
   const transactionRoutes = require('./routes/transaction');
   const orderRoutes = require('./routes/order')
+  const adminRoutes = require('./routes/admin_routes');
   const sellerRoutes = require("./routes/seller")
   app.use("/api", scraperRoutes);
   app.use("/api", performanceMetricsRoutes);
@@ -96,6 +97,7 @@ if (cluster.isMaster) {
   app.use("/api/seller", sellerRoutes)
   app.use("/api/", subRoutes);
   app.use("/api/ai", aiRoutes);
+  app.use('/api/admin', adminRoutes);
 
   // Test endpoint
   app.get("/testing", (req, res) => {

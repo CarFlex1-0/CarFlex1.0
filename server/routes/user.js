@@ -30,6 +30,17 @@ router.post(
   userController.loginUser
 );
 
+// @route   POST /api/users/login-seller
+// @desc    Authenticate Seller & get token
+router.post(
+  '/login-seller',
+  [
+    check('email', 'Please include a valid email').isEmail(),
+    check('password', 'Password is required').exists(),
+  ],
+  userController.loginSeller
+);
+
 // @route   POST /api/users/forgot-password
 // @desc    Send password reset email
 router.post(
