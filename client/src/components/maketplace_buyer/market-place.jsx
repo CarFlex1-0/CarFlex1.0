@@ -5,6 +5,7 @@ import PartsList from "./PartsList";
 import Cart from "./Cart";
 import Header from "./Header";
 import axiosInstance from "@services/axios";
+import { Link } from "react-router-dom";
 
 export default function CarPartsMarketplace() {
   const [carParts, setCarParts] = useState([]);
@@ -117,7 +118,18 @@ export default function CarPartsMarketplace() {
       />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-white p-4">
         <div className="md:col-span-2">
-          <h2 className="text-2xl font-semibold mb-4">Available Parts</h2>
+          <h2 className="text-2xl font-semibold mb-2">Available Parts</h2>
+          <div className="flex justify-start mb-4">
+            <Link 
+              to="/user/order-details" 
+              className="flex items-center gap-2 btn btn-outline text-white hover:bg-white hover:text-black transition-all duration-300 ease-in-out"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+              Order History
+            </Link>
+          </div>
           {loading ? (
             <p>Loading...</p>
           ) : error ? (

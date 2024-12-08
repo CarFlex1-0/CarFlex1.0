@@ -259,20 +259,65 @@ export function SideBar() {
               </ListItem>
             </Link>
 
-            <Link
-              to="buy-parts"
-              onClick={() => {
-                closeDrawer();
-                setDrawerState(false);
-              }}
+            {/* Marketplace Dropdown */}
+            <Accordion
+              open={accordionOpen === 2} // Use a different number than blogs accordion
+              icon={
+                <FaChevronDown
+                  strokeWidth={2.5}
+                  className={`mx-auto h-4 w-4 transition-transform ${
+                    accordionOpen === 2 ? "rotate-180" : ""
+                  }`}
+                />
+              }
             >
-              <ListItem className="text-lg">
-                <ListItemPrefix className="me-3">
-                  <HiOutlineWrenchScrewdriver className="h-5 w-5" />
-                </ListItemPrefix>
-                Buy Parts
+              <ListItem className="p-0" selected={accordionOpen === 2}>
+                <AccordionHeader
+                  onClick={() => handleAccordionOpen(2)}
+                  className="border-b-0 p-3"
+                >
+                  <ListItemPrefix>
+                    <HiOutlineWrenchScrewdriver className="h-5 w-5 me-3" />
+                  </ListItemPrefix>
+                  <Typography color="blue-gray" className="mr-auto font-normal">
+                    Marketplace
+                  </Typography>
+                </AccordionHeader>
               </ListItem>
-            </Link>
+              <AccordionBody className="py-1">
+                <List className="p-0 text-white">
+                  <Link
+                    to="buy-parts"
+                    onClick={() => {
+                      closeDrawer();
+                      setDrawerState(false);
+                    }}
+                  >
+                    <ListItem>
+                      <ListItemPrefix>
+                        <FaAngleRight strokeWidth={3} className="h-3 w-5" />
+                      </ListItemPrefix>
+                      Buy Parts
+                    </ListItem>
+                  </Link>
+
+                  <Link
+                    to="order-details"
+                    onClick={() => {
+                      closeDrawer();
+                      setDrawerState(false);
+                    }}
+                  >
+                    <ListItem>
+                      <ListItemPrefix>
+                        <FaAngleRight strokeWidth={3} className="h-3 w-5" />
+                      </ListItemPrefix>
+                      Order History
+                    </ListItem>
+                  </Link>
+                </List>
+              </AccordionBody>
+            </Accordion>
 
             <Link
               to="subscription"
