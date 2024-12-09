@@ -6,7 +6,7 @@ import Cart from "./Cart";
 import Header from "./Header";
 import axiosInstance from "@services/axios";
 import { Link } from "react-router-dom";
-
+import { useAuth } from "@contexts/auth_context";
 export default function CarPartsMarketplace() {
   const [carParts, setCarParts] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
@@ -20,6 +20,7 @@ export default function CarPartsMarketplace() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10; // Matches backend pageSize
   const [loading, setLoading] = useState(true);
+  const { drawerState } = useAuth();
   const [error, setError] = useState("");
 
   const categories = [
@@ -101,91 +102,110 @@ export default function CarPartsMarketplace() {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <Header
-        setSearchTerm={setSearchTerm}
-        searchTerm={searchTerm}
-        selectedCategory={selectedCategory}
-        setSelectedCategory={setSelectedCategory}
-        categories={categories}
-        brands={brands}
-        selectedBrand={selectedBrand}
-        setSelectedBrand={setSelectedBrand}
-        priceRange={priceRange}
-        setPriceRange={setPriceRange}
-        isPriceVisible={isPriceVisible}
-        setIsPriceVisible={setIsPriceVisible}
-      />
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-white p-4">
-        <div className="md:col-span-2">
-          <h2 className="text-2xl font-semibold mb-2">Available Parts</h2>
-          <div className="flex justify-start mb-4">
-            <Link 
-              to="/user/order-details" 
-              className="flex items-center gap-2 btn btn-outline text-white hover:bg-white hover:text-black transition-all duration-300 ease-in-out"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
-              Order History
-            </Link>
-          </div>
-          {loading ? (
-            <p>Loading...</p>
-          ) : error ? (
-            <p>{error}</p>
-          ) : (
-            <>
-              <PartsList
-                setSelectedId={setSelectedId}
-                setSelectedCarPartCard={setSelectedCarPartCard}
-                addToCart={addToCart}
-                currentItems={carParts}
-              />
-              <div className="mt-8 flex justify-between items-center">
-                <button
-                  className={`btn text-white ${
-                    currentPage === 1 ? "btn-disabled" : ""
-                  }`}
-                  onClick={handlePrevPage}
-                  disabled={currentPage === 1}
-                >
-                  Previous
-                </button>
-                <p className="text-lg">
-                  Page {currentPage} of {totalPages}
-                </p>
-                <button
-                  className={`btn text-white ${
-                    currentPage === totalPages ? "btn-disabled" : ""
-                  }`}
-                  onClick={handleNextPage}
-                  disabled={currentPage === totalPages}
-                >
-                  Next
-                </button>
-              </div>
-            </>
-          )}
-        </div>
-        <Cart
-          cart={cart}
-          updateQuantity={updateQuantity}
-          totalPrice={totalPrice}
+    <div
+      className={
+        drawerState
+          ? "blur bg-blue-950 cursor-none"
+          : "min-h-screen backdrop-blur-md bg-white/5 p-4"
+      }
+    >
+      <div className="container mx-auto p-4">
+        <Header
+          setSearchTerm={setSearchTerm}
+          searchTerm={searchTerm}
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+          categories={categories}
+          brands={brands}
+          selectedBrand={selectedBrand}
+          setSelectedBrand={setSelectedBrand}
+          priceRange={priceRange}
+          setPriceRange={setPriceRange}
+          isPriceVisible={isPriceVisible}
+          setIsPriceVisible={setIsPriceVisible}
         />
-      </div>
-      <AnimatePresence>
-        {selectedId && (
-          <AnimatedCard
-            selectedCarPartCard={selectedCarPartCard}
-            setSelectedId={setSelectedId}
-            addToCart={addToCart}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-white p-4">
+          <div className="md:col-span-2">
+            <h2 className="text-2xl font-semibold mb-2">Available Parts</h2>
+            <div className="flex justify-start mb-4">
+              <Link
+                to="/user/order-details"
+                className="flex items-center gap-2 btn btn-outline text-white hover:bg-white hover:text-black transition-all duration-300 ease-in-out"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                  />
+                </svg>
+                Order History
+              </Link>
+            </div>
+            {loading ? (
+              <p>Loading...</p>
+            ) : error ? (
+              <p>{error}</p>
+            ) : (
+              <>
+                <PartsList
+                  setSelectedId={setSelectedId}
+                  setSelectedCarPartCard={setSelectedCarPartCard}
+                  addToCart={addToCart}
+                  currentItems={carParts}
+                />
+                <div className="mt-8 flex justify-between items-center">
+                  <button
+                    className={`btn text-white ${
+                      currentPage === 1 ? "btn-disabled" : ""
+                    }`}
+                    onClick={handlePrevPage}
+                    disabled={currentPage === 1}
+                  >
+                    Previous
+                  </button>
+                  <p className="text-lg">
+                    Page {currentPage} of {totalPages}
+                  </p>
+                  <button
+                    className={`btn text-white ${
+                      currentPage === totalPages ? "btn-disabled" : ""
+                    }`}
+                    onClick={handleNextPage}
+                    disabled={currentPage === totalPages}
+                  >
+                    Next
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+          <Cart
+            cart={cart}
+            updateQuantity={updateQuantity}
+            totalPrice={totalPrice}
           />
-        )}
-      </AnimatePresence>
-      <footer className="text-white text-center py-4 pt-5">
-        <p>&copy; 2024 CarFlex Marketplace. All Rights Reserved.</p>
-      </footer>
+        </div>
+        <AnimatePresence>
+          {selectedId && (
+            <AnimatedCard
+              selectedCarPartCard={selectedCarPartCard}
+              setSelectedId={setSelectedId}
+              addToCart={addToCart}
+            />
+          )}
+        </AnimatePresence>
+        <footer className="text-white text-center py-4 pt-5">
+          <p>&copy; 2024 CarFlex Marketplace. All Rights Reserved.</p>
+        </footer>
+      </div>
     </div>
   );
 }

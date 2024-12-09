@@ -11,7 +11,7 @@ import { useAuth } from "@contexts/auth_context";
 const AuthorPostPageContent = () => {
   // const authorCookie = Cookies.get("user");
   const [author, setAuthor] = useState({});
-  const { user } = useAuth();
+  const { user, drawerState } = useAuth();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -138,6 +138,14 @@ const AuthorPostPageContent = () => {
   // console.log("Blogs loaded:", blogs);
 
   return (
+    <div
+    className={
+      drawerState
+        ? "blur bg-blue-950 cursor-none"
+        : ""
+    }
+    >
+      
     <main className={`min-h-screen ${
       isDarkMode 
         ? "bg-gradient-to-br from-[#2b4e7e] to-black" 
@@ -227,6 +235,7 @@ const AuthorPostPageContent = () => {
         )}
       </div>
     </main>
+    </div>
   );
 };
 

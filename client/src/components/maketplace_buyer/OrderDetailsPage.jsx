@@ -4,6 +4,7 @@ import { useTheme } from "@contexts/ThemeContext";
 import { motion, AnimatePresence } from "motion/react";
 import { toast } from "react-toastify";
 import { FiPackage, FiX, FiEye } from "react-icons/fi";
+import { useAuth } from "@contexts/auth_context";
 
 const getValidProducts = (products) => {
   return products.filter((item) => item.prod !== null);
@@ -265,7 +266,7 @@ const OrderDetailsPage = () => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-
+  const { drawerState } = useAuth();
   useEffect(() => {
     fetchOrders(currentPage);
   }, [currentPage]);
@@ -325,256 +326,268 @@ const OrderDetailsPage = () => {
 
   return (
     <div
-      className={`min-h-screen w-full h-full ${
-        isDarkMode ? "bg-gradient-to-br from-[#2b4e7e] to-black" : "bg-gray-100"
-      }`}
+      className={
+        drawerState
+          ? "blur bg-blue-950 cursor-none"
+          : ""
+      }
     >
-      <motion.button
-        onClick={toggleTheme}
-        className={`fixed top-6 right-6 p-3 rounded-full z-50 ${
+      <div
+        className={`min-h-screen w-full h-full ${
           isDarkMode
-            ? "bg-white/10 hover:bg-white/20"
-            : "bg-white/80 hover:bg-white/90"
-        } backdrop-blur-sm shadow-lg transition-all duration-300`}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.95 }}
+            ? "bg-gradient-to-br from-[#2b4e7e] to-black"
+            : "bg-gray-100"
+        }`}
       >
-        {isDarkMode ? (
-          <motion.svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6 text-yellow-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            initial={{ rotate: 0 }}
-            animate={{ rotate: 360 }}
-            transition={{ duration: 0.5 }}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707"
-            />
-          </motion.svg>
-        ) : (
-          <motion.svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6 text-gray-900"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            initial={{ rotate: 0 }}
-            animate={{ rotate: 360 }}
-            transition={{ duration: 0.5 }}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-            />
-          </motion.svg>
-        )}
-      </motion.button>
-
-      <div className="container mx-auto py-8 px-4">
-        <div
-          className={`rounded-xl shadow-lg overflow-hidden ${
-            isDarkMode ? "bg-gray-800/50" : "bg-white"
-          } backdrop-blur-sm`}
+        <motion.button
+          onClick={toggleTheme}
+          className={`fixed top-6 right-6 p-3 rounded-full z-50 ${
+            isDarkMode
+              ? "bg-white/10 hover:bg-white/20"
+              : "bg-white/80 hover:bg-white/90"
+          } backdrop-blur-sm shadow-lg transition-all duration-300`}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
         >
-          <div className="p-6">
-            <h2
-              className={`text-2xl font-bold mb-6 flex items-center gap-3 ${
-                isDarkMode ? "text-white" : "text-gray-800"
-              }`}
+          {isDarkMode ? (
+            <motion.svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 text-yellow-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              initial={{ rotate: 0 }}
+              animate={{ rotate: 360 }}
+              transition={{ duration: 0.5 }}
             >
-              <FiPackage className="w-6 h-6" />
-              Order History
-            </h2>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707"
+              />
+            </motion.svg>
+          ) : (
+            <motion.svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6 text-gray-900"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              initial={{ rotate: 0 }}
+              animate={{ rotate: 360 }}
+              transition={{ duration: 0.5 }}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+              />
+            </motion.svg>
+          )}
+        </motion.button>
 
-            {orders && orders.length > 0 ? (
-              <>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr
-                        className={`border-b ${
-                          isDarkMode ? "border-gray-700" : "border-gray-200"
-                        }`}
-                      >
-                        <th className="text-left py-4 px-4">No.</th>
-                        <th className="text-left py-4 px-4">Products</th>
-                        <th className="text-left py-4 px-4">Seller</th>
-                        <th className="text-left py-4 px-4">Total Amount</th>
-                        <th className="text-left py-4 px-4">Status</th>
-                        <th className="text-left py-4 px-4">Date</th>
-                        <th className="text-left py-4 px-4">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {orders.map((order, index) => (
+        <div className="container mx-auto py-8 px-4">
+          <div
+            className={`rounded-xl shadow-lg overflow-hidden ${
+              isDarkMode ? "bg-gray-800/50" : "bg-white"
+            } backdrop-blur-sm`}
+          >
+            <div className="p-6">
+              <h2
+                className={`text-2xl font-bold mb-6 flex items-center gap-3 ${
+                  isDarkMode ? "text-white" : "text-gray-800"
+                }`}
+              >
+                <FiPackage className="w-6 h-6" />
+                Order History
+              </h2>
+
+              {orders && orders.length > 0 ? (
+                <>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
                         <tr
-                          key={order._id}
                           className={`border-b ${
                             isDarkMode ? "border-gray-700" : "border-gray-200"
                           }`}
                         >
-                          <td className="py-4 px-4">
-                            <span
-                              className={`font-medium ${
-                                isDarkMode ? "text-gray-300" : "text-gray-600"
-                              }`}
-                            >
-                              {index + 1}
-                            </span>
-                          </td>
-                          <td className="py-4 px-4">
-                            <div className="flex items-center gap-2">
-                              {order.product &&
-                                getValidProducts(order.product)[0] && (
-                                  <>
-                                    <img
-                                      src={
-                                        getValidProducts(order.product)[0].prod
-                                          .imageUrl?.url
-                                      }
-                                      alt={
-                                        getValidProducts(order.product)[0].prod
-                                          .name
-                                      }
-                                      className="w-10 h-10 rounded object-cover"
-                                      onError={(e) => {
-                                        e.target.src = "fallback-image-url";
-                                      }}
-                                    />
-                                    <div>
-                                      <p
-                                        className={
-                                          isDarkMode
-                                            ? "text-white"
-                                            : "text-gray-800"
+                          <th className="text-left py-4 px-4">No.</th>
+                          <th className="text-left py-4 px-4">Products</th>
+                          <th className="text-left py-4 px-4">Seller</th>
+                          <th className="text-left py-4 px-4">Total Amount</th>
+                          <th className="text-left py-4 px-4">Status</th>
+                          <th className="text-left py-4 px-4">Date</th>
+                          <th className="text-left py-4 px-4">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {orders.map((order, index) => (
+                          <tr
+                            key={order._id}
+                            className={`border-b ${
+                              isDarkMode ? "border-gray-700" : "border-gray-200"
+                            }`}
+                          >
+                            <td className="py-4 px-4">
+                              <span
+                                className={`font-medium ${
+                                  isDarkMode ? "text-gray-300" : "text-gray-600"
+                                }`}
+                              >
+                                {index + 1}
+                              </span>
+                            </td>
+                            <td className="py-4 px-4">
+                              <div className="flex items-center gap-2">
+                                {order.product &&
+                                  getValidProducts(order.product)[0] && (
+                                    <>
+                                      <img
+                                        src={
+                                          getValidProducts(order.product)[0]
+                                            .prod.imageUrl?.url
                                         }
-                                      >
-                                        {
+                                        alt={
                                           getValidProducts(order.product)[0]
                                             .prod.name
                                         }
-                                      </p>
-                                      {getValidProducts(order.product).length >
-                                        1 && (
+                                        className="w-10 h-10 rounded object-cover"
+                                        onError={(e) => {
+                                          e.target.src = "fallback-image-url";
+                                        }}
+                                      />
+                                      <div>
                                         <p
-                                          className={`text-xs ${
+                                          className={
                                             isDarkMode
-                                              ? "text-gray-400"
-                                              : "text-gray-500"
-                                          }`}
+                                              ? "text-white"
+                                              : "text-gray-800"
+                                          }
                                         >
-                                          +
-                                          {getValidProducts(order.product)
-                                            .length - 1}{" "}
-                                          more items
+                                          {
+                                            getValidProducts(order.product)[0]
+                                              .prod.name
+                                          }
                                         </p>
-                                      )}
-                                    </div>
-                                  </>
+                                        {getValidProducts(order.product)
+                                          .length > 1 && (
+                                          <p
+                                            className={`text-xs ${
+                                              isDarkMode
+                                                ? "text-gray-400"
+                                                : "text-gray-500"
+                                            }`}
+                                          >
+                                            +
+                                            {getValidProducts(order.product)
+                                              .length - 1}{" "}
+                                            more items
+                                          </p>
+                                        )}
+                                      </div>
+                                    </>
+                                  )}
+                                {(!order.product ||
+                                  getValidProducts(order.product).length ===
+                                    0) && (
+                                  <p
+                                    className={`text-sm ${
+                                      isDarkMode
+                                        ? "text-gray-400"
+                                        : "text-gray-500"
+                                    }`}
+                                  >
+                                    Product Discontinued
+                                  </p>
                                 )}
-                              {(!order.product ||
-                                getValidProducts(order.product).length ===
-                                  0) && (
-                                <p
-                                  className={`text-sm ${
-                                    isDarkMode
-                                      ? "text-gray-400"
-                                      : "text-gray-500"
-                                  }`}
-                                >
-                                  Product Discontinued
-                                </p>
-                              )}
-                            </div>
-                          </td>
-                          <td className="py-4 px-4">
-                            <p
-                              className={`font-medium ${
-                                isDarkMode ? "text-white" : "text-gray-800"
-                              }`}
-                            >
-                              {order.seller?.username || "N/A"}
-                            </p>
-                          </td>
-                          <td className="py-4 px-4">
-                            <span
-                              className={`font-medium ${
-                                isDarkMode ? "text-white" : "text-gray-800"
-                              }`}
-                            >
-                              PKR {order.totalAmount || 0}
-                            </span>
-                          </td>
-                          <td className="py-4 px-4">
-                            <OrderStatusBadge
-                              status={order.orderStatus || "pending"}
-                            />
-                          </td>
-                          <td className="py-4 px-4">
-                            <span
-                              className={
-                                isDarkMode ? "text-gray-300" : "text-gray-600"
-                              }
-                            >
-                              {order.orderDate
-                                ? new Date(order.orderDate).toLocaleDateString()
-                                : "N/A"}
-                            </span>
-                          </td>
-                          <td className="py-4 px-4">
-                            <button
-                              onClick={() => handleViewDetails(order._id)}
-                              className={`flex items-center gap-2 px-3 py-2 rounded-lg ${
-                                isDarkMode
-                                  ? "bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
-                                  : "bg-blue-50 text-blue-600 hover:bg-blue-100"
-                              } transition-colors`}
-                            >
-                              <FiEye className="w-4 h-4" />
-                              Details
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                              </div>
+                            </td>
+                            <td className="py-4 px-4">
+                              <p
+                                className={`font-medium ${
+                                  isDarkMode ? "text-white" : "text-gray-800"
+                                }`}
+                              >
+                                {order.seller?.username || "N/A"}
+                              </p>
+                            </td>
+                            <td className="py-4 px-4">
+                              <span
+                                className={`font-medium ${
+                                  isDarkMode ? "text-white" : "text-gray-800"
+                                }`}
+                              >
+                                PKR {order.totalAmount || 0}
+                              </span>
+                            </td>
+                            <td className="py-4 px-4">
+                              <OrderStatusBadge
+                                status={order.orderStatus || "pending"}
+                              />
+                            </td>
+                            <td className="py-4 px-4">
+                              <span
+                                className={
+                                  isDarkMode ? "text-gray-300" : "text-gray-600"
+                                }
+                              >
+                                {order.orderDate
+                                  ? new Date(
+                                      order.orderDate
+                                    ).toLocaleDateString()
+                                  : "N/A"}
+                              </span>
+                            </td>
+                            <td className="py-4 px-4">
+                              <button
+                                onClick={() => handleViewDetails(order._id)}
+                                className={`flex items-center gap-2 px-3 py-2 rounded-lg ${
+                                  isDarkMode
+                                    ? "bg-blue-500/20 text-blue-300 hover:bg-blue-500/30"
+                                    : "bg-blue-50 text-blue-600 hover:bg-blue-100"
+                                } transition-colors`}
+                              >
+                                <FiEye className="w-4 h-4" />
+                                Details
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                    isDarkMode={isDarkMode}
+                  />
+                </>
+              ) : (
+                <div
+                  className={`text-center py-8 ${
+                    isDarkMode ? "text-gray-400" : "text-gray-500"
+                  }`}
+                >
+                  No orders found
                 </div>
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={handlePageChange}
-                  isDarkMode={isDarkMode}
-                />
-              </>
-            ) : (
-              <div
-                className={`text-center py-8 ${
-                  isDarkMode ? "text-gray-400" : "text-gray-500"
-                }`}
-              >
-                No orders found
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
-      </div>
 
-      <AnimatePresence>
-        {selectedOrder && (
-          <OrderDetailsModal
-            order={selectedOrder}
-            onClose={() => setSelectedOrder(null)}
-          />
-        )}
-      </AnimatePresence>
+        <AnimatePresence>
+          {selectedOrder && (
+            <OrderDetailsModal
+              order={selectedOrder}
+              onClose={() => setSelectedOrder(null)}
+            />
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 };

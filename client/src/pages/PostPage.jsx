@@ -161,93 +161,103 @@ const PostPageContent = () => {
   // console.log("Blogs loaded:", blogs);
 
   return (
-    <main
-      className={`min-h-screen ${
-        isDarkMode ? "bg-gradient-to-br from-[#2b4e7e] to-black" : "bg-gray-100"
-      } transition-colors duration-300`}
+    <div
+      className={
+        drawerState
+          ? "blur bg-blue-950 cursor-none"
+          : ""
+      }
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <button
-          onClick={toggleTheme}
-          className={`fixed top-4 right-4 p-2 rounded-full ${
-            isDarkMode
-              ? "bg-yellow-400 text-gray-900"
-              : "bg-gray-800 text-white"
-          }`}
-        >
-          {isDarkMode ? "☀️" : "🌙"}
-        </button>
-
-        <section className="mb-8 flex justify-between items-center">
-          <div className="relative w-64">
-            <input
-              type="text"
-              placeholder="Search blogs..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className={`w-full pl-10 pr-4 py-2 rounded-full ${
-                isDarkMode
-                  ? "bg-gray-800 text-white placeholder-gray-400"
-                  : "bg-white text-gray-900 placeholder-gray-500"
-              } focus:ring-2 focus:ring-indigo-500 focus:outline-none`}
-            />
-            <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-indigo-500" />
-          </div>
-
-          <select
-            value={sortOption}
-            onChange={(e) => setSortOption(e.target.value)}
-            className={`ml-4 p-2 rounded-md ${
-              isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
-            } border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none`}
+      <main
+        className={`min-h-screen ${
+          isDarkMode
+            ? "bg-gradient-to-br from-[#2b4e7e] to-black"
+            : "bg-gray-100"
+        } transition-colors duration-300`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <button
+            onClick={toggleTheme}
+            className={`fixed top-4 right-4 p-2 rounded-full ${
+              isDarkMode
+                ? "bg-yellow-400 text-gray-900"
+                : "bg-gray-800 text-white"
+            }`}
           >
-            <option value="dateDesc">Newest</option>
-            <option value="dateAsc">Oldest</option>
-            <option value="likesDesc">Most Liked</option>
-            <option value="likesAsc">Least Liked</option>
-          </select>
-        </section>
+            {isDarkMode ? "☀️" : "🌙"}
+          </button>
 
-        {featuredBlog && (
+          <section className="mb-8 flex justify-between items-center">
+            <div className="relative w-64">
+              <input
+                type="text"
+                placeholder="Search blogs..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className={`w-full pl-10 pr-4 py-2 rounded-full ${
+                  isDarkMode
+                    ? "bg-gray-800 text-white placeholder-gray-400"
+                    : "bg-white text-gray-900 placeholder-gray-500"
+                } focus:ring-2 focus:ring-indigo-500 focus:outline-none`}
+              />
+              <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-indigo-500" />
+            </div>
+
+            <select
+              value={sortOption}
+              onChange={(e) => setSortOption(e.target.value)}
+              className={`ml-4 p-2 rounded-md ${
+                isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-900"
+              } border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none`}
+            >
+              <option value="dateDesc">Newest</option>
+              <option value="dateAsc">Oldest</option>
+              <option value="likesDesc">Most Liked</option>
+              <option value="likesAsc">Least Liked</option>
+            </select>
+          </section>
+
+          {featuredBlog && (
+            <section className="mb-12">
+              <h2
+                className={`text-3xl font-bold mb-6 ${
+                  isDarkMode ? "text-white" : "text-gray-900"
+                }`}
+              >
+                Featured Post
+              </h2>
+              <FeaturedBlogCard
+                item={featuredBlog}
+                onDelete={deleteBlog}
+                onUpdate={updateBlog}
+              />
+            </section>
+          )}
+
           <section className="mb-12">
             <h2
               className={`text-3xl font-bold mb-6 ${
                 isDarkMode ? "text-white" : "text-gray-900"
               }`}
             >
-              Featured Post
+              {getSectionTitle()}
             </h2>
-            <FeaturedBlogCard
-              item={featuredBlog}
-              onDelete={deleteBlog}
-              onUpdate={updateBlog}
-            />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredBlogs
+                .filter((blog) => blog._id !== featuredBlog?._id)
+                .map((blog) => (
+                  <BlogCard
+                    key={blog._id}
+                    item={blog}
+                    onDelete={deleteBlog}
+                    onUpdate={updateBlog}
+                  />
+                ))}
+            </div>
           </section>
-        )}
-
-        <section className="mb-12">
-          <h2
-            className={`text-3xl font-bold mb-6 ${
-              isDarkMode ? "text-white" : "text-gray-900"
-            }`}
-          >
-            {getSectionTitle()}
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredBlogs
-              .filter((blog) => blog._id !== featuredBlog?._id)
-              .map((blog) => (
-                <BlogCard
-                  key={blog._id}
-                  item={blog}
-                  onDelete={deleteBlog}
-                  onUpdate={updateBlog}
-                />
-              ))}
-          </div>
-        </section>
-      </div>
-    </main>
+        </div>
+      </main>
+    </div>
   );
 };
 

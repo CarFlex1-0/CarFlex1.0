@@ -166,6 +166,14 @@ const NewBlogContent = () => {
   };
 
   return (
+    <div
+    className={
+      drawerState
+        ? "blur bg-blue-950 cursor-none"
+        : ""
+    }
+    >
+    
     <div className={`flex-1 ${isDarkMode ? 'bg-gradient-to-br from-[#2b4e7e] to-black' : 'bg-gray-100'} rounded-lg p-8`}>
       <button
         onClick={toggleTheme}
@@ -337,6 +345,7 @@ const NewBlogContent = () => {
           )}
         </div>
       </div>
+    </div>
     </div>
   );
 };

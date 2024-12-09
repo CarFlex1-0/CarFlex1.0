@@ -17,7 +17,7 @@ const FeedbackFormContent = () => {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [rating, setRating] = React.useState(0);
   const { isDarkMode, toggleTheme } = useTheme();
-  const { user } = useAuth();
+  const { user, drawerState } = useAuth();
 
   const onSubmit = async (data) => {
     setIsSubmitting(true);
@@ -60,6 +60,14 @@ const FeedbackFormContent = () => {
   };
 
   return (
+    <div
+    className={
+      drawerState
+        ? "blur bg-blue-950 cursor-none"
+        : " "
+    }
+    >
+     
     <div
       className={`min-h-screen w-full ${
         isDarkMode ? "bg-gray-900" : "bg-gray-100"
@@ -175,6 +183,7 @@ const FeedbackFormContent = () => {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 };
