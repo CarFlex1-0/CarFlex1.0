@@ -22,7 +22,7 @@ export default function CarPartsMarketplace() {
   const [loading, setLoading] = useState(true);
   const { drawerState } = useAuth();
   const [error, setError] = useState("");
-
+  const[totalPages, setTotalPages] = useState();
   const categories = [
     "Engine & Drivetrain",
     "Suspension & Steering",
@@ -45,6 +45,7 @@ export default function CarPartsMarketplace() {
         };
         const { data } = await axiosInstance.get("/products", { params });
         setCarParts(data.products);
+        setTotalPages(data.pages)
       } catch (error) {
         setError("Failed to fetch car parts: " + error.message);
       } finally {
@@ -91,7 +92,7 @@ export default function CarPartsMarketplace() {
     0
   );
 
-  const totalPages = Math.ceil((carParts?.length || 0) / itemsPerPage);
+  // const totalPages = Math.ceil((carParts?.length || 0) / itemsPerPage);
 
   const handleNextPage = () => {
     if (currentPage < totalPages) setCurrentPage(currentPage + 1);

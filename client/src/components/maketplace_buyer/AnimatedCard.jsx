@@ -12,7 +12,7 @@ export default function AnimatedCard({ selectedCarPartCard, setSelectedId, addTo
       >
         <figure>
           <img
-            src={selectedCarPartCard.image}
+            src={selectedCarPartCard.imageUrl.url}
             alt={selectedCarPartCard.name}
             className="w-full h-48 object-cover"
           />

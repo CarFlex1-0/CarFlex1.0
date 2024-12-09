@@ -17,10 +17,10 @@ const createProduct = asyncHandler(async (req, res) => {
     } = req.body;
 
     // Verify the user is a seller
-    // if (!req.user.isSeller) {
-    //     res.status(403);
-    //     throw new Error('Only sellers can create products');
-    // }
+    if (!req.user.isSeller) {
+        res.status(403);
+        throw new Error('Only sellers can create products');
+    }
     if (!image) {
         return res.status(400).json({ message: "No image provided" });
     }
@@ -37,7 +37,7 @@ const createProduct = asyncHandler(async (req, res) => {
         };
     }
     const product = await Product.create({
-        seller: "6742c9fe1b0bae6853c170f2",
+        seller: req.user._id,
         name,
         description,
         price,
@@ -59,7 +59,7 @@ const createProduct = asyncHandler(async (req, res) => {
 // @route   GET /api/products
 // @access  Public
 const getProducts = asyncHandler(async (req, res) => {
-    const pageSize = 10;
+    const pageSize = 9;
     const page = Number(req.query.page) || 1;
 
     const keyword = req.query.keyword
@@ -217,10 +217,10 @@ const updateProduct = asyncHandler(async (req, res) => {
     }
 
     // Verify ownership
-    // if (product.seller.toString() !== req.user._id.toString() && !req.user.isAdmin) {
-    //     res.status(403);
-    //     throw new Error('Not authorized to update this product');
-    // }
+    if (product.seller.toString() !== req.user._id.toString() && !req.user.isAdmin) {
+        res.status(403);
+        throw new Error('Not authorized to update this product');
+    }
 
     product.name = name;
     product.description = description
@@ -248,11 +248,11 @@ const deleteProduct = asyncHandler(async (req, res) => {
         throw new Error('Product not found');
     }
 
-    // // Verify ownership
-    // if (product.seller.toString() !== req.user._id.toString() && !req.user.isAdmin) {
-    //     res.status(403);
-    //     throw new Error('Not authorized to delete this product');
-    // }
+    // Verify ownership
+    if (product.seller.toString() !== req.user._id.toString() && !req.user.isAdmin) {
+        res.status(403);
+        throw new Error('Not authorized to delete this product');
+    }
 
     await product.deleteOne();
     res.json({ message: 'Product removed' });
@@ -262,23 +262,33 @@ const deleteProduct = asyncHandler(async (req, res) => {
 // @route   GET /api/products/seller/:sellerId
 // @access  Public
 const getSellerProducts = asyncHandler(async (req, res) => {
-    const pageSize = 10;
-    const page = Number(req.query.page) || 1;
+    try {
+        const pageSize = 9;
+        const page = Number(req.query.page) || 1;
 
-    const count = await Product.countDocuments({ seller: req.params.sellerId });
-    const products = await Product.find({ seller: req.params.sellerId })
-        .populate('seller', 'username email')
-        .limit(pageSize)
-        .skip(pageSize * (page - 1))
-        .sort('-createdAt');
+        if (!req.user?._id) {
+            return res.status(400).json({ message: 'Invalid user ID' });
+        }
 
-    res.json({
-        products,
-        page,
-        pages: Math.ceil(count / pageSize),
-        total: count
-    });
+        const count = await Product.countDocuments({ seller: req.user._id });
+        const products = await Product.find({ seller: req.user._id })
+            .populate('seller', 'username email')
+            .limit(pageSize)
+            .skip(pageSize * (page - 1))
+            .sort('-createdAt');
+
+        res.json({
+            products,
+            page,
+            pages: Math.ceil(count / pageSize),
+            total: count,
+        });
+    } catch (error) {
+        console.error('Error in getSellerProducts:', error);
+        res.status(500).json({ message: 'Failed to fetch seller products' });
+    }
 });
+
 
 // @desc    Update product stock
 // @route   PATCH /api/products/:id/stock
@@ -291,11 +301,11 @@ const updateStock = asyncHandler(async (req, res) => {
         throw new Error('Product not found');
     }
 
-    // // Verify ownership
-    // if (product.seller.toString() !== req.user._id.toString() && !req.user.isAdmin) {
-    //     res.status(403);
-    //     throw new Error('Not authorized to update this product');
-    // }
+    // Verify ownership
+    if (product.seller.toString() !== req.user._id.toString() && !req.user.isAdmin) {
+        res.status(403);
+        throw new Error('Not authorized to update this product');
+    }
 
     product.stock = req.body.stock;
     if (product.stock === 0) {

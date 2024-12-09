@@ -12,7 +12,7 @@ import AddProduct from "./AddProduct";
 import ProductTable from "./ProductTable";
 import { useTheme } from "@contexts/ThemeContext";
 import { motion } from "framer-motion";
-
+import { toast } from "react-toastify";
 export function Product({ type }) {
   const { isDarkMode } = useTheme();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -45,7 +45,7 @@ export function Product({ type }) {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const { data } = await axiosInstance.get("/products", {
+      const { data } = await axiosInstance.get("/products/seller-products", {
         params: { page, keyword: filters.keyword },
       });
       setProducts(data.products);
@@ -118,7 +118,7 @@ export function Product({ type }) {
         image,
       });
 
-      console.log("Product creation response:", response);
+      // console.log("Product creation response:", response);
       fetchProducts();
       setIsModalOpen(false);
       setNewProduct({
@@ -130,7 +130,7 @@ export function Product({ type }) {
         description: "",
         image: null,
       });
-      alert("Product created successfully!");
+       toast.success("Product created successfully!");
     } catch (error) {
       console.error("Failed to submit product:", error);
       setError(error.response?.data?.message || "Failed to create product");

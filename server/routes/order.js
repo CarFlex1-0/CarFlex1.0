@@ -9,12 +9,12 @@ const {
 } = require('../controllers/order_controller');
 
 // Public routes
-router.get('/seller-orders', getOrdersBySeller);
-router.get('/buyer-orders', getOrdersByBuyers);
+router.get('/seller-orders',protect , seller,  getOrdersBySeller);
+router.get('/buyer-orders', protect, getOrdersByBuyers);
 router.get('/:id', getOrderById);
 
 // Protected routes (require authentication)
-// router.patch('/update-status/:orderId', protect, seller, updateOrderStatus);
-router.patch('/update-status/:orderId', updateOrderStatus);
+router.patch('/update-status/:orderId', protect, seller, updateOrderStatus);
+// router.patch('/update-status/:orderId', updateOrderStatus);
 
 module.exports = router;

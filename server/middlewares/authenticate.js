@@ -45,8 +45,11 @@ const protect = asyncHandler(async (req, res, next) => {
             token = req.headers.authorization.split(' ')[1];
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
             req.user = await User.findById(decoded.id).select('-password');
+
+            console.log('Authenticated User:', req.user); // Debugging line
             next();
         } catch (error) {
+            console.error('Token verification failed:', error);
             res.status(401);
             throw new Error('Not authorized, token failed');
         }
@@ -57,6 +60,7 @@ const protect = asyncHandler(async (req, res, next) => {
         throw new Error('Not authorized, no token');
     }
 });
+
 const seller = (req, res, next) => {
     if (req.user && req.user.isSeller) {
         next();

@@ -5,8 +5,8 @@ const asyncHandler = require('express-async-handler');
 // @route   GET /api/products
 // @access  Public
 const getOrdersBySeller = asyncHandler(async (req, res) => {
-    // const {sellerId} = req.body;
-    const sellerId = "6742c9fe1b0bae6853c170f2"
+    const sellerId = req.user._id;
+    // const sellerId = "6742c9fe1b0bae6853c170f2"
     const pageSize = 10;
     const page = Number(req.query.page) || 1;
 
@@ -36,8 +36,8 @@ const getOrdersBySeller = asyncHandler(async (req, res) => {
 });
 
 const getOrdersByBuyers = asyncHandler(async (req, res) => {
-    // const {buyerId} = req.body;
-    const buyerId = "66ec5fb01bca199ffe10c6c2"
+    const buyerId = req.user._id;
+    // const buyerId = "66ec5fb01bca199ffe10c6c2"
     const pageSize = 10;
     const page = Number(req.query.page) || 1;
 

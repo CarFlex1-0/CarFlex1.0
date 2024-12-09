@@ -4,7 +4,7 @@ import axiosInstance from "@services/axios";
 import { useTheme } from "@contexts/ThemeContext";
 import { motion } from "framer-motion";
 import { FiPackage, FiX } from "react-icons/fi";
-
+import { toast } from "react-toastify";
 const EditProduct = () => {
   const { isDarkMode } = useTheme();
   const { id } = useParams();
@@ -95,18 +95,21 @@ const EditProduct = () => {
 
     try {
       // Update product
-      await axiosInstance.put(`/products/${id}`, {
-        name,
-        price: parseFloat(price),
-        category,
-        brand,
-        stock: parseInt(stock),
-        description,
-        image, // base64 image string
-      });
-
+     const response = await axiosInstance.put(`/products/${id}`, {
+       name,
+       price: parseFloat(price),
+       category,
+       brand,
+       stock: parseInt(stock),
+       description,
+       image, // base64 image string
+     });
+      if(response.status == '200'){
+        setProduct(response.data);
+        toast.success("Product Updated Successfully!")
+        // navigate.push("/products");
+      }
       // Redirect to products page
-      //   navigate.push("/products");
     } catch (error) {
       console.error("Failed to update product:", error);
       setError("Failed to update product");
