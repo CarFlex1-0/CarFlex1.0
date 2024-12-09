@@ -33,7 +33,7 @@ const ForumPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [newQuestionTitle, setNewQuestionTitle] = useState("");
   const [newQuestionContent, setNewQuestionContent] = useState("");
-  const [newQuestionCategory, setNewQuestionCategory] = useState("");
+  const [newQuestionCategory, setNewQuestionCategory] = useState("Car Engine Upgrades");
   const [newAnswer, setNewAnswer] = useState("");
   const [userId, setUserId] = useState("");
   const { user, drawerState } = useAuth();
@@ -82,29 +82,36 @@ const ForumPage = () => {
   };
 
   const handleCreateQuestion = async () => {
+    console.log("Current category:", newQuestionCategory); // Debug log
+    
     if (!newQuestionTitle.trim() || !newQuestionContent.trim()) {
-      // Validate input
-      console.error("Title and content cannot be empty");
+      toast.error("Title and content cannot be empty");
       return;
     }
-    setLoading(true); // Start loading
+    
+    setLoading(true);
     try {
-      await axiosInstance.post(API_ENDPOINTS.ASK_QUESTIONS, {
-        title: newQuestionTitle,
-        description: newQuestionContent,
-        category: newQuestionCategory,
+      const questionData = {
+        title: newQuestionTitle.trim(),
+        description: newQuestionContent.trim(),
+        category: newQuestionCategory, // This should now always have a value
         userId,
-      });
-       document.getElementById("ask-new-question-modal").close();
+      };
+      
+      console.log("Sending question data:", questionData); // Debug log
+      
+      await axiosInstance.post(API_ENDPOINTS.ASK_QUESTIONS, questionData);
+      document.getElementById("ask-new-question-modal").close();
       setNewQuestionTitle("");
       setNewQuestionContent("");
-      setNewQuestionCategory("");
+      setNewQuestionCategory("Car Engine Upgrades"); // Reset to first category
       fetchThreads();
+      toast.success("Question posted successfully!");
     } catch (error) {
       console.error("Error creating question:", error);
-      // Handle error gracefully
+      toast.error("Failed to create question");
     } finally {
-      setLoading(false); // End loading
+      setLoading(false);
     }
   };
 
@@ -124,8 +131,12 @@ const ForumPage = () => {
         answers: [...selectedThread.answers, data],
       });
       setNewAnswer("");
+      if (res.status == "406") {
+        toast.error("Please remove abusive language from your answer.");
+        return; // Don't submit the answer if it contains profanity
+      }
     } catch (error) {
-      if (error.status === 406) {
+      if (error.status == "406") {
         toast.error("Please remove abusive language from your answer.");
         return; // Don't submit the answer if it contains profanity
       }
@@ -410,7 +421,10 @@ const ForumPage = () => {
                 <select
                   className="select select-bordered"
                   value={newQuestionCategory}
-                  onChange={(e) => setNewQuestionCategory(e.target.value)}
+                  onChange={(e) => {
+                    console.log("Selected category:", e.target.value); // Debug log
+                    setNewQuestionCategory(e.target.value);
+                  }}
                 >
                   {categories.map((category) => (
                     <option key={category} value={category}>

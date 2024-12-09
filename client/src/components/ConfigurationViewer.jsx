@@ -411,7 +411,7 @@ const ConfigurationViewer = () => {
                 {/* Search Results Dropdown */}
                 {searchResults.length > 0 && !selectedUser && (
                   <div
-                    className={`absolute w-full mt-1 rounded-lg shadow-lg ${
+                    className={`absolute z-10 w-full mt-1 rounded-lg shadow-lg ${
                       isDarkMode ? "bg-gray-700" : "bg-white"
                     } border ${
                       isDarkMode ? "border-gray-600" : "border-gray-200"

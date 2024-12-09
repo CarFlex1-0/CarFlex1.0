@@ -69,9 +69,7 @@ const FeedbackFormContent = () => {
     >
      
     <div
-      className={`min-h-screen w-full ${
-        isDarkMode ? "bg-gray-900" : "bg-gray-100"
-      } py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center`}
+      className={`min-h-screen min-w-full py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center`}
     >
       <div className="w-full max-w-md">
         <button

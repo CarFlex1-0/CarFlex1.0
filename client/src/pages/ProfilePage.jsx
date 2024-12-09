@@ -7,39 +7,53 @@ import { useAuth } from "@contexts/auth_context";
 import { CiEdit } from "react-icons/ci";
 import { useTheme } from "../contexts/ThemeContext";
 import { FiMail, FiPhone } from "react-icons/fi";
+import Cookies from "js-cookie";
 
 const ProfilePage = () => {
   const [loading, setLoading] = useState(false);
-  const { user, setUser, drawerState } = useAuth(); // Now includes setUser
+  const { user, setUser, drawerState } = useAuth();
+
+  // Debug logs
+  console.log("Initial user data:", user);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    setValue, // Set form field values
+    setValue,
   } = useForm();
+  
+  // Update initial state for imagePreviewUrl
   const [imageFile, setImageFile] = useState(null);
   const [imagePreviewUrl, setImagePreviewUrl] = useState(
-    user?.imageUrl?.url ||
-      "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" // Default image
+    // Check if imageUrl is an empty object
+    Object.keys(user?.imageUrl || {}).length === 0
+      ? "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+      : user?.imageUrl?.url
   );
-  console.log("USer on Mount", user);
 
   const { isDarkMode, toggleTheme } = useTheme();
 
   useEffect(() => {
     if (user) {
-      setValue("firstName", user.firstName);
-      setValue("lastName", user.lastName);
-      setValue("email", user.email);
-      setValue("phoneNum", user.phoneNum);
-      setValue("bio", user.bio);
-      setValue("username", user.username);
-      setImagePreviewUrl(
-        user?.imageUrl?.url ||
-          "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-      );
-      setLoading(false); // Stop loading once user is set
+      console.log("Setting form values with user data:", user);
+      
+      // Set values with empty string fallbacks
+      setValue("firstName", user.firstName || '');
+      setValue("lastName", user.lastName || '');
+      setValue("email", user.email || '');
+      setValue("phoneNum", user.phoneNum || '');
+      setValue("bio", user.bio || '');
+      setValue("username", user.username || '');
+
+      // Handle imageUrl being an empty object
+      if (user.imageUrl && Object.keys(user.imageUrl).length === 0) {
+        setImagePreviewUrl("https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp");
+      } else {
+        setImagePreviewUrl(user.imageUrl?.url || "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp");
+      }
+      
+      setLoading(false);
     }
   }, [user, setValue]);
 
@@ -62,77 +76,65 @@ const ProfilePage = () => {
   const saveChanges = async (data) => {
     try {
       setLoading(true);
-      let imageBase64 = user.imageUrl?.url || "";
-
+      console.log("Saving changes with data:", data);
+      
+      let imageBase64 = null;
       if (imageFile) {
         imageBase64 = await convertBase64(imageFile);
-        console.log("Image converted to Base64:", imageBase64);
+        console.log("New image converted to base64");
+      } else if (user?.imageUrl?.url) {
+        imageBase64 = user.imageUrl.url;
+        console.log("Using existing image URL");
       }
 
-      // Prepare the payload with updated data
       const payload = {
-        firstName: data.firstName,
-        lastName: data.lastName,
-        bio: data.bio,
-        phoneNum: data.phoneNum, // Include phoneNum if you want to update it
-        imageUrl: imageBase64 || user.imageUrl.url,
-        username: data.username, // Include username if you want to update it
-        email: data.email,
+        firstName: data.firstName.trim(),
+        lastName: data.lastName.trim(),
+        bio: data.bio?.trim() || '',
+        phoneNum: data.phoneNum?.trim() || '',
+        imageUrl: imageBase64 || '',
+        username: data.username.trim(),
+        email: data.email.trim(),
       };
 
-      // Log user details
-      console.log("User from useAuth:", user);
+      console.log("Sending payload:", payload);
+
       const userId = user?._id;
-
       if (!userId) {
-        console.error("User ID is not available.");
-        toast.error("User ID is missing!", {
-          position: "top-left",
-          autoClose: 5000,
-          theme: "dark",
-          transition: Slide,
-        });
-
-        return;
+        throw new Error("User ID is missing");
       }
 
-      console.log("Sending PUT request to /profile/update", userId);
       const response = await axiosInstance.put(
         `user/profile/${userId}`,
         payload
       );
-      console.log("Response from server:", response.data);
+      
+      console.log("Server response:", response.data);
 
-      // Update user context
-      const updatedUser = { ...user, ...response.data }; // Merge the old user with the new data
-      await setUser(updatedUser); // Update the context with new user data
+      // Update both user data and token in cookies
+      const updatedUser = { 
+        ...user, 
+        ...response.data,
+        token: response.data.token || user.token // Preserve token if not in response
+      };
+      
+      // Update cookies with new user data
+      Cookies.set('user', JSON.stringify(updatedUser));
+      if (response.data.token) {
+        Cookies.set('token', response.data.token);
+      }
+      
+      console.log("Updated user data:", updatedUser);
+      setUser(updatedUser);
 
-      console.log("New User data", updatedUser);
+      // Force a page refresh to ensure all data is updated
+      window.location.reload();
 
-      // Clear image file state after saving
-      // setImageFile(null);
-      // Update preview after save
-      setImagePreviewUrl(updatedUser.imageUrl?.url);
-
-      toast.success("Profile updated successfully", {
-        position: "top-left",
-        autoClose: 5000,
-        theme: "dark",
-        transition: Slide,
-      });
+      toast.success("Profile updated successfully");
     } catch (error) {
       console.error("Error updating profile:", error);
-      if (error.response) {
-        console.error("Error response data:", error.response.data);
-        console.error("Error response status:", error.response.status);
-        console.error("Error response headers:", error.response.headers);
-      }
-      toast.error("Update Profile unsuccessful!", {
-        position: "top-left",
-        autoClose: 5000,
-        theme: "dark",
-        transition: Slide,
-      });
+      console.error("Error details:", error.response?.data);
+      toast.error(error.response?.data?.message || "Update failed");
     } finally {
       setLoading(false);
     }
@@ -168,13 +170,7 @@ const ProfilePage = () => {
   };
 
   return (
-    <div
-      className={
-        drawerState
-          ? "blur bg-blue-950 cursor-none"
-          : ""
-      }
-    >
+    <div className={drawerState ? "blur bg-blue-950 cursor-none" : ""}>
       <div
         className={`min-h-screen ${
           isDarkMode
