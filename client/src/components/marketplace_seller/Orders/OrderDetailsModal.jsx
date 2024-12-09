@@ -233,7 +233,7 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }) => {
                         isDarkMode ? "divide-gray-700" : "divide-gray-200"
                       }`}
                     >
-                      {orderDetails.prod ? (
+                      {orderDetails.product ? (
                         orderDetails.product.map((item) => (
                           <tr
                             key={item._id}

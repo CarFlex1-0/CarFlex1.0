@@ -5,12 +5,12 @@ const mongoose = require("mongoose");
 
 const getDashboardStats = async (req, res) => {
     try {
-        const sellerId = "6742c9fe1b0bae6853c170f2"; // Hardcoded for now, replace with actual authenticated seller
+        const sellerId = req.user._id; // Hardcoded for now, replace with actual authenticated seller
 
         // Total Sales (Revenue)
         const totalSales = await Transaction.aggregate([
             { $match: { seller: sellerId, paymentStatus: 'completed' } },
-            { $group: { _id: null, total: { $sum: 'Rs. amount' } } }
+            { $group: { _id: null, total: { $sum: '$amount' } } }
         ]);
 
         // Total Products
@@ -101,7 +101,7 @@ const getDashboardStats = async (req, res) => {
             stats: [
                 {
                     title: "Total Sales",
-                    value: `$${totalSales[0]?.total || 0}`,
+                    value: `Rs. ${totalSales[0]?.total || 0}`,
                     change: "+12.5%",
                     isPositive: true,
                     icon: "FiTrendingUp"
