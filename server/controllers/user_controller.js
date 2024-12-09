@@ -46,8 +46,7 @@ exports.searchUsers = async (req, res) => {
 const generateToken = require("../utils/generate_token");
 // Register user
 exports.registerUser = async (req, res) => {
-  const { firstName, lastName, email, password, isSeller } = req.body;
-
+  const { firstName, lastName, email, password, role } = req.body;
   // Check if user already exists
   const userExists = await User.findOne({ email });
 
@@ -58,14 +57,26 @@ exports.registerUser = async (req, res) => {
   }
   const userName = firstName + " " + lastName;
   // Create the user
-  const user = await User.create({
-    firstName,
-    lastName,
-    username: userName,
-    email,
-    password, // Password hashing is handled by mongoose's pre-save hook
-    isSeller: isSeller || false,
-  });
+  let user;
+  if (role == "seller") {
+    user = await User.create({
+      firstName,
+      lastName,
+      username: userName,
+      email,
+      password, // Password hashing is handled by mongoose's pre-save hook
+      isSeller: true,
+    });
+  } else {
+    user = await User.create({
+      firstName,
+      lastName,
+      username: userName,
+      email,
+      password, // Password hashing is handled by mongoose's pre-save hook
+      isSeller: false,
+    });
+  }
   // If the user is created successfully
   if (user) {
     res.status(201).json({
