@@ -27,7 +27,7 @@ import Users from "@components/admin/Users";
 import AdminDashoardAnalytics from "@components/admin/Dashboard";
 import Upload3DModel from "@components/admin/Upload3DModel";
 import UserDashboard from "@pages/UserDashboard";
-import { ThemeProvider } from '@contexts/ThemeContext';
+import { ThemeProvider } from "@contexts/ThemeContext";
 import CarPreview from "@components/car_model/CarPreview";
 import ForumPage from "@pages/ForumPage";
 import CarPartsMarketplace from "@components/maketplace_buyer/market-place";
@@ -36,18 +36,17 @@ import SellerDashboard from "@components/marketplace_seller/SellerDashboard";
 import Analytics from "@components/marketplace_seller/Analytics";
 import SellerProfilePage from "@components/marketplace_seller/SellerProfilePage";
 // import UploadProduct from "@components/marketplace_seller/Products/UploadProduct";
-import {Product}  from "@components/marketplace_seller/Products/Product";
-import Order  from "@components/marketplace_seller/Orders/Order";
+import { Product } from "@components/marketplace_seller/Products/Product";
+import Order from "@components/marketplace_seller/Orders/Order";
 import EditProduct from "@components/marketplace_seller/Products/EditProduct";
 import CarPreviewCorolla from "@components/car_model_corolla/CarPreviewCorolla";
 import CarPreviewSwift from "@components/car_model_swift/CarPreviewSwift";
 import CarPreviewLambo from "@components/lambo-intro-dashboard/CarPreviewLambo";
-import ModelSelectionPage from '@pages/ModelSelectionPage';
-import ConfigurationViewer from '@components/ConfigurationViewer';
+import ModelSelectionPage from "@pages/ModelSelectionPage";
+import ConfigurationViewer from "@components/ConfigurationViewer";
 import AdminLoginPage from "@pages/AdminLoginPage";
-import OrderDetailsPage from "@components/maketplace_buyer/OrderDetailsPage"
+import OrderDetailsPage from "@components/maketplace_buyer/OrderDetailsPage";
 // import OrderDetailsPage from "@pages/OrderDetailsPage";
-
 
 // Extra! Should be Deleted along with files
 // import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
@@ -59,7 +58,6 @@ import OrderDetailsPage from "@components/maketplace_buyer/OrderDetailsPage"
 // import SingleThread from "@components/forum/SingleThread";
 // import CreateQuestion from "@components/forum/CreateQuestion";
 // import Success from "@components/Success";
-
 
 function App() {
   return (
@@ -80,41 +78,8 @@ function App() {
         <AuthProvider>
           <BrowserRouter>
             <div className="flex-grow">
-              {/* Allow content to grow */}
               <Routes>
                 <Route path="/" element={<Welcome />} />
-                <Route
-                  path="/user-dashboard"
-                  element={
-                    <ProtectedRoute>
-                      <Dashboard />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/scrap"
-                  element={
-                    <ProtectedRoute>
-                      <Scrapper />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/metric"
-                  element={
-                    <ProtectedRoute>
-                      <Metric />
-                    </ProtectedRoute>
-                  }
-                />
-
-                {/* Ahmad Raza - Forum & Community */}
-                {/* <Route path="/thread/:id" element={<ProtectedRoute><SingleThread /></ProtectedRoute>} />
-                <Route path="/create-question" element={<ProtectedRoute><CreateQuestion /></ProtectedRoute>} />
-                <Route path="/forum" element={<ProtectedRoute><ThreadsList /></ProtectedRoute>} /> */}
-
-                {/* Combination - User Profiling */}
-
                 <Route path="/sign-in" element={<SignIn />} />
                 <Route path="/sign-up" element={<SignUp />} />
                 <Route path="/sign-in-admin" element={<AdminLoginPage />} />
@@ -135,89 +100,281 @@ function App() {
                   }
                 />
 
-                <Route path="admin" element={<AdminDashboard />}>
+                <Route
+                  path="admin"
+                  element={
+                    <ProtectedRoute>
+                      <AdminDashboard />
+                    </ProtectedRoute>
+                  }
+                >
                   <Route
                     path="dashboard"
-                    element={<AdminDashoardAnalytics />}
+                    element={
+                      <ProtectedRoute>
+                        <AdminDashoardAnalytics />
+                      </ProtectedRoute>
+                    }
                   />
-                  <Route path="users" element={<Users />} />
-                  <Route path="upload-3d-model" element={<Upload3DModel />} />
+                  <Route
+                    path="users"
+                    element={
+                      <ProtectedRoute>
+                        <Users />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="upload-3d-model"
+                    element={
+                      <ProtectedRoute>
+                        <Upload3DModel />
+                      </ProtectedRoute>
+                    }
+                  />
                 </Route>
 
-                <Route path="seller" element={<SellerDashboard />}>
-                  <Route path="dashboard" element={<Analytics />} />
-                  <Route path="profile" element={<SellerProfilePage />} />
+                <Route
+                  path="seller"
+                  element={
+                    <ProtectedRoute>
+                      <SellerDashboard />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route
+                    path="dashboard"
+                    element={
+                      <ProtectedRoute>
+                        <Analytics />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="profile"
+                    element={
+                      <ProtectedRoute>
+                        <SellerProfilePage />
+                      </ProtectedRoute>
+                    }
+                  />
                   <Route
                     path="products"
-                    element={<Product type="products" />}
+                    element={
+                      <ProtectedRoute>
+                        <Product type="products" />
+                      </ProtectedRoute>
+                    }
                   />
-                  <Route path="orders" element={<Order type="orders" />} />
-                  {/* <Route path="upload-products" element={<UploadProduct />} /> */}
+                  <Route
+                    path="orders"
+                    element={
+                      <ProtectedRoute>
+                        <Order type="orders" />
+                      </ProtectedRoute>
+                    }
+                  />
                   <Route
                     path="products/edit-product/:id"
-                    element={<EditProduct />}
+                    element={
+                      <ProtectedRoute>
+                        <EditProduct />
+                      </ProtectedRoute>
+                    }
                   />
                 </Route>
 
-                <Route path="user" element={<UserDashboard />}>
                 <Route
+                  path="user"
+                  element={
+                    <ProtectedRoute>
+                      <UserDashboard />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route
                     path="order-details"
-                    element={<OrderDetailsPage />}
+                    element={
+                      <ProtectedRoute>
+                        <OrderDetailsPage />
+                      </ProtectedRoute>
+                    }
                   />
-                  {/* Profiling */}
-                  <Route path="profile-page" element={<ProfilePage />} />
-                  {/* Intro Dashboard to User */}
-                  <Route path="dashboard" element={<CarPreviewLambo />} />
-                  <Route path="user-dashboard" element={<Dashboard />} />
-
-                  {/* 3D Model Routes - Mohid */}
-                  <Route path="customize-3d-model" element={<CarPreview />} />
+                  <Route
+                    path="profile-page"
+                    element={
+                      <ProtectedRoute>
+                        <ProfilePage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="dashboard"
+                    element={
+                      <ProtectedRoute>
+                        <CarPreviewLambo />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="user-dashboard"
+                    element={
+                      <ProtectedRoute>
+                        <Dashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="customize-3d-model"
+                    element={
+                      <ProtectedRoute>
+                        <CarPreview />
+                      </ProtectedRoute>
+                    }
+                  />
                   <Route
                     path="customize-3d-model-corolla"
-                    element={<CarPreviewCorolla />}
+                    element={
+                      <ProtectedRoute>
+                        <CarPreviewCorolla />
+                      </ProtectedRoute>
+                    }
                   />
                   <Route
                     path="customize-3d-model-swift"
-                    element={<CarPreviewSwift />}
+                    element={
+                      <ProtectedRoute>
+                        <CarPreviewSwift />
+                      </ProtectedRoute>
+                    }
                   />
-                  <Route path="models" element={<ModelSelectionPage />} />
-                  <Route path="models/:id" element={<ConfigurationViewer />} />
+                  <Route
+                    path="models"
+                    element={
+                      <ProtectedRoute>
+                        <ModelSelectionPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="models/:id"
+                    element={
+                      <ProtectedRoute>
+                        <ConfigurationViewer />
+                      </ProtectedRoute>
+                    }
+                  />
                   <Route
                     path="model/civic"
                     element={
                       <ProtectedRoute>
-                        <div className="flex justify-center items-center">
-                          <CarPreview />
-                        </div>
+                        <CarPreview />
                       </ProtectedRoute>
                     }
                   />
-
-                  {/* Mohid Anwar Blog Routes */}
-                  <Route path="blog-dashboard" element={<PostPage />} />
-                  <Route path="blog/author/:id" element={<PostPage />} />
-                  <Route path="blog/:id" element={<SingleBlogPage />} />
-                  <Route path="blog-create" element={<NewBlog />} />
-                  <Route path="blog/:id/edit" element={<EditBlog />} />
+                  <Route
+                    path="blog-dashboard"
+                    element={
+                      <ProtectedRoute>
+                        <PostPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="blog/author/:id"
+                    element={
+                      <ProtectedRoute>
+                        <PostPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="blog/:id"
+                    element={
+                      <ProtectedRoute>
+                        <SingleBlogPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="blog-create"
+                    element={
+                      <ProtectedRoute>
+                        <NewBlog />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="blog/:id/edit"
+                    element={
+                      <ProtectedRoute>
+                        <EditBlog />
+                      </ProtectedRoute>
+                    }
+                  />
                   <Route
                     path="blog-actions-dashboard"
-                    element={<AuthorPostPage />}
+                    element={
+                      <ProtectedRoute>
+                        <AuthorPostPage />
+                      </ProtectedRoute>
+                    }
                   />
-
-                  {/* Ahmad Marketplace  */}
-                  <Route path="success" element={<Success />} />
-                  <Route path="failure" element={<Failure />} />
-                  <Route path="buy-parts" element={<CarPartsMarketplace />} />
-                  <Route path="subscription" element={<SubscriptionSelect />} />
-
-                  {/* Mohid Anwar Feedback */}
-                  <Route path="feedback" element={<FeedbackPage />} />
-                  {/* Forum Page */}
-                  <Route path="forum-page" element={<ForumPage />} />
-                  {/* Ai Ahmad */}
+                  <Route
+                    path="success"
+                    element={
+                      <ProtectedRoute>
+                        <Success />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="failure"
+                    element={
+                      <ProtectedRoute>
+                        <Failure />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="buy-parts"
+                    element={
+                      <ProtectedRoute>
+                        <CarPartsMarketplace />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="subscription"
+                    element={
+                      <ProtectedRoute>
+                        <SubscriptionSelect />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="feedback"
+                    element={
+                      <ProtectedRoute>
+                        <FeedbackPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="forum-page"
+                    element={
+                      <ProtectedRoute>
+                        <ForumPage />
+                      </ProtectedRoute>
+                    }
+                  />
                   <Route
                     path="car-enhancements"
-                    element={<CarEnhancements />}
+                    element={
+                      <ProtectedRoute>
+                        <CarEnhancements />
+                      </ProtectedRoute>
+                    }
                   />
                 </Route>
               </Routes>
