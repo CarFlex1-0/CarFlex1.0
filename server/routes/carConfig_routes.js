@@ -1,6 +1,6 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { authenticateToken } = require('../middlewares/authenticate');
+const { authenticateToken } = require("../middlewares/authenticate");
 const {
   saveConfiguration,
   getConfigurations,
@@ -8,21 +8,28 @@ const {
   deleteConfiguration,
   updateConfiguration,
   shareConfiguration,
-  removeShare
-} = require('../controllers/car_config_controller');
+  removeShare,
+  rateConfiguration,
+  getAllPublicConfigurations,
+  getUserRating,
+} = require("../controllers/car_config_controller");
 
 router.use(authenticateToken);
 
-router.route('/')
-  .post( saveConfiguration)
-  .get( getConfigurations);
+// Base routes
+router.route("/").post(saveConfiguration).get(getConfigurations);
 
-router.post('/share', shareConfiguration);
-router.delete('/share', removeShare);
+// Put specific routes before parameter routes
+router.post("/public", getAllPublicConfigurations);
+router.post("/rate", rateConfiguration);
+router.get("/rating/:configId", getUserRating);
+router.post("/share", shareConfiguration);
+router.delete("/share", removeShare);
 
-router.route('/:id')
+// Parameter routes should come last
+router.route("/:id")
   .get(getConfigurationById)
   .put(updateConfiguration)
   .delete(deleteConfiguration);
 
-module.exports = router; 
+module.exports = router;

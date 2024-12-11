@@ -141,20 +141,64 @@ export function SideBar() {
               </ListItem>
             </Link>
 
-            <Link
-              to="models"
-              onClick={() => {
-                closeDrawer();
-                setDrawerState(false);
-              }}
+            <Accordion
+              open={accordionOpen === 3} // Use a new number for this accordion
+              icon={
+                <FaChevronDown
+                  strokeWidth={2.5}
+                  className={`mx-auto h-4 w-4 transition-transform ${
+                    accordionOpen === 3 ? "rotate-180" : ""
+                  }`}
+                />
+              }
             >
-              <ListItem className="text-lg">
-                <ListItemPrefix className="me-3">
-                  <MdOutlineDirectionsCar className="h-5 w-5" />
-                </ListItemPrefix>
-                Customize Your Car
+              <ListItem className="p-0" selected={accordionOpen === 3}>
+                <AccordionHeader
+                  onClick={() => handleAccordionOpen(3)}
+                  className="border-b-0 p-3"
+                >
+                  <ListItemPrefix>
+                    <MdOutlineDirectionsCar className="h-5 w-5 me-3" />
+                  </ListItemPrefix>
+                  <Typography color="blue-gray" className="mr-auto font-normal">
+                    Customize Your Car
+                  </Typography>
+                </AccordionHeader>
               </ListItem>
-            </Link>
+              <AccordionBody className="py-1">
+                <List className="p-0 text-white">
+                  <Link
+                    to="models"
+                    onClick={() => {
+                      closeDrawer();
+                      setDrawerState(false);
+                    }}
+                  >
+                    <ListItem>
+                      <ListItemPrefix>
+                        <FaAngleRight strokeWidth={3} className="h-3 w-5" />
+                      </ListItemPrefix>
+                      Car Models
+                    </ListItem>
+                  </Link>
+
+                  <Link
+                    to="models/ratings"
+                    onClick={() => {
+                      closeDrawer();
+                      setDrawerState(false);
+                    }}
+                  >
+                    <ListItem>
+                      <ListItemPrefix>
+                        <FaAngleRight strokeWidth={3} className="h-3 w-5" />
+                      </ListItemPrefix>
+                      View Ratings
+                    </ListItem>
+                  </Link>
+                </List>
+              </AccordionBody>
+            </Accordion>
 
             <Link
               to="car-enhancements"

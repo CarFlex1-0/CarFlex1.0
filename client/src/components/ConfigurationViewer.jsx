@@ -12,6 +12,7 @@ import { CiEdit } from "react-icons/ci";
 import { MdDeleteForever } from "react-icons/md";
 import { GiSpeedometer } from "react-icons/gi";
 import { motion } from "framer-motion";
+import RatingStars from "@components/RatingStars";
 
 const ConfigurationViewer = () => {
   const { id } = useParams();
@@ -27,10 +28,26 @@ const ConfigurationViewer = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [userRating, setUserRating] = useState(null);
 
   useEffect(() => {
     fetchConfiguration();
   }, [id]);
+
+  useEffect(() => {
+    const fetchUserRating = async () => {
+      try {
+        const response = await axios.get(`/car-configs/rating/${id}`);
+        setUserRating(response.data.data.rating);
+      } catch (error) {
+        console.error('Error fetching user rating:', error);
+      }
+    };
+
+    if (config) {
+      fetchUserRating();
+    }
+  }, [config]);
 
   const fetchConfiguration = async () => {
     try {
@@ -134,6 +151,26 @@ const ConfigurationViewer = () => {
     return () => clearTimeout(timer);
   }, [shareEmail]);
 
+  const handleRating = async (rating) => {
+    try {
+      const response = await axios.post('/car-configs/rate', {
+        configId: id,
+        rating
+      });
+      
+      setConfig(prev => ({
+        ...prev,
+        averageRating: response.data.data.averageRating,
+        totalRatings: response.data.data.totalRatings
+      }));
+      
+      setUserRating(rating);
+      toast.success('Rating submitted successfully!');
+    } catch (error) {
+      toast.error('Failed to submit rating');
+    }
+  };
+
   if (isLoading) {
     return (
       <div
@@ -155,28 +192,38 @@ const ConfigurationViewer = () => {
       <BackgroundIcons />
 
       <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex justify-between items-center mb-8"
+        >
           <div className="flex items-center gap-3">
             <div className={`p-3 rounded-full ${
-              config.customization.modelType === 'civic' 
+              config?.customization.modelType === 'civic' 
                 ? 'bg-blue-500/10' 
-                : config.customization.modelType === 'corolla'
+                : config?.customization.modelType === 'corolla'
                 ? 'bg-emerald-500/10'
                 : 'bg-purple-500/10'
             }`}>
               <BiCar className={`w-8 h-8 ${
-                config.customization.modelType === 'civic' 
+                config?.customization.modelType === 'civic' 
                   ? 'text-blue-500' 
-                  : config.customization.modelType === 'corolla'
+                  : config?.customization.modelType === 'corolla'
                   ? 'text-emerald-500'
                   : 'text-purple-500'
               }`} />
             </div>
             <div>
-              <h1 className="text-3xl font-bold">{config.name}</h1>
-              <p className={`text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                {getModelName(config.customization.modelType)}
-              </p>
+              <h1 className="text-3xl font-bold">{config?.name}</h1>
+              <div className="mt-2">
+                <RatingStars
+                  rating={config?.averageRating || 0}
+                  totalRatings={config?.totalRatings || 0}
+                  userRating={userRating}
+                  onRate={handleRating}
+                  size="lg"
+                />
+              </div>
             </div>
           </div>
 
@@ -187,12 +234,12 @@ const ConfigurationViewer = () => {
               onClick={() => setShowShareModal(true)}
               className={`flex items-center gap-2 px-6 py-2.5 rounded-xl ${
                 isDarkMode 
-                  ? 'bg-gray-800/50 hover:bg-blue-900/20 backdrop-blur-sm border border-blue-500/20 shadow-lg shadow-blue-500/10' 
-                  : 'bg-blue-500/10 hover:bg-blue-500/20 shadow-sm hover:shadow-blue-500/25'
-              } transition-all duration-300`}
+                  ? 'bg-gray-800/50 hover:bg-blue-900/20 backdrop-blur-sm border border-blue-500/20' 
+                  : 'bg-blue-500/10 hover:bg-blue-500/20'
+              }`}
             >
-              <FaShareAlt className={`w-4 h-4 ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`} />
-              <span className={`font-medium ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>Share</span>
+              <FaShareAlt className="w-4 h-4" />
+              <span>Share</span>
             </motion.button>
 
             <motion.button
@@ -201,31 +248,31 @@ const ConfigurationViewer = () => {
               onClick={handleEdit}
               className={`flex items-center gap-2 px-6 py-2.5 rounded-xl ${
                 isDarkMode 
-                  ? 'bg-gray-800/50 hover:bg-emerald-900/20 backdrop-blur-sm border border-emerald-500/20 shadow-lg shadow-emerald-500/10' 
-                  : 'bg-emerald-500/10 hover:bg-emerald-500/20 shadow-sm hover:shadow-emerald-500/25'
-              } transition-all duration-300`}
+                  ? 'bg-gray-800/50 hover:bg-emerald-900/20 backdrop-blur-sm border border-emerald-500/20' 
+                  : 'bg-emerald-500/10 hover:bg-emerald-500/20'
+              }`}
             >
-              <CiEdit className={`w-4 h-4 ${isDarkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
-              <span className={`font-medium ${isDarkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>Edit</span>
+              <CiEdit className="w-4 h-4" />
+              <span>Edit</span>
             </motion.button>
 
-            {config.creator._id === user._id && (
+            {config?.creator._id === user._id && (
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setShowDeleteModal(true)}
                 className={`flex items-center gap-2 px-6 py-2.5 rounded-xl ${
                   isDarkMode 
-                    ? 'bg-gray-800/50 hover:bg-red-900/20 backdrop-blur-sm border border-red-500/20 shadow-lg shadow-red-500/10' 
-                    : 'bg-red-500/10 hover:bg-red-500/20 shadow-sm hover:shadow-red-500/25'
-                } transition-all duration-300`}
+                    ? 'bg-gray-800/50 hover:bg-red-900/20 backdrop-blur-sm border border-red-500/20' 
+                    : 'bg-red-500/10 hover:bg-red-500/20'
+                }`}
               >
-                <MdDeleteForever className={`w-4 h-4 ${isDarkMode ? 'text-red-400' : 'text-red-600'}`} />
-                <span className={`font-medium ${isDarkMode ? 'text-red-400' : 'text-red-600'}`}>Delete</span>
+                <MdDeleteForever className="w-4 h-4" />
+                <span>Delete</span>
               </motion.button>
             )}
           </div>
-        </div>
+        </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <motion.div

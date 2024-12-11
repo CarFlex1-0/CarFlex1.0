@@ -122,13 +122,7 @@ const ModelSelectionPage = () => {
   }
 
   return (
-    <div
-      className={
-        drawerState
-          ? "blur bg-blue-950 cursor-none"
-          : ""
-      }
-    >
+    <div className={drawerState ? "blur bg-blue-950 cursor-none" : ""}>
       <div
         className={`min-h-screen relative ${
           isDarkMode

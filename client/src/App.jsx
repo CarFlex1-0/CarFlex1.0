@@ -46,6 +46,7 @@ import ModelSelectionPage from "@pages/ModelSelectionPage";
 import ConfigurationViewer from "@components/ConfigurationViewer";
 import AdminLoginPage from "@pages/AdminLoginPage";
 import OrderDetailsPage from "@components/maketplace_buyer/OrderDetailsPage";
+import CarModelRating from "@pages/CarModelRating";
 // import OrderDetailsPage from "@pages/OrderDetailsPage";
 
 // Extra! Should be Deleted along with files
@@ -264,6 +265,15 @@ function App() {
                       </ProtectedRoute>
                     }
                   />
+                  <Route
+                    path="models/ratings"
+                    element={
+                      <ProtectedRoute>
+                        <CarModelRating />
+                      </ProtectedRoute>
+                    }
+                  />
+                  
                   <Route
                     path="model/civic"
                     element={
