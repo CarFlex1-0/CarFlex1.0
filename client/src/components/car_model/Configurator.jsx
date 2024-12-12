@@ -25,6 +25,7 @@ import { useTheme } from "@contexts/ThemeContext";
 import { useLocation } from "react-router-dom";
 import { toast, Slide } from "react-toastify";
 import Cookies from "js-cookie";
+import RatingStars from "@components/RatingStars";
 
 const Configurator = () => {
   const {
@@ -284,12 +285,19 @@ const Configurator = () => {
   const { user } = useAuth();
   const location = useLocation();
   const existingConfig = location.state?.config;
+  const isViewMode = location.state?.isViewMode;
+  const configData = location.state?.config;
+  const [currentRating, setCurrentRating] = useState({
+    averageRating: configData?.averageRating || 0,
+    totalRatings: configData?.totalRatings || 0,
+  });
 
   // Add these new states
   const [isConfigOpen, setIsConfigOpen] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [configName, setConfigName] = useState("");
+  const [showRadialChart, setShowRadialChart] = useState(false);
 
   // Add useEffect for loading existing configuration
   useEffect(() => {
@@ -476,13 +484,50 @@ const Configurator = () => {
           {isConfigOpen ? "Close" : "Open"} Configurator
         </button>
 
-        <button
-          onClick={handleSave}
-          disabled={isSaving}
-          className="flex-1 h-full bg-white/5 hover:bg-green-500/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.3)] transition-all duration-300 text-white font-medium disabled:opacity-50 border-r border-white/10"
-        >
-          {isSaving ? "Saving..." : "Save Configuration"}
-        </button>
+        {isViewMode ? (
+          <div className="flex-1 h-full bg-white/5 flex items-center justify-center px-4 border-r border-white/10">
+            <RatingStars
+              rating={currentRating.averageRating}
+              totalRatings={currentRating.totalRatings}
+              onRate={async (rating) => {
+                try {
+                  const response = await axios.post("/car-configs/rate", {
+                    configId: configData._id,
+                    rating,
+                  });
+
+                  setCurrentRating({
+                    averageRating: response.data.data.averageRating,
+                    totalRatings: response.data.data.totalRatings,
+                  });
+
+                  toast.success("Rating submitted successfully!", {
+                    position: "top-right",
+                    autoClose: 3000,
+                    theme: isDarkMode ? "dark" : "light",
+                    transition: Slide,
+                  });
+                } catch (error) {
+                  toast.error("Failed to submit rating", {
+                    position: "top-right",
+                    autoClose: 3000,
+                    theme: isDarkMode ? "dark" : "light",
+                    transition: Slide,
+                  });
+                }
+              }}
+              size="lg"
+            />
+          </div>
+        ) : (
+          <button
+            onClick={handleSave}
+            disabled={isSaving}
+            className="flex-1 h-full bg-white/5 hover:bg-green-500/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.3)] transition-all duration-300 text-white font-medium disabled:opacity-50 border-r border-white/10"
+          >
+            {isSaving ? "Saving..." : "Save Configuration"}
+          </button>
+        )}
 
         {/* Theme Toggle Button */}
         <button
@@ -575,41 +620,12 @@ const Configurator = () => {
         >
           Performance Details
         </div>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="name"
-              stroke={isDarkMode ? "#FFFFFF" : "#000000"}
-              tick={{ fill: isDarkMode ? "#FFFFFF" : "#000000" }}
-            />
-            <YAxis
-              stroke={isDarkMode ? "#FFFFFF" : "#000000"}
-              domain={[0, (dataMax) => Math.max(dataMax, getMaxValue("Stock"))]}
-              tick={{ fill: isDarkMode ? "#FFFFFF" : "#000000" }}
-            />
-            <Tooltip content={<CustomTooltip />} />
-            <Legend
-              wrapperStyle={{
-                color: isDarkMode ? "#FFFFFF" : "#000000",
-              }}
-            />
-            <Bar dataKey="Stock" fill="#8884d8" />
-            <Bar dataKey="New" fill="#82ca9d" />
-          </BarChart>
-        </ResponsiveContainer>
 
-        {/* Line Chart */}
-        <div className="mt-10 w-full">
-          <div
-            className={`text-${
-              isDarkMode ? "white" : "gray-800"
-            } text-2xl mb-3`}
-          >
-            Performance Trend
-          </div>
+        {/* Bar and Line Charts */}
+        <div className="w-full">
+          {/* Bar Chart */}
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={data}>
+            <BarChart data={data}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
                 dataKey="name"
@@ -630,67 +646,52 @@ const Configurator = () => {
                   color: isDarkMode ? "#FFFFFF" : "#000000",
                 }}
               />
-              <Line type="monotone" dataKey="Stock" stroke="#8884d8" />
-              <Line type="monotone" dataKey="New" stroke="#82ca9d" />
-            </LineChart>
+              <Bar dataKey="Stock" fill="#8884d8" />
+              <Bar dataKey="New" fill="#82ca9d" />
+            </BarChart>
           </ResponsiveContainer>
-        </div>
 
-        {/* Radial Chart */}
-        <div className="mt-10 w-full">
-          <div
-            className={`text-${
-              isDarkMode ? "white" : "gray-800"
-            } text-2xl mb-3`}
-          >
-            Performance Overview
-          </div>
-          <ResponsiveContainer width="100%" height={400}>
-            <RadialBarChart
-              innerRadius="20%"
-              outerRadius="80%"
-              data={data}
-              startAngle={180}
-              endAngle={0}
+          {/* Line Chart */}
+          <div className="mt-10 w-full">
+            <div
+              className={`text-${
+                isDarkMode ? "white" : "gray-800"
+              } text-2xl mb-3`}
             >
-              <PolarAngleAxis
-                type="number"
-                domain={getRadialDomain()}
-                tick={{ fill: isDarkMode ? "#FFFFFF" : "#000000" }}
-              />
-              <RadialBar
-                minAngle={15}
-                background
-                clockWise={true}
-                dataKey="Stock"
-                fill="#8884d8"
-                name="Stock"
-              />
-              <RadialBar
-                minAngle={15}
-                background
-                clockWise={true}
-                dataKey="New"
-                fill="#82ca9d"
-                name="New"
-              />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend
-                iconSize={10}
-                layout="vertical"
-                verticalAlign="middle"
-                wrapperStyle={{
-                  ...style,
-                  color: isDarkMode ? "#FFFFFF" : "#000000",
-                }}
-              />
-            </RadialBarChart>
-          </ResponsiveContainer>
+              Performance Trend
+            </div>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={data}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="name"
+                  stroke={isDarkMode ? "#FFFFFF" : "#000000"}
+                  tick={{ fill: isDarkMode ? "#FFFFFF" : "#000000" }}
+                />
+                <YAxis
+                  stroke={isDarkMode ? "#FFFFFF" : "#000000"}
+                  domain={[
+                    0,
+                    (dataMax) => Math.max(dataMax, getMaxValue("Stock")),
+                  ]}
+                  tick={{ fill: isDarkMode ? "#FFFFFF" : "#000000" }}
+                />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend
+                  wrapperStyle={{
+                    color: isDarkMode ? "#FFFFFF" : "#000000",
+                  }}
+                />
+                <Line type="monotone" dataKey="Stock" stroke="#8884d8" />
+                <Line type="monotone" dataKey="New" stroke="#82ca9d" />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       </div>
 
-      {/* Button Row */}
-      <div
+        {/* Button Row */}
+        <div
         className={`btn-row fixed top-20 ml-5 flex flex-col gap-4 ${
           isConfigOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         } transition-opacity duration-300 overflow-y-auto h-[80vh]`}
@@ -1067,1165 +1068,1277 @@ const Configurator = () => {
         </button>
       </div>
 
-      <div className="fixed right-6 bottom-[5vh] w-[380px] p-6 flex flex-col gap-2">
-        {/* Spoiler Customization */}
-        {spoilerClick && isConfigOpen && (
-          <>
-            {/* Spoiler Type Section */}
-            <div className="configurator__section">
-              <div className="uppercase font-bold text-white font-poppins">
-                Spoilers
-              </div>
-              <div className="flex flex-row gap-8 items-center flex-wrap py-4">
-                <div
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    spoiler === 0 ? "item--active" : ""
-                  }`}
-                  onClick={() => {
-                    setSpoiler(0);
-                    updateMetrics({
-                      ...bodyData,
-                      dC: bodyData.dC + 0.02,
-                      kW: bodyData.kW - 5,
-                    });
-                  }}
+      {/* Radial Chart - Adjusted positioning to align with button row */}
+      <div className="fixed top-28 left-[220px] w-[320px] h-[300px] rounded-lg p-4">
+        {/* Improved Toggle Button - Moved to top */}
+        <div className="absolute -top-11 left-3 w-full flex justify-start">
+          <button
+            onClick={() => setShowRadialChart(!showRadialChart)}
+            className={`
+              flex items-center gap-2 px-3 py-2 rounded-lg
+              transition-all duration-300 ease-in-out
+              ${
+                showRadialChart
+                  ? "bg-gray-800/80 hover:bg-gray-700/80"
+                  : "bg-indigo-600/80 hover:bg-indigo-500/80"
+              }
+              text-white font-medium text-sm
+              hover:shadow-lg transform hover:-translate-y-0.5
+              backdrop-blur-sm
+            `}
+          >
+            <span className="w-5">
+              {showRadialChart ? (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
                 >
-                  <div
-                    className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                      spoiler === 0 ? "text-white" : "text-gray-400"
-                    }`}
-                  >
-                    No Spoiler
-                  </div>
-                </div>
-                <div
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    spoiler === 1 ? "item--active" : ""
-                  }`}
-                  onClick={() => {
-                    setSpoiler(1);
-                    updateMetrics({
-                      ...bodyData,
-                      dC: bodyData.dC - 0.01,
-                      kW: bodyData.kW + 5,
-                    });
-                  }}
-                >
-                  <div
-                    className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                      spoiler === 1 ? "text-white" : "text-gray-400"
-                    }`}
-                  >
-                    Original Spoiler
-                  </div>
-                </div>
-                <div
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    spoiler === 2 ? "item--active" : ""
-                  }`}
-                  onClick={() => {
-                    setSpoiler(2);
-                    updateMetrics({
-                      ...bodyData,
-                      dC: bodyData.dC - 0.02,
-                      kW: bodyData.kW + 7,
-                    });
-                  }}
-                >
-                  <div
-                    className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                      spoiler === 2 ? "text-white" : "text-gray-400"
-                    }`}
-                  >
-                    Classic Spoiler
-                  </div>
-                </div>
-                <div
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    spoiler === 3 ? "item--active" : ""
-                  }`}
-                  onClick={() => {
-                    setSpoiler(3);
-                    updateMetrics({
-                      ...bodyData,
-                      dC: bodyData.dC - 0.03,
-                      kW: bodyData.kW + 10,
-                    });
-                  }}
-                >
-                  <div
-                    className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                      spoiler === 3 ? "text-white" : "text-gray-400"
-                    }`}
-                  >
-                    Spoiler 3
-                  </div>
-                </div>
-              </div>
-              <div className="text-white text-center font-bold text-sm capitalize">
-                The Civic Spoiler makes the car aerodynamic and gives it a
-                sporty look.
-              </div>
-            </div>
-
-            {/* Spoiler Color Section */}
-            {spoiler !== 0 && (
-              <div className="configurator__section">
-                <div className="uppercase font-bold text-white font-poppins">
-                  Spoiler Color
-                </div>
-                <div className="flex flex-row gap-8 items-center flex-wrap py-4">
-                  {spoilerColors.map((item, index) => (
-                    <div
-                      key={index}
-                      className={`item flex flex-col items-center transition-all duration-400 ${
-                        item.color === spoilerColor.color ? "item--active" : ""
-                      }`}
-                      onClick={() => setSpoilerColor(item)}
-                    >
-                      <div
-                        className="w-8 h-8 rounded-full border-2"
-                        style={{ backgroundColor: item.color }}
-                      />
-                      <div
-                        className={`text-center font-bold text-sm capitalize ${
-                          item.color === spoilerColor.color
-                            ? "text-white"
-                            : "text-gray-400"
-                        }`}
-                      >
-                        {item.name}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </>
-        )}
-
-        {/* Bonnet Customization */}
-        {bonnetClick && isConfigOpen && (
-          <>
-            {/* Bonnet Type Section */}
-            <div className="configurator__section">
-              <div className="uppercase font-bold text-white font-poppins">
-                Bonnets
-              </div>
-              <div className="flex flex-row gap-8 items-center flex-wrap py-4">
-                <div
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    bonnet === 0 ? "item--active" : ""
-                  }`}
-                  onClick={() => {
-                    setEngineClick(true);
-                    if (bonnet === 1) {
-                      setBonnet(3);
-                    } else setBonnet(4);
-                  }}
-                >
-                  <div
-                    className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                      bonnet === 3 || bonnet === 4
-                        ? "text-white"
-                        : "text-gray-400"
-                    }`}
-                  >
-                    Open Bonnet
-                  </div>
-                </div>
-                <div
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    bonnet === 1 ? "item--active" : ""
-                  }`}
-                  onClick={() => {
-                    setEngineClick(false);
-                    setBonnet(1);
-                    updateMetrics({
-                      ...bodyData,
-                      kW: bodyData.kW + 5,
-                    });
-                  }}
-                >
-                  <div
-                    className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                      bonnet === 1 ? "text-white" : "text-gray-400"
-                    }`}
-                  >
-                    Original Bonnet
-                  </div>
-                </div>
-                <div
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    bonnet === 2 ? "item--active" : ""
-                  }`}
-                  onClick={() => {
-                    setEngineClick(false);
-                    setBonnet(2);
-                    updateMetrics({
-                      ...bodyData,
-                      kW: bodyData.kW + 3,
-                      dC: bodyData.dC - 0.01,
-                      rpm: bodyData.rpm + 50,
-                      brpm: bodyData.brpm + 50,
-                    });
-                  }}
-                >
-                  <div
-                    className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                      bonnet === 2 ? "text-white" : "text-gray-400"
-                    }`}
-                  >
-                    Modded Bonnet
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Bonnet Color Section */}
-            {bonnet !== 3 && bonnet !== 4 && (
-              <div className="configurator__section">
-                <div className="uppercase font-bold text-white font-poppins">
-                  Bonnet Color
-                </div>
-                <div className="flex flex-row gap-8 items-center flex-wrap py-4">
-                  {bonnetColors.map((item, index) => (
-                    <div
-                      key={index}
-                      className={`item flex flex-col items-center transition-all duration-400 ${
-                        item.color === bonnetColor.color ? "item--active" : ""
-                      }`}
-                      onClick={() => setBonnetColor(item)}
-                    >
-                      <div
-                        className="w-8 h-8 rounded-full border-2"
-                        style={{ backgroundColor: item.color }}
-                      />
-                      <div
-                        className={`text-center font-bold text-sm capitalize ${
-                          item.color === bonnetColor.color
-                            ? "text-white"
-                            : "text-gray-400"
-                        }`}
-                      >
-                        {item.name}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </>
-        )}
-
-        {/* Engine Customization */}
-        {engineClick && isConfigOpen && (
-          <>
-            {/* Engine Type Section */}
-            <div className="configurator__section">
-              <div className="uppercase font-bold text-white font-poppins">
-                Engines
-              </div>
-              <div className="flex flex-row gap-8 items-center flex-wrap py-4">
-                <div
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    engine === 1 ? "item--active" : ""
-                  }`}
-                  onClick={() => {
-                    setEngine(1);
-                    updateMetrics({
-                      ...bodyData,
-                      p: 320,
-                      t: 400,
-                      r: 2500,
-                      nOC: 4,
-                      bD: 86,
-                      pS: 85.9,
-                      brpm: 6500,
-                    });
-                  }}
-                >
-                  <div
-                    className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                      engine === 1 ? "text-white" : "text-gray-400"
-                    }`}
-                  >
-                    Stock Engine
-                  </div>
-                </div>
-                <div
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    engine === 2 ? "item--active" : ""
-                  }`}
-                  onClick={() => {
-                    setEngine(2);
-                    updateMetrics({
-                      ...bodyData,
-                      p: 390,
-                      t: 440,
-                      r: 3300,
-                      nOC: 6,
-                      bD: 90,
-                      pS: 90.9,
-                      brpm: 8000,
-                    });
-                  }}
-                >
-                  <div
-                    className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                      engine === 2 ? "text-white" : "text-gray-400"
-                    }`}
-                  >
-                    VTEC D16
-                  </div>
-                </div>
-                <div
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    engine === 3 ? "item--active" : ""
-                  }`}
-                  onClick={() => {
-                    setEngine(3);
-                    updateMetrics({
-                      ...bodyData,
-                      p: 430,
-                      t: 480,
-                      r: 3700,
-                      nOC: 8,
-                      bD: 92,
-                      pS: 93,
-                      brpm: 8500,
-                    });
-                  }}
-                >
-                  <div
-                    className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                      engine === 3 ? "text-white" : "text-gray-400"
-                    }`}
-                  >
-                    2JZ Engine
-                  </div>
-                </div>
-              </div>
-            </div>
-          </>
-        )}
-
-        {/* Wheel Customization */}
-        {wheelsClick && isConfigOpen && (
-          <>
-            {/* WheelType Section */}
-            <div className="configurator__section">
-              <div className="uppercase font-bold text-white font-poppins">
-                Wheel Offset
-              </div>
-              <div className="flex flex-row gap-8 items-center flex-wrap py-4">
-                <div
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    wheels === 0 ? "item--active" : ""
-                  }`}
-                  onClick={() => {
-                    setWheels(0);
-                    updateMetrics({
-                      ...bodyData,
-                      kW: bodyData.kW - 10,
-                      dC: bodyData.dC + 0.01,
-                    });
-                  }}
-                >
-                  <div
-                    className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                      wheels === 0 ? "text-white" : "text-gray-400"
-                    }`}
-                  >
-                    Stock Wheels
-                  </div>
-                </div>
-
-                <div
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    wheels === 1 ? "item--active" : ""
-                  }`}
-                  onClick={() => {
-                    setWheels(1);
-                    updateMetrics({
-                      ...bodyData,
-                      kW: bodyData.kW + 5,
-                      dC: bodyData.dC - 0.005,
-                    });
-                  }}
-                >
-                  <div
-                    className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                      wheels === 1 ? "text-white" : "text-gray-400"
-                    }`}
-                  >
-                    5 degree Offset
-                  </div>
-                </div>
-
-                <div
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    wheels === 2 ? "item--active" : ""
-                  }`}
-                  onClick={() => {
-                    setWheels(2);
-                    updateMetrics({
-                      ...bodyData,
-                      kW: bodyData.kW + 10,
-                      dC: bodyData.dC - 0.01,
-                    });
-                  }}
-                >
-                  <div
-                    className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                      wheels === 2 ? "text-white" : "text-gray-400"
-                    }`}
-                  >
-                    10 degree Offset
-                  </div>
-                </div>
-
-                <div
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    wheels === 3 ? "item--active" : ""
-                  }`}
-                  onClick={() => {
-                    setWheels(3);
-                    updateMetrics({
-                      ...bodyData,
-                      kW: bodyData.kW + 15,
-                      dC: bodyData.dC - 0.015,
-                    });
-                  }}
-                >
-                  <div
-                    className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                      wheels === 3 ? "text-white" : "text-gray-400"
-                    }`}
-                  >
-                    15 degree Offset
-                  </div>
-                </div>
-              </div>
-            </div>
-          </>
-        )}
-
-        {/* Diffuser Customization */}
-        {diffuserClick && isConfigOpen && (
-          <>
-            {/* Diffuser Type Section */}
-            <div className="configurator__section">
-              <div className="uppercase font-bold text-white font-poppins">
-                Diffusers
-              </div>
-              <div className="flex flex-row gap-8 items-center flex-wrap py-4">
-                <div
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    diffuser === 3 ? "item--active" : ""
-                  }`}
-                  onClick={() => {
-                    setDiffuser(3);
-                    if (silencer === 2) {
-                      setSilencer(1);
-                    } else if (silencer === 4) {
-                      setSilencer(3);
-                    }
-                    updateMetrics({
-                      ...bodyData,
-                      dC: bodyData.dC + 0.02,
-                      kW: bodyData.kW - 5,
-                    });
-                  }}
-                >
-                  <div
-                    className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                      diffuser === 3 ? "text-white" : "text-gray-400"
-                    }`}
-                  >
-                    No Diffuser
-                  </div>
-                </div>
-                <div
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    diffuser === 0 ? "item--active" : ""
-                  }`}
-                  onClick={() => {
-                    setDiffuser(0);
-                    if (silencer === 2) {
-                      setSilencer(1);
-                    } else if (silencer === 4) {
-                      setSilencer(3);
-                    }
-                    updateMetrics({
-                      ...bodyData,
-                      dC: bodyData.dC - 0.01,
-                      kW: bodyData.kW + 3,
-                    });
-                  }}
-                >
-                  <div
-                    className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                      diffuser === 0 ? "text-white" : "text-gray-400"
-                    }`}
-                  >
-                    Diffuser 01
-                  </div>
-                </div>
-                <div
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    diffuser === 1 ? "item--active" : ""
-                  }`}
-                  onClick={() => {
-                    setDiffuser(1);
-                    if (silencer === 2) {
-                      setSilencer(1);
-                    } else if (silencer === 4) {
-                      setSilencer(3);
-                    }
-                    updateMetrics({
-                      ...bodyData,
-                      dC: bodyData.dC - 0.015,
-                      kW: bodyData.kW + 4,
-                    });
-                  }}
-                >
-                  <div
-                    className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                      diffuser === 1 ? "text-white" : "text-gray-400"
-                    }`}
-                  >
-                    Diffuser 02
-                  </div>
-                </div>
-                <div
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    diffuser === 2 ? "item--active" : ""
-                  }`}
-                  onClick={() => {
-                    setDiffuser(2);
-                    if (silencer === 1) {
-                      setSilencer(2);
-                    } else if (silencer === 3) {
-                      setSilencer(4);
-                    }
-                    updateMetrics({
-                      ...bodyData,
-                      dC: bodyData.dC - 0.02,
-                      kW: bodyData.kW + 5,
-                    });
-                  }}
-                >
-                  <div
-                    className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                      diffuser === 2 ? "text-white" : "text-gray-400"
-                    }`}
-                  >
-                    Diffuser 03
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Diffuser Color Section */}
-            {diffuser !== 3 && (
-              <div className="configurator__section">
-                <div className="uppercase font-bold text-white font-poppins">
-                  Diffuser Color
-                </div>
-                <div className="flex flex-row gap-8 items-center flex-wrap py-4">
-                  {diffuserColors.map((item, index) => (
-                    <div
-                      key={index}
-                      className={`item flex flex-col items-center transition-all duration-400 ${
-                        item.color === diffuserColor.color ? "item--active" : ""
-                      }`}
-                      onClick={() => setDiffuserColor(item)}
-                    >
-                      <div
-                        className="w-8 h-8 rounded-full border-2"
-                        style={{ backgroundColor: item.color }}
-                      />
-                      <div
-                        className={`text-center font-bold text-sm capitalize ${
-                          item.color === diffuserColor.color
-                            ? "text-white"
-                            : "text-gray-400"
-                        }`}
-                      >
-                        {item.name}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </>
-        )}
-
-        {/* Silencer Selection Customization (Not done yet) */}
-        {silencerClick && isConfigOpen && (
-          <>
-            {/* Silencer Type Section */}
-            <div className="configurator__section">
-              <div className="uppercase font-bold text-white font-poppins">
-                {diffuser === 3 || diffuser === 0 || diffuser === 1
-                  ? "Silencers"
-                  : "Lowered Silencers"}
-              </div>
-
-              <div className="flex flex-row gap-8 items-center flex-wrap py-4">
-                {(diffuser === 3 || diffuser === 0 || diffuser === 1) && (
-                  <>
-                    <div
-                      className={`item flex flex-col items-center transition-all duration-400 ${
-                        silencer === 1 ? "item--active" : ""
-                      }`}
-                      onClick={() => {
-                        setSilencer(1);
-                        updateMetrics({
-                          ...bodyData,
-                          dC: bodyData.dC + 0.01,
-                          kW: bodyData.kW + 2,
-                        });
-                      }}
-                    >
-                      <div
-                        className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                          silencer === 1 ? "text-white" : "text-gray-400"
-                        }`}
-                      >
-                        Silencer Triple
-                      </div>
-                    </div>
-
-                    <div
-                      className={`item flex flex-col items-center transition-all duration-400 ${
-                        silencer === 3 ? "item--active" : ""
-                      }`}
-                      onClick={() => {
-                        setSilencer(3);
-                        updateMetrics({
-                          ...bodyData,
-                          dC: bodyData.dC - 0.005,
-                          kW: bodyData.kW + 1,
-                        });
-                      }}
-                    >
-                      <div
-                        className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                          silencer === 3 ? "text-white" : "text-gray-400"
-                        }`}
-                      >
-                        Silencer Single
-                      </div>
-                    </div>
-                  </>
-                )}
-
-                {diffuser === 2 && (
-                  <>
-                    <div
-                      className={`item flex flex-col items-center transition-all duration-400 ${
-                        silencer === 2 ? "item--active" : ""
-                      }`}
-                      onClick={() => {
-                        setSilencer(2);
-                        updateMetrics({
-                          ...bodyData,
-                          dC: bodyData.dC + 0.005,
-                          kW: bodyData.kW + 3,
-                        });
-                      }}
-                    >
-                      <div
-                        className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                          silencer === 2 ? "text-white" : "text-gray-400"
-                        }`}
-                      >
-                        Triple Silencer
-                      </div>
-                    </div>
-
-                    <div
-                      className={`item flex flex-col items-center transition-all duration-400 ${
-                        silencer === 4 ? "item--active" : ""
-                      }`}
-                      onClick={() => {
-                        setSilencer(4);
-                        updateMetrics({
-                          ...bodyData,
-                          dC: bodyData.dC - 0.01,
-                          kW: bodyData.kW + 2,
-                        });
-                      }}
-                    >
-                      <div
-                        className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                          silencer === 4 ? "text-white" : "text-gray-400"
-                        }`}
-                      >
-                        Ring Silencer
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-          </>
-        )}
-
-        {/* SideKit Customization */}
-        {sideKitClick && isConfigOpen && (
-          <>
-            {/* Sidekit Type Section */}
-            <div className="configurator__section">
-              <div className="uppercase font-bold text-white font-poppins">
-                SideKits
-              </div>
-              <div className="flex flex-row gap-8 items-center flex-wrap py-4">
-                <div
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    sideKit === 0 ? "item--active" : ""
-                  }`}
-                  onClick={() => {
-                    setSideKit(0);
-                    updateMetrics({
-                      ...bodyData,
-                      dC: bodyData.dC + 0.01,
-                      kW: bodyData.kW - 5,
-                    });
-                  }}
-                >
-                  <div
-                    className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                      sideKit === 0 ? "text-white" : "text-gray-400"
-                    }`}
-                  >
-                    Remove Side Kit
-                  </div>
-                </div>
-                <div
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    sideKit === 1 ? "item--active" : ""
-                  }`}
-                  onClick={() => {
-                    setSideKit(1);
-                    updateMetrics({
-                      ...bodyData,
-                      dC: bodyData.dC - 0.01,
-                      kW: bodyData.kW + 5,
-                    });
-                  }}
-                >
-                  <div
-                    className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
-                      sideKit === 1 ? "text-white" : "text-gray-400"
-                    }`}
-                  >
-                    Add Side Kit
-                  </div>
-                </div>
-              </div>
-              <div className="text-white text-center font-bold text-sm capitalize">
-                A Side kit is a great option for a sporty look addition to your
-                Car.
-              </div>
-            </div>
-
-            {/* SideKit Color Section */}
-            {sideKit !== 0 && (
-              <div className="configurator__section">
-                <div className="uppercase font-bold text-white font-poppins">
-                  Side Kit Color
-                </div>
-                <div className="flex flex-row gap-8 items-center flex-wrap py-4">
-                  {sideKitColors.map((item, index) => (
-                    <div
-                      key={index}
-                      className={`item flex flex-col items-center transition-all duration-400 ${
-                        item.color === sideKitColor.color ? "item--active" : ""
-                      }`}
-                      onClick={() => setSideKitColor(item)}
-                    >
-                      <div
-                        className="w-8 h-8 rounded-full border-2"
-                        style={{ backgroundColor: item.color }}
-                      />
-                      <div
-                        className={`text-center font-bold text-sm capitalize ${
-                          item.color === sideKitColor.color
-                            ? "text-white"
-                            : "text-gray-400"
-                        }`}
-                      >
-                        {item.name}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </>
-        )}
-
-        {/* Door Customization */}
-        {doorClick && isConfigOpen && (
-          <div className="configurator__section">
-            <div className="uppercase font-bold text-white font-poppins">
-              Door Color
-            </div>
-            <div className="flex flex-row gap-8 items-center flex-wrap py-4">
-              {doorColors.map((item, index) => (
-                <div
-                  key={index}
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    item.color === doorColor.color ? "item--active" : ""
-                  }`}
-                  onClick={() => setDoorColor(item)}
-                >
-                  <div
-                    className="w-8 h-8 rounded-full border-2"
-                    style={{ backgroundColor: item.color }}
+                  <path
+                    fillRule="evenodd"
+                    d="M14.77 12.79a.75.75 0 01-1.06-.02L10 8.832 6.29 12.77a.75.75 0 11-1.08-1.04l4.25-4.5a.75.75 0 011.08 0l4.25 4.5a.75.75 0 01-.02 1.06z"
+                    clipRule="evenodd"
                   />
-                  <div
-                    className={`text-center font-bold text-sm text-gray-400 capitalize ${
-                      item.color === doorColor.color ? "text-white" : ""
-                    }`}
-                  >
-                    {item.name}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* bumperBack Customization */}
-
-        {bumperBackClick && isConfigOpen && (
-          <div className="configurator__section">
-            <div className="uppercase font-bold text-white font-poppins">
-              Back Bumper Color
-            </div>
-            <div className="flex flex-row gap-8 items-center flex-wrap py-4">
-              {bumperBackColors.map((item, index) => (
-                <div
-                  key={index}
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    item.color === bumperBackColor.color ? "item--active" : ""
-                  }`}
-                  onClick={() => setBumperBackColor(item)}
+                </svg>
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
                 >
-                  <div
-                    className="w-8 h-8 rounded-full border-2"
-                    style={{ backgroundColor: item.color }}
+                  <path
+                    fillRule="evenodd"
+                    d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                    clipRule="evenodd"
                   />
-                  <div
-                    className={`text-center font-bold text-sm text-gray-400 capitalize ${
-                      item.color === bumperBackColor.color ? "text-white" : ""
-                    }`}
-                  >
-                    {item.name}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+                </svg>
+              )}
+            </span>
+            <span className="whitespace-nowrap">
+              {showRadialChart ? "Hide Overview" : "Show Overview"}
+            </span>
+          </button>
+        </div>
 
-        {/* Trunk Customization */}
-        {trunkClick && isConfigOpen && (
-          <div className="configurator__section">
-            <div className="uppercase font-bold text-white font-poppins">
-              Trunk Color
-            </div>
-            <div className="flex flex-row gap-8 items-center flex-wrap py-4">
-              {trunkColors.map((item, index) => (
-                <div
-                  key={index}
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    item.color === trunkColor.color ? "item--active" : ""
-                  }`}
-                  onClick={() => setTrunkColor(item)}
-                >
-                  <div
-                    className="w-8 h-8 rounded-full border-2"
-                    style={{ backgroundColor: item.color }}
-                  />
-                  <div
-                    className={`text-center font-bold text-sm text-gray-400 capitalize ${
-                      item.color === trunkColor.color ? "text-white" : ""
-                    }`}
-                  >
-                    {item.name}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Roof Customization */}
-        {roofClick && isConfigOpen && (
-          <div className="configurator__section">
-            <div className="uppercase font-bold text-white font-poppins">
-              Roof Color
-            </div>
-            <div className="flex flex-row gap-8 items-center flex-wrap py-4">
-              {roofColors.map((item, index) => (
-                <div
-                  key={index}
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    item.color === roofColor.color ? "item--active" : ""
-                  }`}
-                  onClick={() => setRoofColor(item)}
-                >
-                  <div
-                    className="w-8 h-8 rounded-full border-2"
-                    style={{ backgroundColor: item.color }}
-                  />
-                  <div
-                    className={`text-center font-bold text-sm text-gray-400 capitalize ${
-                      item.color === roofColor.color ? "text-white" : ""
-                    }`}
-                  >
-                    {item.name}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Grill Customization */}
-        {grillClick && isConfigOpen && (
-          <div className="configurator__section">
-            <div className="uppercase font-bold text-white font-poppins">
-              Grill Color
-            </div>
-            <div className="flex flex-row gap-8 items-center flex-wrap py-4">
-              {grillColors.map((item, index) => (
-                <div
-                  key={index}
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    item.color === grillColor.color ? "item--active" : ""
-                  }`}
-                  onClick={() => setGrillColor(item)}
-                >
-                  <div
-                    className="w-8 h-8 rounded-full border-2"
-                    style={{ backgroundColor: item.color }}
-                  />
-                  <div
-                    className={`text-center font-bold text-sm text-gray-400 capitalize ${
-                      item.color === grillColor.color ? "text-white" : ""
-                    }`}
-                  >
-                    {item.name}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Front Customization */}
-        {bumperFrontClick && isConfigOpen && (
-          <div className="configurator__section">
-            <div className="uppercase font-bold text-white font-poppins">
-              Front bumper Color
-            </div>
-            <div className="flex flex-row gap-8 items-center flex-wrap py-4">
-              {bumperFrontColors.map((item, index) => (
-                <div
-                  key={index}
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    item.color === bumperFrontColor.color ? "item--active" : ""
-                  }`}
-                  onClick={() => setBumperFrontColor(item)}
-                >
-                  <div
-                    className="w-8 h-8 rounded-full border-2"
-                    style={{ backgroundColor: item.color }}
-                  />
-                  <div
-                    className={`text-center font-bold text-sm text-gray-400 capitalize ${
-                      item.color === bumperFrontColor.color ? "text-white" : ""
-                    }`}
-                  >
-                    {item.name}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Fender Customization */}
-        {fenderClick && isConfigOpen && (
-          <div className="configurator__section">
-            <div className="uppercase font-bold text-white font-poppins">
-              Fender Color
-            </div>
-            <div className="flex flex-row gap-8 items-center flex-wrap py-4">
-              {fenderColors.map((item, index) => (
-                <div
-                  key={index}
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    item.color === fenderColor.color ? "item--active" : ""
-                  }`}
-                  onClick={() => setFenderColor(item)}
-                >
-                  <div
-                    className="w-8 h-8 rounded-full border-2"
-                    style={{ backgroundColor: item.color }}
-                  />
-                  <div
-                    className={`text-center font-bold text-sm text-gray-400 capitalize ${
-                      item.color === fenderColor.color ? "text-white" : ""
-                    }`}
-                  >
-                    {item.name}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Rim Customization */}
-        {rimClick && isConfigOpen && (
-          <div className="configurator__section">
-            <div className="uppercase font-bold text-white font-poppins">
-              Rim Color
-            </div>
-            <div className="flex flex-row gap-8 items-center flex-wrap py-4">
-              {rimColors.map((item, index) => (
-                <div
-                  key={index}
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    item.color === rimColor.color ? "item--active" : ""
-                  }`}
-                  onClick={() => setRimColor(item)}
-                >
-                  <div
-                    className="w-8 h-8 rounded-full border-2"
-                    style={{ backgroundColor: item.color }}
-                  />
-                  <div
-                    className={`text-center font-bold text-sm text-gray-400 capitalize ${
-                      item.color === rimColor.color ? "text-white" : ""
-                    }`}
-                  >
-                    {item.name}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Window Customization */}
-        {windowClick && isConfigOpen && (
-          <div className="configurator__section">
-            <div className="uppercase font-bold text-white font-poppins">
-              Window Color
-            </div>
-            <div className="flex flex-row gap-8 items-center flex-wrap py-4">
-              {windowColors.map((item, index) => (
-                <div
-                  key={index}
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    item.color === windowColor.color ? "item--active" : ""
-                  }`}
-                  onClick={() => setWindowColor(item)}
-                >
-                  <div
-                    className="w-8 h-8 rounded-full border-2"
-                    style={{ backgroundColor: item.color }}
-                  />
-                  <div
-                    className={`text-center font-bold text-sm text-gray-400 capitalize ${
-                      item.color === windowColor.color ? "text-white" : ""
-                    }`}
-                  >
-                    {item.name}
-                  </div>
-                </div>
-              ))}
-              <div className="text-white text-center font-bold text-sm capitalize">
-                While Tints Aren't legal, they add a level of privacy to the
-                car.
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Light Customization */}
-        {/* {lightClick && (
-          <div className="configurator__section">
-            <div className="uppercase font-bold text-white font-poppins">
-              Light Color
-            </div>
-            <div className="flex flex-row gap-8 items-center flex-wrap py-4">
-              {lightColors.map((item, index) => (
-                <div
-                  key={index}
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    item.color === lightColor.color ? "item--active" : ""
-                  }`}
-                  onClick={() => setLightColor(item)}
-                >
-                  <div
-                    className="w-8 h-8 rounded-full border-2"
-                    style={{ backgroundColor: item.color }}
-                  />
-                  <div
-                    className={`text-center font-bold text-sm text-gray-400 capitalize ${
-                      item.color === lightColor.color ? "text-white" : ""
-                    }`}
-                  >
-                    {item.name}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )} */}
-
-        {/* Body Customization */}
-        {carBodyClick && isConfigOpen && ( // Make sure bodyColorClick is defined in the context
-          <div className="configurator__section">
-            <div className="uppercase font-bold text-white font-poppins">
-              Body Color
-            </div>
-            <div className="flex flex-row gap-8 items-center flex-wrap py-4">
-              {bodyColors.map((item, index) => (
-                <div
-                  key={index}
-                  className={`item flex flex-col items-center transition-all duration-400 ${
-                    item.color === carBodyColor.color ? "item--active" : ""
-                  }`}
-                  onClick={() => setCarBodyColor(item)} // Ensure setBodyColor is defined in context
-                >
-                  <div
-                    className="w-8 h-8 rounded-full border-2"
-                    style={{ backgroundColor: item.color }}
-                  />
-                  <div
-                    className={`text-center font-bold text-sm text-gray-400 capitalize ${
-                      item.color === carBodyColor.color ? "text-white" : ""
-                    }`}
-                  >
-                    {item.name}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        <div
+          className={`transition-all duration-300 ${
+            showRadialChart
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-4 pointer-events-none"
+          }`}
+        >
+          <div className="text-white text-xl mb-2">Performance Overview</div>
+          <ResponsiveContainer width="100%" height={250}>
+            <RadialBarChart
+              innerRadius="30%"
+              outerRadius="90%"
+              data={data}
+              startAngle={180}
+              endAngle={0}
+              barGap={2}
+              barCategoryGap={3}
+            >
+              <PolarAngleAxis
+                type="number"
+                domain={getRadialDomain()}
+                tick={{
+                  fill: isDarkMode ? "#FFFFFF" : "#000000",
+                  fontSize: 12,
+                }}
+              />
+              <RadialBar
+                minAngle={15}
+                background
+                clockWise={true}
+                dataKey="Stock"
+                fill="#8884d8"
+              />
+              <RadialBar
+                minAngle={15}
+                background
+                clockWise={true}
+                dataKey="New"
+                fill="#82ca9d"
+              />
+              <Tooltip content={<CustomTooltip />} />
+            </RadialBarChart>
+          </ResponsiveContainer>
+        </div>
       </div>
+
+      {/* Configuration Panels */}
+      {isConfigOpen && !isViewMode && (
+        <div className="fixed right-6 bottom-[5vh] w-[380px] p-6 flex flex-col gap-2">
+          {/* Spoiler Customization */}
+          {spoilerClick && isConfigOpen && (
+            <>
+              {/* Spoiler Type Section */}
+              <div className="configurator__section">
+                <div className="uppercase font-bold text-white font-poppins">
+                  Spoilers
+                </div>
+                <div className="flex flex-row gap-8 items-center flex-wrap py-4">
+                  <div
+                    className={`item flex flex-col items-center transition-all duration-400 ${
+                      spoiler === 0 ? "item--active" : ""
+                    }`}
+                    onClick={() => {
+                      setSpoiler(0);
+                      updateMetrics({
+                        ...bodyData,
+                        dC: bodyData.dC + 0.02,
+                        kW: bodyData.kW - 5,
+                      });
+                    }}
+                  >
+                    <div
+                      className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                        spoiler === 0 ? "text-white" : "text-gray-400"
+                      }`}
+                    >
+                      No Spoiler
+                    </div>
+                  </div>
+                  <div
+                    className={`item flex flex-col items-center transition-all duration-400 ${
+                      spoiler === 1 ? "item--active" : ""
+                    }`}
+                    onClick={() => {
+                      setSpoiler(1);
+                      updateMetrics({
+                        ...bodyData,
+                        dC: bodyData.dC - 0.01,
+                        kW: bodyData.kW + 5,
+                      });
+                    }}
+                  >
+                    <div
+                      className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                        spoiler === 1 ? "text-white" : "text-gray-400"
+                      }`}
+                    >
+                      Original Spoiler
+                    </div>
+                  </div>
+                  <div
+                    className={`item flex flex-col items-center transition-all duration-400 ${
+                      spoiler === 2 ? "item--active" : ""
+                    }`}
+                    onClick={() => {
+                      setSpoiler(2);
+                      updateMetrics({
+                        ...bodyData,
+                        dC: bodyData.dC - 0.02,
+                        kW: bodyData.kW + 7,
+                      });
+                    }}
+                  >
+                    <div
+                      className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                        spoiler === 2 ? "text-white" : "text-gray-400"
+                      }`}
+                    >
+                      Classic Spoiler
+                    </div>
+                  </div>
+                  <div
+                    className={`item flex flex-col items-center transition-all duration-400 ${
+                      spoiler === 3 ? "item--active" : ""
+                    }`}
+                    onClick={() => {
+                      setSpoiler(3);
+                      updateMetrics({
+                        ...bodyData,
+                        dC: bodyData.dC - 0.03,
+                        kW: bodyData.kW + 10,
+                      });
+                    }}
+                  >
+                    <div
+                      className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                        spoiler === 3 ? "text-white" : "text-gray-400"
+                      }`}
+                    >
+                      Spoiler 3
+                    </div>
+                  </div>
+                </div>
+                <div className="text-white text-center font-bold text-sm capitalize">
+                  The Civic Spoiler makes the car aerodynamic and gives it a
+                  sporty look.
+                </div>
+              </div>
+
+              {/* Spoiler Color Section */}
+              {spoiler !== 0 && (
+                <div className="configurator__section">
+                  <div className="uppercase font-bold text-white font-poppins">
+                    Spoiler Color
+                  </div>
+                  <div className="flex flex-row gap-8 items-center flex-wrap py-4">
+                    {spoilerColors.map((item, index) => (
+                      <div
+                        key={index}
+                        className={`item flex flex-col items-center transition-all duration-400 ${
+                          item.color === spoilerColor.color
+                            ? "item--active"
+                            : ""
+                        }`}
+                        onClick={() => setSpoilerColor(item)}
+                      >
+                        <div
+                          className="w-8 h-8 rounded-full border-2"
+                          style={{ backgroundColor: item.color }}
+                        />
+                        <div
+                          className={`text-center font-bold text-sm capitalize ${
+                            item.color === spoilerColor.color
+                              ? "text-white"
+                              : "text-gray-400"
+                          }`}
+                        >
+                          {item.name}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Bonnet Customization */}
+          {bonnetClick && isConfigOpen && (
+            <>
+              {/* Bonnet Type Section */}
+              <div className="configurator__section">
+                <div className="uppercase font-bold text-white font-poppins">
+                  Bonnets
+                </div>
+                <div className="flex flex-row gap-8 items-center flex-wrap py-4">
+                  <div
+                    className={`item flex flex-col items-center transition-all duration-400 ${
+                      bonnet === 0 ? "item--active" : ""
+                    }`}
+                    onClick={() => {
+                      setEngineClick(true);
+                      if (bonnet === 1) {
+                        setBonnet(3);
+                      } else setBonnet(4);
+                    }}
+                  >
+                    <div
+                      className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                        bonnet === 3 || bonnet === 4
+                          ? "text-white"
+                          : "text-gray-400"
+                      }`}
+                    >
+                      Open Bonnet
+                    </div>
+                  </div>
+                  <div
+                    className={`item flex flex-col items-center transition-all duration-400 ${
+                      bonnet === 1 ? "item--active" : ""
+                    }`}
+                    onClick={() => {
+                      setEngineClick(false);
+                      setBonnet(1);
+                      updateMetrics({
+                        ...bodyData,
+                        kW: bodyData.kW + 5,
+                      });
+                    }}
+                  >
+                    <div
+                      className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                        bonnet === 1 ? "text-white" : "text-gray-400"
+                      }`}
+                    >
+                      Original Bonnet
+                    </div>
+                  </div>
+                  <div
+                    className={`item flex flex-col items-center transition-all duration-400 ${
+                      bonnet === 2 ? "item--active" : ""
+                    }`}
+                    onClick={() => {
+                      setEngineClick(false);
+                      setBonnet(2);
+                      updateMetrics({
+                        ...bodyData,
+                        kW: bodyData.kW + 3,
+                        dC: bodyData.dC - 0.01,
+                        rpm: bodyData.rpm + 50,
+                        brpm: bodyData.brpm + 50,
+                      });
+                    }}
+                  >
+                    <div
+                      className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                        bonnet === 2 ? "text-white" : "text-gray-400"
+                      }`}
+                    >
+                      Modded Bonnet
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bonnet Color Section */}
+              {bonnet !== 3 && bonnet !== 4 && (
+                <div className="configurator__section">
+                  <div className="uppercase font-bold text-white font-poppins">
+                    Bonnet Color
+                  </div>
+                  <div className="flex flex-row gap-8 items-center flex-wrap py-4">
+                    {bonnetColors.map((item, index) => (
+                      <div
+                        key={index}
+                        className={`item flex flex-col items-center transition-all duration-400 ${
+                          item.color === bonnetColor.color ? "item--active" : ""
+                        }`}
+                        onClick={() => setBonnetColor(item)}
+                      >
+                        <div
+                          className="w-8 h-8 rounded-full border-2"
+                          style={{ backgroundColor: item.color }}
+                        />
+                        <div
+                          className={`text-center font-bold text-sm capitalize ${
+                            item.color === bonnetColor.color
+                              ? "text-white"
+                              : "text-gray-400"
+                          }`}
+                        >
+                          {item.name}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Engine Customization */}
+          {engineClick && isConfigOpen && (
+            <>
+              {/* Engine Type Section */}
+              <div className="configurator__section">
+                <div className="uppercase font-bold text-white font-poppins">
+                  Engines
+                </div>
+                <div className="flex flex-row gap-8 items-center flex-wrap py-4">
+                  <div
+                    className={`item flex flex-col items-center transition-all duration-400 ${
+                      engine === 1 ? "item--active" : ""
+                    }`}
+                    onClick={() => {
+                      setEngine(1);
+                      updateMetrics({
+                        ...bodyData,
+                        p: 320,
+                        t: 400,
+                        r: 2500,
+                        nOC: 4,
+                        bD: 86,
+                        pS: 85.9,
+                        brpm: 6500,
+                      });
+                    }}
+                  >
+                    <div
+                      className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                        engine === 1 ? "text-white" : "text-gray-400"
+                      }`}
+                    >
+                      Stock Engine
+                    </div>
+                  </div>
+                  <div
+                    className={`item flex flex-col items-center transition-all duration-400 ${
+                      engine === 2 ? "item--active" : ""
+                    }`}
+                    onClick={() => {
+                      setEngine(2);
+                      updateMetrics({
+                        ...bodyData,
+                        p: 390,
+                        t: 440,
+                        r: 3300,
+                        nOC: 6,
+                        bD: 90,
+                        pS: 90.9,
+                        brpm: 8000,
+                      });
+                    }}
+                  >
+                    <div
+                      className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                        engine === 2 ? "text-white" : "text-gray-400"
+                      }`}
+                    >
+                      VTEC D16
+                    </div>
+                  </div>
+                  <div
+                    className={`item flex flex-col items-center transition-all duration-400 ${
+                      engine === 3 ? "item--active" : ""
+                    }`}
+                    onClick={() => {
+                      setEngine(3);
+                      updateMetrics({
+                        ...bodyData,
+                        p: 430,
+                        t: 480,
+                        r: 3700,
+                        nOC: 8,
+                        bD: 92,
+                        pS: 93,
+                        brpm: 8500,
+                      });
+                    }}
+                  >
+                    <div
+                      className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                        engine === 3 ? "text-white" : "text-gray-400"
+                      }`}
+                    >
+                      2JZ Engine
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Wheel Customization */}
+          {wheelsClick && isConfigOpen && (
+            <>
+              {/* WheelType Section */}
+              <div className="configurator__section">
+                <div className="uppercase font-bold text-white font-poppins">
+                  Wheel Offset
+                </div>
+                <div className="flex flex-row gap-8 items-center flex-wrap py-4">
+                  <div
+                    className={`item flex flex-col items-center transition-all duration-400 ${
+                      wheels === 0 ? "item--active" : ""
+                    }`}
+                    onClick={() => {
+                      setWheels(0);
+                      updateMetrics({
+                        ...bodyData,
+                        kW: bodyData.kW - 10,
+                        dC: bodyData.dC + 0.01,
+                      });
+                    }}
+                  >
+                    <div
+                      className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                        wheels === 0 ? "text-white" : "text-gray-400"
+                      }`}
+                    >
+                      Stock Wheels
+                    </div>
+                  </div>
+
+                  <div
+                    className={`item flex flex-col items-center transition-all duration-400 ${
+                      wheels === 1 ? "item--active" : ""
+                    }`}
+                    onClick={() => {
+                      setWheels(1);
+                      updateMetrics({
+                        ...bodyData,
+                        kW: bodyData.kW + 5,
+                        dC: bodyData.dC - 0.005,
+                      });
+                    }}
+                  >
+                    <div
+                      className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                        wheels === 1 ? "text-white" : "text-gray-400"
+                      }`}
+                    >
+                      5 degree Offset
+                    </div>
+                  </div>
+
+                  <div
+                    className={`item flex flex-col items-center transition-all duration-400 ${
+                      wheels === 2 ? "item--active" : ""
+                    }`}
+                    onClick={() => {
+                      setWheels(2);
+                      updateMetrics({
+                        ...bodyData,
+                        kW: bodyData.kW + 10,
+                        dC: bodyData.dC - 0.01,
+                      });
+                    }}
+                  >
+                    <div
+                      className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                        wheels === 2 ? "text-white" : "text-gray-400"
+                      }`}
+                    >
+                      10 degree Offset
+                    </div>
+                  </div>
+
+                  <div
+                    className={`item flex flex-col items-center transition-all duration-400 ${
+                      wheels === 3 ? "item--active" : ""
+                    }`}
+                    onClick={() => {
+                      setWheels(3);
+                      updateMetrics({
+                        ...bodyData,
+                        kW: bodyData.kW + 15,
+                        dC: bodyData.dC - 0.015,
+                      });
+                    }}
+                  >
+                    <div
+                      className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                        wheels === 3 ? "text-white" : "text-gray-400"
+                      }`}
+                    >
+                      15 degree Offset
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Diffuser Customization */}
+          {diffuserClick && isConfigOpen && (
+            <>
+              {/* Diffuser Type Section */}
+              <div className="configurator__section">
+                <div className="uppercase font-bold text-white font-poppins">
+                  Diffusers
+                </div>
+                <div className="flex flex-row gap-8 items-center flex-wrap py-4">
+                  <div
+                    className={`item flex flex-col items-center transition-all duration-400 ${
+                      diffuser === 3 ? "item--active" : ""
+                    }`}
+                    onClick={() => {
+                      setDiffuser(3);
+                      if (silencer === 2) {
+                        setSilencer(1);
+                      } else if (silencer === 4) {
+                        setSilencer(3);
+                      }
+                      updateMetrics({
+                        ...bodyData,
+                        dC: bodyData.dC + 0.02,
+                        kW: bodyData.kW - 5,
+                      });
+                    }}
+                  >
+                    <div
+                      className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                        diffuser === 3 ? "text-white" : "text-gray-400"
+                      }`}
+                    >
+                      No Diffuser
+                    </div>
+                  </div>
+                  <div
+                    className={`item flex flex-col items-center transition-all duration-400 ${
+                      diffuser === 0 ? "item--active" : ""
+                    }`}
+                    onClick={() => {
+                      setDiffuser(0);
+                      if (silencer === 2) {
+                        setSilencer(1);
+                      } else if (silencer === 4) {
+                        setSilencer(3);
+                      }
+                      updateMetrics({
+                        ...bodyData,
+                        dC: bodyData.dC - 0.01,
+                        kW: bodyData.kW + 3,
+                      });
+                    }}
+                  >
+                    <div
+                      className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                        diffuser === 0 ? "text-white" : "text-gray-400"
+                      }`}
+                    >
+                      Diffuser 01
+                    </div>
+                  </div>
+                  <div
+                    className={`item flex flex-col items-center transition-all duration-400 ${
+                      diffuser === 1 ? "item--active" : ""
+                    }`}
+                    onClick={() => {
+                      setDiffuser(1);
+                      if (silencer === 2) {
+                        setSilencer(1);
+                      } else if (silencer === 4) {
+                        setSilencer(3);
+                      }
+                      updateMetrics({
+                        ...bodyData,
+                        dC: bodyData.dC - 0.015,
+                        kW: bodyData.kW + 4,
+                      });
+                    }}
+                  >
+                    <div
+                      className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                        diffuser === 1 ? "text-white" : "text-gray-400"
+                      }`}
+                    >
+                      Diffuser 02
+                    </div>
+                  </div>
+                  <div
+                    className={`item flex flex-col items-center transition-all duration-400 ${
+                      diffuser === 2 ? "item--active" : ""
+                    }`}
+                    onClick={() => {
+                      setDiffuser(2);
+                      if (silencer === 1) {
+                        setSilencer(2);
+                      } else if (silencer === 3) {
+                        setSilencer(4);
+                      }
+                      updateMetrics({
+                        ...bodyData,
+                        dC: bodyData.dC - 0.02,
+                        kW: bodyData.kW + 5,
+                      });
+                    }}
+                  >
+                    <div
+                      className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                        diffuser === 2 ? "text-white" : "text-gray-400"
+                      }`}
+                    >
+                      Diffuser 03
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Diffuser Color Section */}
+              {diffuser !== 3 && (
+                <div className="configurator__section">
+                  <div className="uppercase font-bold text-white font-poppins">
+                    Diffuser Color
+                  </div>
+                  <div className="flex flex-row gap-8 items-center flex-wrap py-4">
+                    {diffuserColors.map((item, index) => (
+                      <div
+                        key={index}
+                        className={`item flex flex-col items-center transition-all duration-400 ${
+                          item.color === diffuserColor.color
+                            ? "item--active"
+                            : ""
+                        }`}
+                        onClick={() => setDiffuserColor(item)}
+                      >
+                        <div
+                          className="w-8 h-8 rounded-full border-2"
+                          style={{ backgroundColor: item.color }}
+                        />
+                        <div
+                          className={`text-center font-bold text-sm capitalize ${
+                            item.color === diffuserColor.color
+                              ? "text-white"
+                              : "text-gray-400"
+                          }`}
+                        >
+                          {item.name}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Silencer Selection Customization (Not done yet) */}
+          {silencerClick && isConfigOpen && (
+            <>
+              {/* Silencer Type Section */}
+              <div className="configurator__section">
+                <div className="uppercase font-bold text-white font-poppins">
+                  {diffuser === 3 || diffuser === 0 || diffuser === 1
+                    ? "Silencers"
+                    : "Lowered Silencers"}
+                </div>
+
+                <div className="flex flex-row gap-8 items-center flex-wrap py-4">
+                  {(diffuser === 3 || diffuser === 0 || diffuser === 1) && (
+                    <>
+                      <div
+                        className={`item flex flex-col items-center transition-all duration-400 ${
+                          silencer === 1 ? "item--active" : ""
+                        }`}
+                        onClick={() => {
+                          setSilencer(1);
+                          updateMetrics({
+                            ...bodyData,
+                            dC: bodyData.dC + 0.01,
+                            kW: bodyData.kW + 2,
+                          });
+                        }}
+                      >
+                        <div
+                          className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                            silencer === 1 ? "text-white" : "text-gray-400"
+                          }`}
+                        >
+                          Silencer Triple
+                        </div>
+                      </div>
+
+                      <div
+                        className={`item flex flex-col items-center transition-all duration-400 ${
+                          silencer === 3 ? "item--active" : ""
+                        }`}
+                        onClick={() => {
+                          setSilencer(3);
+                          updateMetrics({
+                            ...bodyData,
+                            dC: bodyData.dC - 0.005,
+                            kW: bodyData.kW + 1,
+                          });
+                        }}
+                      >
+                        <div
+                          className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                            silencer === 3 ? "text-white" : "text-gray-400"
+                          }`}
+                        >
+                          Silencer Single
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {diffuser === 2 && (
+                    <>
+                      <div
+                        className={`item flex flex-col items-center transition-all duration-400 ${
+                          silencer === 2 ? "item--active" : ""
+                        }`}
+                        onClick={() => {
+                          setSilencer(2);
+                          updateMetrics({
+                            ...bodyData,
+                            dC: bodyData.dC + 0.005,
+                            kW: bodyData.kW + 3,
+                          });
+                        }}
+                      >
+                        <div
+                          className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                            silencer === 2 ? "text-white" : "text-gray-400"
+                          }`}
+                        >
+                          Triple Silencer
+                        </div>
+                      </div>
+
+                      <div
+                        className={`item flex flex-col items-center transition-all duration-400 ${
+                          silencer === 4 ? "item--active" : ""
+                        }`}
+                        onClick={() => {
+                          setSilencer(4);
+                          updateMetrics({
+                            ...bodyData,
+                            dC: bodyData.dC - 0.01,
+                            kW: bodyData.kW + 2,
+                          });
+                        }}
+                      >
+                        <div
+                          className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                            silencer === 4 ? "text-white" : "text-gray-400"
+                          }`}
+                        >
+                          Ring Silencer
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* SideKit Customization */}
+          {sideKitClick && isConfigOpen && (
+            <>
+              {/* Sidekit Type Section */}
+              <div className="configurator__section">
+                <div className="uppercase font-bold text-white font-poppins">
+                  SideKits
+                </div>
+                <div className="flex flex-row gap-8 items-center flex-wrap py-4">
+                  <div
+                    className={`item flex flex-col items-center transition-all duration-400 ${
+                      sideKit === 0 ? "item--active" : ""
+                    }`}
+                    onClick={() => {
+                      setSideKit(0);
+                      updateMetrics({
+                        ...bodyData,
+                        dC: bodyData.dC + 0.01,
+                        kW: bodyData.kW - 5,
+                      });
+                    }}
+                  >
+                    <div
+                      className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                        sideKit === 0 ? "text-white" : "text-gray-400"
+                      }`}
+                    >
+                      Remove Side Kit
+                    </div>
+                  </div>
+                  <div
+                    className={`item flex flex-col items-center transition-all duration-400 ${
+                      sideKit === 1 ? "item--active" : ""
+                    }`}
+                    onClick={() => {
+                      setSideKit(1);
+                      updateMetrics({
+                        ...bodyData,
+                        dC: bodyData.dC - 0.01,
+                        kW: bodyData.kW + 5,
+                      });
+                    }}
+                  >
+                    <div
+                      className={`text-center font-bold text-sm capitalize hover:cursor-pointer ${
+                        sideKit === 1 ? "text-white" : "text-gray-400"
+                      }`}
+                    >
+                      Add Side Kit
+                    </div>
+                  </div>
+                </div>
+                <div className="text-white text-center font-bold text-sm capitalize">
+                  A Side kit is a great option for a sporty look addition to
+                  your Car.
+                </div>
+              </div>
+
+              {/* SideKit Color Section */}
+              {sideKit !== 0 && (
+                <div className="configurator__section">
+                  <div className="uppercase font-bold text-white font-poppins">
+                    Side Kit Color
+                  </div>
+                  <div className="flex flex-row gap-8 items-center flex-wrap py-4">
+                    {sideKitColors.map((item, index) => (
+                      <div
+                        key={index}
+                        className={`item flex flex-col items-center transition-all duration-400 ${
+                          item.color === sideKitColor.color
+                            ? "item--active"
+                            : ""
+                        }`}
+                        onClick={() => setSideKitColor(item)}
+                      >
+                        <div
+                          className="w-8 h-8 rounded-full border-2"
+                          style={{ backgroundColor: item.color }}
+                        />
+                        <div
+                          className={`text-center font-bold text-sm capitalize ${
+                            item.color === sideKitColor.color
+                              ? "text-white"
+                              : "text-gray-400"
+                          }`}
+                        >
+                          {item.name}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Door Customization */}
+          {doorClick && isConfigOpen && (
+            <div className="configurator__section">
+              <div className="uppercase font-bold text-white font-poppins">
+                Door Color
+              </div>
+              <div className="flex flex-row gap-8 items-center flex-wrap py-4">
+                {doorColors.map((item, index) => (
+                  <div
+                    key={index}
+                    className={`item flex flex-col items-center transition-all duration-400 ${
+                      item.color === doorColor.color ? "item--active" : ""
+                    }`}
+                    onClick={() => setDoorColor(item)}
+                  >
+                    <div
+                      className="w-8 h-8 rounded-full border-2"
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <div
+                      className={`text-center font-bold text-sm text-gray-400 capitalize ${
+                        item.color === doorColor.color ? "text-white" : ""
+                      }`}
+                    >
+                      {item.name}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* bumperBack Customization */}
+
+          {bumperBackClick && isConfigOpen && (
+            <div className="configurator__section">
+              <div className="uppercase font-bold text-white font-poppins">
+                Back Bumper Color
+              </div>
+              <div className="flex flex-row gap-8 items-center flex-wrap py-4">
+                {bumperBackColors.map((item, index) => (
+                  <div
+                    key={index}
+                    className={`item flex flex-col items-center transition-all duration-400 ${
+                      item.color === bumperBackColor.color ? "item--active" : ""
+                    }`}
+                    onClick={() => setBumperBackColor(item)}
+                  >
+                    <div
+                      className="w-8 h-8 rounded-full border-2"
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <div
+                      className={`text-center font-bold text-sm text-gray-400 capitalize ${
+                        item.color === bumperBackColor.color ? "text-white" : ""
+                      }`}
+                    >
+                      {item.name}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Trunk Customization */}
+          {trunkClick && isConfigOpen && (
+            <div className="configurator__section">
+              <div className="uppercase font-bold text-white font-poppins">
+                Trunk Color
+              </div>
+              <div className="flex flex-row gap-8 items-center flex-wrap py-4">
+                {trunkColors.map((item, index) => (
+                  <div
+                    key={index}
+                    className={`item flex flex-col items-center transition-all duration-400 ${
+                      item.color === trunkColor.color ? "item--active" : ""
+                    }`}
+                    onClick={() => setTrunkColor(item)}
+                  >
+                    <div
+                      className="w-8 h-8 rounded-full border-2"
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <div
+                      className={`text-center font-bold text-sm text-gray-400 capitalize ${
+                        item.color === trunkColor.color ? "text-white" : ""
+                      }`}
+                    >
+                      {item.name}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Roof Customization */}
+          {roofClick && isConfigOpen && (
+            <div className="configurator__section">
+              <div className="uppercase font-bold text-white font-poppins">
+                Roof Color
+              </div>
+              <div className="flex flex-row gap-8 items-center flex-wrap py-4">
+                {roofColors.map((item, index) => (
+                  <div
+                    key={index}
+                    className={`item flex flex-col items-center transition-all duration-400 ${
+                      item.color === roofColor.color ? "item--active" : ""
+                    }`}
+                    onClick={() => setRoofColor(item)}
+                  >
+                    <div
+                      className="w-8 h-8 rounded-full border-2"
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <div
+                      className={`text-center font-bold text-sm text-gray-400 capitalize ${
+                        item.color === roofColor.color ? "text-white" : ""
+                      }`}
+                    >
+                      {item.name}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Grill Customization */}
+          {grillClick && isConfigOpen && (
+            <div className="configurator__section">
+              <div className="uppercase font-bold text-white font-poppins">
+                Grill Color
+              </div>
+              <div className="flex flex-row gap-8 items-center flex-wrap py-4">
+                {grillColors.map((item, index) => (
+                  <div
+                    key={index}
+                    className={`item flex flex-col items-center transition-all duration-400 ${
+                      item.color === grillColor.color ? "item--active" : ""
+                    }`}
+                    onClick={() => setGrillColor(item)}
+                  >
+                    <div
+                      className="w-8 h-8 rounded-full border-2"
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <div
+                      className={`text-center font-bold text-sm text-gray-400 capitalize ${
+                        item.color === grillColor.color ? "text-white" : ""
+                      }`}
+                    >
+                      {item.name}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Front Customization */}
+          {bumperFrontClick && isConfigOpen && (
+            <div className="configurator__section">
+              <div className="uppercase font-bold text-white font-poppins">
+                Front bumper Color
+              </div>
+              <div className="flex flex-row gap-8 items-center flex-wrap py-4">
+                {bumperFrontColors.map((item, index) => (
+                  <div
+                    key={index}
+                    className={`item flex flex-col items-center transition-all duration-400 ${
+                      item.color === bumperFrontColor.color
+                        ? "item--active"
+                        : ""
+                    }`}
+                    onClick={() => setBumperFrontColor(item)}
+                  >
+                    <div
+                      className="w-8 h-8 rounded-full border-2"
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <div
+                      className={`text-center font-bold text-sm text-gray-400 capitalize ${
+                        item.color === bumperFrontColor.color
+                          ? "text-white"
+                          : ""
+                      }`}
+                    >
+                      {item.name}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Fender Customization */}
+          {fenderClick && isConfigOpen && (
+            <div className="configurator__section">
+              <div className="uppercase font-bold text-white font-poppins">
+                Fender Color
+              </div>
+              <div className="flex flex-row gap-8 items-center flex-wrap py-4">
+                {fenderColors.map((item, index) => (
+                  <div
+                    key={index}
+                    className={`item flex flex-col items-center transition-all duration-400 ${
+                      item.color === fenderColor.color ? "item--active" : ""
+                    }`}
+                    onClick={() => setFenderColor(item)}
+                  >
+                    <div
+                      className="w-8 h-8 rounded-full border-2"
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <div
+                      className={`text-center font-bold text-sm text-gray-400 capitalize ${
+                        item.color === fenderColor.color ? "text-white" : ""
+                      }`}
+                    >
+                      {item.name}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Rim Customization */}
+          {rimClick && isConfigOpen && (
+            <div className="configurator__section">
+              <div className="uppercase font-bold text-white font-poppins">
+                Rim Color
+              </div>
+              <div className="flex flex-row gap-8 items-center flex-wrap py-4">
+                {rimColors.map((item, index) => (
+                  <div
+                    key={index}
+                    className={`item flex flex-col items-center transition-all duration-400 ${
+                      item.color === rimColor.color ? "item--active" : ""
+                    }`}
+                    onClick={() => setRimColor(item)}
+                  >
+                    <div
+                      className="w-8 h-8 rounded-full border-2"
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <div
+                      className={`text-center font-bold text-sm text-gray-400 capitalize ${
+                        item.color === rimColor.color ? "text-white" : ""
+                      }`}
+                    >
+                      {item.name}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Window Customization */}
+          {windowClick && isConfigOpen && (
+            <div className="configurator__section">
+              <div className="uppercase font-bold text-white font-poppins">
+                Window Color
+              </div>
+              <div className="flex flex-row gap-8 items-center flex-wrap py-4">
+                {windowColors.map((item, index) => (
+                  <div
+                    key={index}
+                    className={`item flex flex-col items-center transition-all duration-400 ${
+                      item.color === windowColor.color ? "item--active" : ""
+                    }`}
+                    onClick={() => setWindowColor(item)}
+                  >
+                    <div
+                      className="w-8 h-8 rounded-full border-2"
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <div
+                      className={`text-center font-bold text-sm text-gray-400 capitalize ${
+                        item.color === windowColor.color ? "text-white" : ""
+                      }`}
+                    >
+                      {item.name}
+                    </div>
+                  </div>
+                ))}
+                <div className="text-white text-center font-bold text-sm capitalize">
+                  While Tints Aren't legal, they add a level of privacy to the
+                  car.
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Light Customization */}
+          {/* {lightClick && (
+            <div className="configurator__section">
+              <div className="uppercase font-bold text-white font-poppins">
+                Light Color
+              </div>
+              <div className="flex flex-row gap-8 items-center flex-wrap py-4">
+                {lightColors.map((item, index) => (
+                  <div
+                    key={index}
+                    className={`item flex flex-col items-center transition-all duration-400 ${
+                      item.color === lightColor.color ? "item--active" : ""
+                    }`}
+                    onClick={() => setLightColor(item)}
+                  >
+                    <div
+                      className="w-8 h-8 rounded-full border-2"
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <div
+                      className={`text-center font-bold text-sm text-gray-400 capitalize ${
+                        item.color === lightColor.color ? "text-white" : ""
+                      }`}
+                    >
+                      {item.name}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )} */}
+
+          {/* Body Customization */}
+          {carBodyClick &&
+            isConfigOpen && ( // Make sure bodyColorClick is defined in the context
+              <div className="configurator__section">
+                <div className="uppercase font-bold text-white font-poppins">
+                  Body Color
+                </div>
+                <div className="flex flex-row gap-8 items-center flex-wrap py-4">
+                  {bodyColors.map((item, index) => (
+                    <div
+                      key={index}
+                      className={`item flex flex-col items-center transition-all duration-400 ${
+                        item.color === carBodyColor.color ? "item--active" : ""
+                      }`}
+                      onClick={() => setCarBodyColor(item)} // Ensure setBodyColor is defined in context
+                    >
+                      <div
+                        className="w-8 h-8 rounded-full border-2"
+                        style={{ backgroundColor: item.color }}
+                      />
+                      <div
+                        className={`text-center font-bold text-sm text-gray-400 capitalize ${
+                          item.color === carBodyColor.color ? "text-white" : ""
+                        }`}
+                      >
+                        {item.name}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+        </div>
+      )}
     </>
   );
 };

@@ -25,12 +25,20 @@ import {
 } from "recharts";
 import axios from "@services/axios";
 import Cookies from "js-cookie";
+import RatingStars from "@components/RatingStars";
 
 const Configurator = () => {
   const { isDarkMode, toggleTheme } = useTheme();
   const { user } = useAuth();
   const location = useLocation();
   const existingConfig = location.state?.config;
+  const isViewMode = location.state?.isViewMode;
+  const configData = location.state?.config;
+
+  const [currentRating, setCurrentRating] = useState({
+    averageRating: configData?.averageRating || 0,
+    totalRatings: configData?.totalRatings || 0,
+  });
 
   const {
     interior,
@@ -194,6 +202,7 @@ const Configurator = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [configName, setConfigName] = useState("");
+  const [showRadialChart, setShowRadialChart] = useState(false);
 
   useEffect(() => {
     if (existingConfig) {
@@ -439,7 +448,6 @@ const Configurator = () => {
         response = await axios.put(
           `/car-configs/${existingConfig._id}`,
           configData
-          
         );
         toast.success("Configuration updated successfully!");
       } else {
@@ -540,13 +548,50 @@ const Configurator = () => {
           {isConfigOpen ? "Close" : "Open"} Configurator
         </button>
 
-        <button
-          onClick={handleSave}
-          disabled={isSaving}
-          className="flex-1 h-full bg-white/5 hover:bg-green-500/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.3)] transition-all duration-300 text-white font-medium disabled:opacity-50 border-r border-white/10"
-        >
-          {isSaving ? "Saving..." : "Save Configuration"}
-        </button>
+        {isViewMode ? (
+          <div className="flex-1 h-full bg-white/5 flex items-center justify-center px-4 border-r border-white/10">
+            <RatingStars
+              rating={currentRating.averageRating}
+              totalRatings={currentRating.totalRatings}
+              onRate={async (rating) => {
+                try {
+                  const response = await axios.post("/car-configs/rate", {
+                    configId: configData._id,
+                    rating,
+                  });
+
+                  setCurrentRating({
+                    averageRating: response.data.data.averageRating,
+                    totalRatings: response.data.data.totalRatings,
+                  });
+
+                  toast.success("Rating submitted successfully!", {
+                    position: "top-right",
+                    autoClose: 3000,
+                    theme: isDarkMode ? "dark" : "light",
+                    transition: Slide,
+                  });
+                } catch (error) {
+                  toast.error("Failed to submit rating", {
+                    position: "top-right",
+                    autoClose: 3000,
+                    theme: isDarkMode ? "dark" : "light",
+                    transition: Slide,
+                  });
+                }
+              }}
+              size="lg"
+            />
+          </div>
+        ) : (
+          <button
+            onClick={handleSave}
+            disabled={isSaving}
+            className="flex-1 h-full bg-white/5 hover:bg-green-500/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.3)] transition-all duration-300 text-white font-medium disabled:opacity-50 border-r border-white/10"
+          >
+            {isSaving ? "Saving..." : "Save Configuration"}
+          </button>
+        )}
 
         {/* Theme Toggle Button */}
         <button
@@ -707,7 +752,7 @@ const Configurator = () => {
         </div>
 
         {/* Radial Chart */}
-        <div className="mt-10 w-full">
+        {/* <div className="mt-10 w-full">
           <div className="text-white text-2xl mb-3">Performance Overview</div>
           <ResponsiveContainer width="100%" height={400}>
             <RadialBarChart
@@ -752,7 +797,7 @@ const Configurator = () => {
               />
             </RadialBarChart>
           </ResponsiveContainer>
-        </div>
+        </div> */}
       </div>
 
       {/* Button Row - Always visible */}
@@ -1115,9 +1160,105 @@ const Configurator = () => {
           Interior
         </button>
       </div>
+      {/* Radial Chart - Positioned next to button row */}
+      <div className="fixed top-28 left-[220px] w-[320px] h-[300px] rounded-lg p-4">
+        {/* Improved Toggle Button - Moved to top */}
+        <div className="absolute -top-11 left-3 w-full flex justify-start">
+          <button
+            onClick={() => setShowRadialChart(!showRadialChart)}
+            className={`
+        flex items-center gap-2 px-3 py-2 rounded-lg
+        transition-all duration-300 ease-in-out
+        ${
+          showRadialChart
+            ? "bg-gray-800/80 hover:bg-gray-700/80"
+            : "bg-indigo-600/80 hover:bg-indigo-500/80"
+        }
+        text-white font-medium text-sm
+        hover:shadow-lg transform hover:-translate-y-0.5
+        backdrop-blur-sm
+      `}
+          >
+            <span className="w-5">
+              {showRadialChart ? (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M14.77 12.79a.75.75 0 01-1.06-.02L10 8.832 6.29 12.77a.75.75 0 11-1.08-1.04l4.25-4.5a.75.75 0 011.08 0l4.25 4.5a.75.75 0 01-.02 1.06z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              )}
+            </span>
+            <span className="whitespace-nowrap">
+              {showRadialChart ? "Hide Overview" : "Show Overview"}
+            </span>
+          </button>
+        </div>
 
+        <div
+          className={`transition-all duration-300 ${
+            showRadialChart
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-4 pointer-events-none"
+          }`}
+        >
+          <div className="text-white text-xl mb-2">Performance Overview</div>
+          <ResponsiveContainer width="100%" height={250}>
+            <RadialBarChart
+              innerRadius="30%"
+              outerRadius="90%"
+              data={data}
+              startAngle={180}
+              endAngle={0}
+              barGap={2}
+              barCategoryGap={3}
+            >
+              <PolarAngleAxis
+                type="number"
+                domain={getRadialDomain()}
+                tick={{
+                  fill: isDarkMode ? "#FFFFFF" : "#000000",
+                  fontSize: 12,
+                }}
+              />
+              <RadialBar
+                minAngle={15}
+                background
+                clockWise={true}
+                dataKey="Stock"
+                fill="#8884d8"
+              />
+              <RadialBar
+                minAngle={15}
+                background
+                clockWise={true}
+                dataKey="New"
+                fill="#82ca9d"
+              />
+              <Tooltip content={<CustomTooltip />} />
+            </RadialBarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
       {/* Configuration Panels - Conditionally visible */}
-      {isConfigOpen && (
+      {isConfigOpen && !isViewMode && (
         <div className="absolute right-6 bottom-[5vh] w-[380px] flex flex-col gap-2">
           {/* Spoiler Customization */}
           {spoilerClick && (
@@ -1188,7 +1329,6 @@ const Configurator = () => {
                       Sporty Spoiler
                     </div>
                   </div>
-                  
                 </div>
                 <div className="text-white text-center font-bold text-sm capitalize">
                   The Swift Spoiler makes the car aerodynamic and gives it a

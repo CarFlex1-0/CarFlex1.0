@@ -46,6 +46,7 @@ import ModelSelectionPage from "@pages/ModelSelectionPage";
 import ConfigurationViewer from "@components/ConfigurationViewer";
 import AdminLoginPage from "@pages/AdminLoginPage";
 import OrderDetailsPage from "@components/maketplace_buyer/OrderDetailsPage";
+import CarModelRating from "@pages/CarModelRating";
 import DummyPage from "@components/journey-suggestion/DummyPage";
 import TravelPlanner from "@pages/TravelPlanner";
 // import OrderDetailsPage from "@pages/OrderDetailsPage";
@@ -268,6 +269,15 @@ function App() {
                       </ProtectedRoute>
                     }
                   />
+                  <Route
+                    path="models/ratings"
+                    element={
+                      <ProtectedRoute>
+                        <CarModelRating />
+                      </ProtectedRoute>
+                    }
+                  />
+                  
                   <Route
                     path="model/civic"
                     element={
