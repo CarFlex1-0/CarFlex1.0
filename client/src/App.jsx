@@ -46,6 +46,8 @@ import ModelSelectionPage from "@pages/ModelSelectionPage";
 import ConfigurationViewer from "@components/ConfigurationViewer";
 import AdminLoginPage from "@pages/AdminLoginPage";
 import OrderDetailsPage from "@components/maketplace_buyer/OrderDetailsPage";
+import DummyPage from "@components/journey-suggestion/DummyPage";
+import TravelPlanner from "@pages/TravelPlanner";
 // import OrderDetailsPage from "@pages/OrderDetailsPage";
 
 // Extra! Should be Deleted along with files
@@ -79,6 +81,8 @@ function App() {
           <BrowserRouter>
             <div className="flex-grow">
               <Routes>
+                <Route path="/map" element={<DummyPage />} />
+                <Route path="/travel-planner" element={<TravelPlanner />} />
                 <Route path="/" element={<Welcome />} />
                 <Route path="/sign-in" element={<SignIn />} />
                 <Route path="/sign-up" element={<SignUp />} />
@@ -373,6 +377,14 @@ function App() {
                     element={
                       <ProtectedRoute>
                         <CarEnhancements />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="travel-planner"
+                    element={
+                      <ProtectedRoute>
+                        <TravelPlanner />
                       </ProtectedRoute>
                     }
                   />

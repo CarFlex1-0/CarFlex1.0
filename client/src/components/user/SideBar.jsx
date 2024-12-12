@@ -157,7 +157,7 @@ export function SideBar() {
             </Link>
 
             <Link
-              to="car-enhancements"
+              to="travel-planner"
               onClick={() => {
                 closeDrawer();
                 setDrawerState(false);

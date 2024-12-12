@@ -2,6 +2,7 @@ const OpenAI = require("openai");
 const User = require ("../models/user");
 const Chat = require("../models/chat");
 const axios = require('axios');
+const getLatLongFromOpenStreet = require("../services/get_lat_long");
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
@@ -123,6 +124,9 @@ const getResponseFromModel = async (req, res) => {
         res.status(500).json({ error: "Failed to get response from the model" });
     }
 };
+
+
+
 const getChatSpecificUser = (async(req, res)=>{
     try{
         const { userId } = req.body;
@@ -134,24 +138,47 @@ const getChatSpecificUser = (async(req, res)=>{
         res.status(500).json({ error: "Failed to get chat history" });
     }
 })
-const getWeather = (async(req, res)=>{
-    try{
-        const { location } = req.body;
-        const response = await axios.get(`http://api.weatherapi.com/v1/future.json?key=${process.env.WEATHER_API_KEY}&q=${location}&dt=2024-10-28`);
-        const forecast = response.data.forecast.forecastday[0].day; // Getting the forecast for the specific date
 
+
+
+
+const getWeather = async (req, res) => {
+    try {
+        const { location, date } = req.body;
+
+        // Fetch forecast data for multiple days (max needed range)
+        const response = await axios.get(`http://api.weatherapi.com/v1/forecast.json`, {
+            params: {
+                key: process.env.WEATHER_API_KEY,
+                q: location,
+                days: 3, // Adjust based on the maximum range of dates you might handle
+            },
+        });
+        console.log(date);
+        // Find the forecast for the requested date
+        const forecast = response.data.forecast.forecastday.find(day => day.date === date);
+
+        if (!forecast) {
+            return res.status(404).json({ error: "Weather data not found for the specified date" });
+        }
+        // Extract relevant weather data
         const safeWeatherData = {
-            avgtemp_c: forecast.avgtemp_c,
-            avghumidity: forecast.avghumidity,
-            condition: forecast.condition.text,  // Additional weather condition field
-            maxtemp_c: forecast.maxtemp_c,       // Maximum temperature
-            mintemp_c: forecast.mintemp_c,       // Minimum temperature
-            maxwind_kph: forecast.maxwind_kph,   // Maximum wind speed
+            date: forecast.date,
+            avgtemp_c: forecast.day.avgtemp_c,
+            avghumidity: forecast.day.avghumidity,
+            condition: forecast.day.condition.text,  // Additional weather condition field
+            maxtemp_c: forecast.day.maxtemp_c,       // Maximum temperature
+            mintemp_c: forecast.day.mintemp_c,       // Minimum temperature
+            maxwind_kph: forecast.day.maxwind_kph,   // Maximum wind speed
         };
+
         res.status(200).json(safeWeatherData);
-    }catch(error){
-        console.error("Error fetching weather:", error);
-        res.status(500).json("Server Error")
+    } catch (error) {
+        console.error("Error fetching weather:", error.message);
+        res.status(500).json({ error: "Server Error" });
     }
-})
+};
+
+
+
 module.exports = { getResponseFromModel, getChatSpecificUser, getWeather };
