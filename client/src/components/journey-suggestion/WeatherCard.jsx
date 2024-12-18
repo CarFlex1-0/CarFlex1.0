@@ -4,7 +4,7 @@ import { WiHumidity, WiCloud } from "react-icons/wi";
 
 function WeatherCard({ location, weatherData }) {
   return (
-    <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg shadow-lg p-6 w-full max-w-sm text-white">
+    <div className="bg-gradient-to-br from-[#2b4e7e] to-black w-full text-white bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 shadow-2xl">
       <h3 className="text-2xl font-bold mb-4 text-center">{location}</h3>
       <p className="text-sm text-gray-200 text-center mb-6">
         {new Date(weatherData.date).toDateString()}

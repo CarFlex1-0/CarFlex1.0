@@ -61,23 +61,24 @@ const getAverageWeather = async (location1, location2, date) => {
 
 const getResponseFromModel = async (req, res) => {
     try {
-        const { userId, chatTitle, startLocation,
-            endLocation,
-            travelDate, carName } = req.body;
-        const { avgTemp, avgHumidity } = await getAverageWeather(startLocation, endLocation, travelDate);
-        const prompt = `I am embarking on a road trip from ${startLocation} to ${endLocation} in my ${carName}. Provide a detailed and thorough analysis of the mechanical upgrades or enhancements I should consider for my vehicle to ensure optimal performance and safety throughout the journey. Include an in-depth breakdown of the terrain, potential hazards, and best traffic routes between these cities. Also, analyze the weather conditions along the route, specifically focusing on how the average humidity of ${avgHumidity}% and temperature of ${avgTemp}°C on ${travelDate} could impact the vehicle and driver health. Respond **ONLY STRICTLY** in the following JSON format: {"carEnhancements": "Comprehensive recommendations for mechanical upgrades or checks", "terrainAnalysis": "In-depth analysis of terrain, traffic routes, total distance in km and miles ,and potential driving challenges", "weatherConditions": "Detailed summary of expected weather and its effects on vehicle and driver health"} with no extra text outside of the JSON format.`;
+        const { userId, chatTitle, startLocation, endLocation, travelDate, carName, avgHumidity, avgTemp } = req.body;
 
+        // Prompt enforcing strict JSON response
+        const prompt = `
+            I am embarking on a road trip from ${startLocation} to ${endLocation} in my ${carName}. Also, analyze the weather conditions along the route, specifically focusing on how the average humidity of ${avgHumidity}% and temperature of ${avgTemp}°C on ${travelDate} could impact the vehicle and driver health.
+            Provide a detailed analysis of:
+            1. Mechanical upgrades for the car ("carEnhancements").
+            2. Terrain, traffic routes, and challenges ("terrainAnalysis").
+            3. Weather impacts on car and driver health ("weatherConditions").
 
-            
-        // Make the API call to OpenAI
+            Respond **STRICTLY** in this JSON format: 
+             {"carEnhancements": "Comprehensive recommendations for mechanical upgrades or checks", "terrainAnalysis": "In-depth analysis of terrain, traffic routes, total distance in km and miles ,and potential driving challenges", "weatherConditions": "Detailed summary of expected weather and its effects on vehicle and driver health"}
+            Do not include any text outside of this JSON format.`;
+
+        // API call to OpenAI
         const response = await openai.chat.completions.create({
             model: "ft:gpt-3.5-turbo-0125:personal:carflex-v1-0:ABW31SvM",
-            messages: [
-                {
-                    role: "user",
-                    content: prompt, // Directly use the prompt as a string
-                },
-            ],
+            messages: [{ role: "user", content: prompt }],
             temperature: 1,
             max_tokens: 700,
             top_p: 1,
@@ -85,40 +86,48 @@ const getResponseFromModel = async (req, res) => {
             presence_penalty: 0,
         });
 
-        // Extract the content from the response
-        const completion = await response.choices[0].message.content;
+        // Extract the raw response
+        const completion = response.choices[0].message.content;
+
+        // Function to extract JSON part from the response
+        const extractJson = (response) => {
+            const match = response.match(/\{[\s\S]*\}/); // Regex to find JSON
+            return match ? match[0] : null;
+        };
+
+        // Validate and parse the response
+        const jsonString = extractJson(completion);
+        if (!jsonString) {
+            console.error("Invalid JSON response from model:", completion);
+            return res.status(500).json({ error: "Model response did not contain valid JSON" });
+        }
+
         let modelResponse;
         try {
-            modelResponse = JSON.parse(completion);
+            modelResponse = JSON.parse(jsonString);
         } catch (parseError) {
-            console.error("Failed to parse the model response as JSON:", parseError);
+            console.error("Failed to parse JSON:", parseError, "\nRaw response:", jsonString);
             return res.status(500).json({ error: "Model response is not valid JSON" });
         }
 
-        const { carEnhancements, terrainAnalysis, weatherConditions } = modelResponse;
+        // Extract and validate the fields
+        const { carEnhancements = "No data", terrainAnalysis = "No data", weatherConditions = "No data" } = modelResponse;
 
+        // Save the response in the database
         const chat = await Chat.create({
             user: userId,
             prompt,
-            response: {
-                carEnhancements,
-                terrainAnalysis,
-                weatherConditions
-            }, 
+            response: { carEnhancements, terrainAnalysis, weatherConditions },
             title: chatTitle,
-            modelUsed: "ft:gpt-3.5-turbo-0125:personal:carflex-v1-0:ABW31SvM"
-        })
-        await User.findByIdAndUpdate(
-            userId,
-                {$push: { chatHistory : chat._id }
-            }
-        )
-        // Return the response to the client in the required format
-        res.status(200).json({
-            carEnhancements,
-            terrainAnalysis,
-            weatherConditions,chat
+            modelUsed: "ft:gpt-3.5-turbo-0125:personal:carflex-v1-0:ABW31SvM",
         });
+
+        // Update user's chat history
+        await User.findByIdAndUpdate(userId, { $push: { chatHistory: chat._id } });
+
+        // Respond to the client with the formatted data
+        res.status(200).json({ carEnhancements, terrainAnalysis, weatherConditions, chat });
+
     } catch (error) {
         console.error("Error fetching response from model:", error);
         res.status(500).json({ error: "Failed to get response from the model" });

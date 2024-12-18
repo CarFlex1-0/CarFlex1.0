@@ -84,7 +84,7 @@ const TravelForm = ({ onSubmit }) => {
           <div className="flex rounded-lg justify-end items-center mt-4 md:mt-0 md:col-span-1">
             <button
               type="submit"
-              className="w-full rounded-lg bg-blue-900 glass text-white py-3 px-8  shadow-lg hover:shadow-2xl hover:scale-105 transform transition duration-300"
+              className="w-full rounded-lg bg-blue-900 glass text-white py-3 px-3  shadow-lg hover:shadow-2xl hover:scale-105 transform transition duration-300"
             >
               Get Suggestions
             </button>
