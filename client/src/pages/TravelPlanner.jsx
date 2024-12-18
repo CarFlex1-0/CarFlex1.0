@@ -26,7 +26,6 @@ const TravelPlanner = () => {
   const [startLocationLatLong, setStartLocationLatLong] = useState([]);
   const [endLocationLatLong, setEndLocationLatLong] = useState([]);
 
-  // Main submission handler
   const handleTravelSubmit = async (formData) => {
     setIsLoading(true);
 
@@ -42,55 +41,55 @@ const TravelPlanner = () => {
       const chatTitle = `${formData.startLocation} to ${formData.endLocation}`;
 
       // Parallel API calls for weather and location data using Promise.allSettled
-      const [
-        startWeatherRes,
-        endWeatherRes,
-        startLatLongRes,
-        endLatLongRes,
-        suggestionsRes,
-      ] = await Promise.allSettled([
-        // Weather for start location
-        axiosInstance.post("/ai/weather", {
-          location: formData.startLocation,
-          date: formData.travelDate,
-        }),
-        // Weather for end location
-        axiosInstance.post("/ai/weather", {
-          location: formData.endLocation,
-          date: formData.travelDate,
-        }),
-        // Latitude and longitude for start location
-        axiosInstance.post("/location/get-lat-long", {
-          location: formData.startLocation,
-        }),
-        // Latitude and longitude for end location
-        axiosInstance.post("/location/get-lat-long", {
-          location: formData.endLocation,
-        }),
-        // AI-based travel suggestions
-        axiosInstance.post("/ai/get-response", {
-          userId: user._id, // User ID
-          chatTitle,
-          startLocation: formData.startLocation,
-          endLocation: formData.endLocation,
-          carName: formData.carName,
-          travelDate: formData.travelDate,
-        }),
-      ]);
+      const [startWeatherRes, endWeatherRes, startLatLongRes, endLatLongRes] =
+        await Promise.allSettled([
+          // Weather for start location
+          axiosInstance.post("/ai/weather", {
+            location: formData.startLocation,
+            date: formData.travelDate,
+          }),
+          // Weather for end location
+          axiosInstance.post("/ai/weather", {
+            location: formData.endLocation,
+            date: formData.travelDate,
+          }),
+          // Latitude and longitude for start location
+          axiosInstance.post("/location/get-lat-long", {
+            location: formData.startLocation,
+          }),
+          // Latitude and longitude for end location
+          axiosInstance.post("/location/get-lat-long", {
+            location: formData.endLocation,
+          }),
+        ]);
 
       // Check and handle API call results
-      if (startWeatherRes.status === "fulfilled") {
-        setStartLocationWeatherData(startWeatherRes.value.data);
+      let avgHumidity = null;
+      let avgTemp = null;
+
+      if (
+        startWeatherRes.status === "fulfilled" &&
+        endWeatherRes.status === "fulfilled"
+      ) {
+        const startWeather = startWeatherRes.value.data;
+        const endWeather = endWeatherRes.value.data;
+
+        // Calculate average humidity and temperature
+        avgHumidity = (
+          (startWeather.humidity + endWeather.humidity) /
+          2
+        ).toFixed(2);
+        avgTemp = (
+          (startWeather.temperature + endWeather.temperature) /
+          2
+        ).toFixed(2);
+
+        setStartLocationWeatherData(startWeather);
+        setEndLocationWeatherData(endWeather);
       } else {
         toast.error(
-          "Failed to fetch weather for start location. Internet connection failed."
+          "Failed to fetch weather data. Internet connection failed."
         );
-      }
-
-      if (endWeatherRes.status === "fulfilled") {
-        setEndLocationWeatherData(endWeatherRes.value.data);
-      } else {
-        toast.error("Failed to fetch weather for end location. Internet connection failed.");
       }
 
       if (startLatLongRes.status === "fulfilled") {
@@ -115,9 +114,21 @@ const TravelPlanner = () => {
         );
       }
 
-      if (suggestionsRes.status === "fulfilled") {
+      // Call AI travel suggestions API after gathering weather and location data
+      const suggestionsRes = await axiosInstance.post("/ai/get-response", {
+        userId: user._id, // User ID
+        chatTitle,
+        startLocation: formData.startLocation,
+        endLocation: formData.endLocation,
+        carName: formData.carName,
+        travelDate: formData.travelDate,
+        avgHumidity: startLocationWeatherData.avghumidity, // Added average humidity
+        avgTemp: startLocationWeatherData.avgtemp_c, // Added average temperature
+      });
+
+      if (suggestionsRes.status === 200) {
         const { carEnhancements, terrainAnalysis, weatherConditions } =
-          suggestionsRes.value.data;
+          suggestionsRes.data;
 
         setSuggestions({
           carEnhancements:
@@ -128,7 +139,9 @@ const TravelPlanner = () => {
             weatherConditions || "No specific weather warnings.",
         });
       } else {
-        toast.error("Failed to fetch AI travel suggestions. Internet connection failed.");
+        toast.error(
+          "Failed to fetch AI travel suggestions. Internet connection failed."
+        );
       }
 
       // Store travel details if all necessary APIs succeed
@@ -140,6 +153,7 @@ const TravelPlanner = () => {
       setIsLoading(false);
     }
   };
+
 
   return (
     <div
@@ -173,7 +187,6 @@ const TravelPlanner = () => {
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 shadow-2xl"
           >
             <TravelForm onSubmit={handleTravelSubmit} />
           </motion.div>
@@ -183,7 +196,7 @@ const TravelPlanner = () => {
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 shadow-2xl"
+            className="bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 shadow-2xl"
           >
             {travelData ? (
               <LocationRoutingMap

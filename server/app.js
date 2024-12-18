@@ -23,7 +23,7 @@ if (cluster.isMaster) {
   const workerStats = Array(numCPUs).fill(0);
 
   // Fork workers
-  for (let i = 0; i < numCPUs; i++) {
+  for (let i = 0; i < (numCPUs-6); i++) {
     const worker = cluster.fork();
 
     // Monitor message from workers (e.g., load updates)
