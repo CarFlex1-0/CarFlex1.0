@@ -26,133 +26,153 @@ const TravelPlanner = () => {
   const [startLocationLatLong, setStartLocationLatLong] = useState([]);
   const [endLocationLatLong, setEndLocationLatLong] = useState([]);
 
-  const handleTravelSubmit = async (formData) => {
-    setIsLoading(true);
+ const handleTravelSubmit = async (formData) => {
+   setIsLoading(true);
 
-    // Reset previous suggestions and states
-    setSuggestions({
-      carEnhancements: "",
-      terrainAnalysis: "",
-      weatherConditions: "",
-    });
+   // Reset previous suggestions and states
+   setSuggestions({
+     carEnhancements: "",
+     terrainAnalysis: "",
+     weatherConditions: "",
+   });
 
-    try {
-      // Construct chat title
-      const chatTitle = `${formData.startLocation} to ${formData.endLocation}`;
+   try {
+     // Construct chat title
+     const chatTitle = `${formData.startLocation} to ${formData.endLocation}`;
 
-      // Parallel API calls for weather and location data using Promise.allSettled
-      const [startWeatherRes, endWeatherRes, startLatLongRes, endLatLongRes] =
-        await Promise.allSettled([
-          // Weather for start location
-          axiosInstance.post("/ai/weather", {
-            location: formData.startLocation,
-            date: formData.travelDate,
-          }),
-          // Weather for end location
-          axiosInstance.post("/ai/weather", {
-            location: formData.endLocation,
-            date: formData.travelDate,
-          }),
-          // Latitude and longitude for start location
-          axiosInstance.post("/location/get-lat-long", {
-            location: formData.startLocation,
-          }),
-          // Latitude and longitude for end location
-          axiosInstance.post("/location/get-lat-long", {
-            location: formData.endLocation,
-          }),
-        ]);
+     // Parallel API calls for weather and location data using Promise.allSettled
+     const [startWeatherRes, endWeatherRes, startLatLongRes, endLatLongRes] =
+       await Promise.allSettled([
+         // Weather for start location
+         axiosInstance.post("/ai/weather", {
+           location: formData.startLocation,
+           date: formData.travelDate,
+         }),
+         // Weather for end location
+         axiosInstance.post("/ai/weather", {
+           location: formData.endLocation,
+           date: formData.travelDate,
+         }),
+         // Latitude and longitude for start location
+         axiosInstance.post("/location/get-lat-long", {
+           location: formData.startLocation,
+         }),
+         // Latitude and longitude for end location
+         axiosInstance.post("/location/get-lat-long", {
+           location: formData.endLocation,
+         }),
+       ]);
 
-      // Check and handle API call results
-      let avgHumidity = null;
-      let avgTemp = null;
+     // Check and handle API call results
+     let avgHumidity = null;
+     let avgTemp = null;
+     let hasAllRequiredData = true;
 
-      if (
-        startWeatherRes.status === "fulfilled" &&
-        endWeatherRes.status === "fulfilled"
-      ) {
-        const startWeather = startWeatherRes.value.data;
-        const endWeather = endWeatherRes.value.data;
+     // Validate weather data
+     if (
+       startWeatherRes.status === "fulfilled" &&
+       endWeatherRes.status === "fulfilled"
+     ) {
+       const startWeather = startWeatherRes.value.data;
+       const endWeather = endWeatherRes.value.data;
 
-        // Calculate average humidity and temperature
-        avgHumidity = (
-          (startWeather.humidity + endWeather.humidity) /
-          2
-        ).toFixed(2);
-        avgTemp = (
-          (startWeather.temperature + endWeather.temperature) /
-          2
-        ).toFixed(2);
+       // Calculate average humidity and temperature
+       avgHumidity = (
+         (startWeather.avghumidity + endWeather.avghumidity) /
+         2
+       ).toFixed(2);
+       avgTemp = ((startWeather.avgtemp_c + endWeather.avgtemp_c) / 2).toFixed(
+         2
+       );
 
-        setStartLocationWeatherData(startWeather);
-        setEndLocationWeatherData(endWeather);
-      } else {
-        toast.error(
-          "Failed to fetch weather data. Internet connection failed."
-        );
-      }
+       setStartLocationWeatherData(startWeather);
+       setEndLocationWeatherData(endWeather);
+     } else {
+       hasAllRequiredData = false;
+       toast.error("Failed to fetch weather data. Internet connection failed.");
+     }
 
-      if (startLatLongRes.status === "fulfilled") {
-        setStartLocationLatLong([
-          startLatLongRes.value.data.latitude,
-          startLatLongRes.value.data.longitude,
-        ]);
-      } else {
-        toast.error(
-          "Failed to fetch coordinates for start location. Internet connection failed."
-        );
-      }
+     // Validate location data
+     if (startLatLongRes.status === "fulfilled") {
+       setStartLocationLatLong([
+         startLatLongRes.value.data.latitude,
+         startLatLongRes.value.data.longitude,
+       ]);
+     } else {
+       hasAllRequiredData = false;
+       toast.error(
+         "Failed to fetch coordinates for start location. Internet connection failed."
+       );
+     }
 
-      if (endLatLongRes.status === "fulfilled") {
-        setEndLocationLatLong([
-          endLatLongRes.value.data.latitude,
-          endLatLongRes.value.data.longitude,
-        ]);
-      } else {
-        toast.error(
-          "Failed to fetch coordinates for end location. Internet connection failed."
-        );
-      }
+     if (endLatLongRes.status === "fulfilled") {
+       setEndLocationLatLong([
+         endLatLongRes.value.data.latitude,
+         endLatLongRes.value.data.longitude,
+       ]);
+     } else {
+       hasAllRequiredData = false;
+       toast.error(
+         "Failed to fetch coordinates for end location. Internet connection failed."
+       );
+     }
 
-      // Call AI travel suggestions API after gathering weather and location data
-      const suggestionsRes = await axiosInstance.post("/ai/get-response", {
-        userId: user._id, // User ID
-        chatTitle,
-        startLocation: formData.startLocation,
-        endLocation: formData.endLocation,
-        carName: formData.carName,
-        travelDate: formData.travelDate,
-        avgHumidity: startLocationWeatherData.avghumidity, // Added average humidity
-        avgTemp: startLocationWeatherData.avgtemp_c, // Added average temperature
-      });
+     // Validate all required data before making the AI suggestions API call
+     const requiredDataCheck = {
+       userId: user?._id,
+       chatTitle,
+       startLocation: formData?.startLocation,
+       endLocation: formData?.endLocation,
+       carName: formData?.carName,
+       travelDate: formData?.travelDate,
+       avgHumidity: avgHumidity
+         ? avgHumidity
+         : startLocationWeatherData?.avghumidity,
+       avgTemp: avgTemp?avgTemp:startLocationWeatherData?.avgtemp_c,
+     };
 
-      if (suggestionsRes.status === 200) {
-        const { carEnhancements, terrainAnalysis, weatherConditions } =
-          suggestionsRes.data;
+     const missingFields = Object.entries(requiredDataCheck)
+       .filter(([_, value]) => !value)
+       .map(([key]) => key);
 
-        setSuggestions({
-          carEnhancements:
-            carEnhancements || "No specific enhancements recommended.",
-          terrainAnalysis:
-            terrainAnalysis || "Standard terrain analysis unavailable.",
-          weatherConditions:
-            weatherConditions || "No specific weather warnings.",
-        });
-      } else {
-        toast.error(
-          "Failed to fetch AI travel suggestions. Internet connection failed."
-        );
-      }
+     if (missingFields.length > 0 || !hasAllRequiredData) {
+       toast.error(`Missing required data: ${missingFields.join(", ")}`);
+       return;
+     }
 
-      // Store travel details if all necessary APIs succeed
-      setTravelData(formData);
-    } catch (error) {
-      console.error("Travel Planning Error:", error);
-      toast.error("An unexpected error occurred. Please try again later.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+     // Call AI travel suggestions API only if all required data is available
+     const suggestionsRes = await axiosInstance.post(
+       "/ai/get-response",
+       requiredDataCheck
+     );
+
+     if (suggestionsRes.status === 200) {
+       const { carEnhancements, terrainAnalysis, weatherConditions } =
+         suggestionsRes.data;
+
+       setSuggestions({
+         carEnhancements:
+           carEnhancements || "No specific enhancements recommended.",
+         terrainAnalysis:
+           terrainAnalysis || "Standard terrain analysis unavailable.",
+         weatherConditions:
+           weatherConditions || "No specific weather warnings.",
+       });
+     } else {
+       toast.error(
+         "Failed to fetch AI travel suggestions. Internet connection failed."
+       );
+     }
+
+     // Store travel details if all necessary APIs succeed
+     setTravelData(formData);
+   } catch (error) {
+     console.error("Travel Planning Error:", error);
+     toast.error("An unexpected error occurred. Please try again later.");
+   } finally {
+     setIsLoading(false);
+   }
+ };
 
 
   return (
@@ -171,7 +191,7 @@ const TravelPlanner = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <h1 className="text-5xl font-extrabold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600">
+          <h1 className="text-5xl mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600">
             Smart Travel Planner
           </h1>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
@@ -227,7 +247,7 @@ const TravelPlanner = () => {
         {!isLoading && travelData && (
           <div className="mt-12 space-y-8">
             {/* Weather Cards */}
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="flex gap-6">
               {startLocationWeatherData && (
                 <WeatherCard
                   location={travelData.startLocation}
